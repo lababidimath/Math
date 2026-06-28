@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة الأستاذ محمد لبابيدي | الرئيسية</title>
+    
+    <!-- ربط مكتبة الأيقونات Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>        
+        :root { 
+            --primary-color: #1a365d; 
+            --accent-color: #e53e3e; 
+            --bg-color: #f7fafc; 
+            --text-color: #2d3748; 
+            --box-bg: #ffffff;
+            --card-border: #e2e8f0;
+            --pomo-bg: #edf2f7;
+        }
+        
+        /* 🌟 الألوان الخاصة بالوضع الليلي */
+        body.dark-mode {
+            --bg-color: #111827;       
+            --text-color: #f3f4f6;     
+            --box-bg: #1f2937;         
+            --primary-color: #06b6d4;  
+            --accent-color: #f43f5e;   
+            --card-border: #374151;
+            --pomo-bg: #111827;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            background-color: var(--bg-color); 
+            color: var(--text-color); 
+            text-align: center; 
+            padding-bottom: 90px !important; 
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        
+        header { 
+            background: #1a365d; 
+            color: white; 
+            padding: 30px; 
+            transition: background 0.3s;
+        }
+        
+        body.dark-mode header {
+            background: #1f2937;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        /* 🌙 زر تبديل الوضع الليلي */
+        .theme-toggle {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: #ffffff;
+            color: #1a365d;
+            border: 2px solid #1a365d;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .theme-toggle {
+            background: var(--primary-color);
+            color: #111827;
+            border-color: var(--primary-color);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        /* شريط الأخبار المتحرك */
+        .ticker-wrap {
+            width: 100%;
+            overflow: hidden; 
+            background-color: #feebc8; 
+            border-bottom: 2px solid #fbd38d;
+            box-sizing: border-box;
+            padding: 10px 0;
+            direction: ltr; 
+            transition: all 0.3s;
+        }
+        
+        body.dark-mode .ticker-wrap {
+            background-color: #2d200a;
+            border-bottom: 2px solid #b45309;
+        }
+
+        .ticker {
+            display: inline-block;
+            white-space: nowrap; 
+            animation: ticker-move-left-to-right 15s linear infinite; 
+        }
+
+        .ticker:hover { animation-play-state: paused; }
+
+        .ticker__item {
+            display: inline-block;
+            padding: 0 3rem; 
+            font-size: 1rem;
+            color: #c05621; 
+            font-weight: bold;
+            direction: rtl; 
+        }
+        
+        body.dark-mode .ticker__item {
+            color: #fbbf24;
+        }
+
+        @keyframes ticker-move-left-to-right {
+            0% { transform: translate3d(-100%, 0, 0); }
+            100% { transform: translate3d(100vw, 0, 0); }
+        }
+        
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px; 
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .logo-img {
+            width: 80px; 
+            height: auto; 
+            object-fit: cover;
+        }
+
+        .header-text {
+            text-align: right; 
+            display: flex;
+            flex-direction: column;
+            gap: 5px; 
+        }
+
+        .main-title {
+            font-size: 2.4rem;
+            font-weight: bold;
+            color: #ffffff; 
+            margin: 0;
+        }
+        
+        body.dark-mode .main-title {
+            color: var(--primary-color);
+        }
+
+        .hero-desc {
+            font-size: 1rem;
+            color: #ffffff;
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+        
+        .container { 
+            max-width: 800px; 
+            margin: 30px auto; 
+            padding: 20px; 
+            background: var(--box-bg); 
+            border-radius: 12px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+            transition: all 0.3s;
+        }
+        
+        body.dark-mode .container {
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            border: 1px solid #374151;
+        }
+        
+        /* تصميم قسم العداد التنازلي البكالوريا */
+        .countdown-section { 
+            background: linear-gradient(135deg, #1a365d, #2a4365); 
+            color: white; 
+            padding: 25px; 
+            border-radius: 12px; 
+            margin-bottom: 30px; 
+            box-shadow: 0 4px 15px rgba(26, 54, 93, 0.2);
+            transition: all 0.3s;
+        }
+        
+        body.dark-mode .countdown-section {
+            background: #1f2937;
+            border: 1px solid #374151;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .countdown-title {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .timer-display { 
+            display: flex; 
+            justify-content: center; 
+            gap: 15px; 
+            direction: ltr; 
+        }
+        
+        .time-box {
+            background: var(--accent-color);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            min-width: 75px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+
+        .time-number {
+            display: block;
+            font-size: 2rem;
+            font-weight: bold;
+            line-height: 1.2;
+        }
+
+        .time-label {
+            display: block;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+
+        /* ⏱️ التنسيقات الدائرية الجديدة لمؤقت بومودورو */
+        .pomodoro-box {
+            background-color: var(--pomo-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 25px auto 10px auto;
+            max-width: 500px;
+            transition: all 0.3s ease;
+        }
+
+        .pomo-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--text-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .pomo-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .pomo-tab-btn {
+            background: transparent;
+            border: 1px solid var(--card-border);
+            color: var(--text-color);
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .pomo-tab-btn.active {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            border-color: var(--primary-color);
+        }
+
+        body.dark-mode .pomo-tab-btn.active {
+            color: #111827;
+        }
+
+        /* حاوية التصميم الدائري للعداد */
+        .pomo-circle-container {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            margin: 15px auto;
+        }
+
+        .pomo-svg {
+            transform: rotate(-90deg); /* لكي يبدأ العد التنازلي من الأعلى تماماً */
+            width: 100%;
+            height: 100%;
+        }
+
+        .pomo-circle-bg {
+            fill: none;
+            stroke: var(--card-border);
+            stroke-width: 8;
+        }
+
+        .pomo-circle-progress {
+            fill: none;
+            stroke: var(--accent-color); /* لون الخط الدائري النشط */
+            stroke-width: 8;
+            stroke-linecap: round; /* أطراف دائرية ناعمة للخط */
+            stroke-dasharray: 502.65; /* محيط الدائرة البرمجي الرياضي */
+            stroke-dashoffset: 0;
+            transition: stroke-dashoffset 1s linear; /* حركة انسيابية ناعمة كل ثانية */
+        }
+
+        .pomo-time-display {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.2rem;
+            font-weight: bold;
+            font-family: monospace, sans-serif;
+            color: var(--text-color);
+            letter-spacing: 1px;
+            direction: ltr;
+        }
+
+        .pomo-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 5px;
+        }
+
+        .pomo-act-btn {
+            border: none;
+            padding: 8px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.2s;
+        }
+
+        .pomo-btn-start {
+            background-color: #28a745;
+            color: white;
+        }
+        .pomo-btn-start:hover { background-color: #218838; }
+
+        .pomo-btn-pause {
+            background-color: #ffc107;
+            color: #212529;
+            display: none;
+        }
+
+        .pomo-btn-reset {
+            background-color: #6c757d;
+            color: white;
+        }
+        .pomo-btn-reset:hover { background-color: #5a6268; }
+
+        /* حاوية الشريط السفلي الثابت */
+        .bottom-nav {
+            position: fixed !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 70px !important;
+            background-color: #ffffff !important;
+            display: flex !important;
+            justify-content: space-around !important; 
+            align-items: center !important;
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.08) !important;
+            z-index: 99999 !important; 
+            padding: 0 !important;
+            margin: 0 !important;
+            box-sizing: border-box !important;
+            transition: background 0.3s;
+        }
+        
+        body.dark-mode .bottom-nav {
+            background-color: #1f2937 !important;
+            border-top: 1px solid #374151;
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        .nav-item {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            color: #9ca3af !important; 
+            text-decoration: none !important;
+            width: 100% !important;
+            height: 100% !important;
+            transition: all 0.25s ease-in-out !important;
+        }
+
+        .icon-wrapper {
+            font-size: 1.4rem !important; 
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+        }
+
+        .nav-text {
+            font-size: 0.8rem !important;
+            font-weight: 600 !important;
+            margin-top: 5px !important;
+            opacity: 0.8 !important;
+        }
+
+        .nav-item.active {
+            color: var(--accent-color) !important; 
+        }
+
+        .nav-item.active .icon-wrapper {
+            transform: translateY(-6px) scale(1.2) !important; 
+            color: var(--accent-color) !important;
+        }
+
+        @media (max-width: 600px) {
+            .header-container { flex-direction: column; text-align: center; }
+            .header-text { text-align: center; }
+            .main-title { font-size: 1.8rem; }
+            .logo-img { width: 70px; }
+            .timer-display { gap: 8px; }
+            .time-box { min-width: 60px; padding: 8px 10px; }
+            .time-number { font-size: 1.5rem; }
+            .time-label { font-size: 0.75rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- زر التبديل للوضع الليلي -->
+    <button id="theme-toggle" class="theme-toggle" title="تبديل المظهر">
+        <i class="fa-solid fa-moon"></i>
+    </button>
+
+    <!-- شريط الأخبار المتحرك -->
+    <div class="ticker-wrap">
+        <div class="ticker">
+            <div class="ticker__item">💡 الأستاذ محمد لبابيدي يتمنى لجميع طلاب البكالوريا التوفيق والنجاح الدائم</div>
+            <div class="ticker__item">🔥 اختبر نفسك الآن في قسم الاختبارات التفاعلية وتحدّى وقتك.</div>
+            <div class="ticker__item">📢 تم رفع مكثفة الجبر الشاملة لعام 2027 في قسم المكتبة.. حمل نسختك الآن</div>
+        </div>
+    </div>
+
+    <!-- الهيدر -->
+    <header>
+        <div class="header-container">
+            <img src="logo.png" alt="لوغو منصة الأستاذ محمد لبابيدي" class="logo-img">
+            <div class="header-text">
+                <h2 class="main-title">المنصة التعليمية </h2>
+                <h2 class="main-title">للأستاذ محمد لبابيدي</h2>
+                <p class="hero-desc">التميز والتفوق في مادة الرياضيات لطلاب البكالوريا</p>
+            </div>
+        </div>
+    </header>
+
+    <!-- القائمة السفلية الثابتة -->
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item active">
+            <div class="icon-wrapper">
+                <i class="fa-solid fa-house"></i>
+            </div>
+            <span class="nav-text">الرئيسية</span>
+        </a>
+        
+        <a href="library.html" class="nav-item">
+            <div class="icon-wrapper">
+                <i class="fa-solid fa-book-open"></i>
+            </div>
+            <span class="nav-text">المكتبة</span>
+        </a>
+        
+        <a href="profile.html" class="nav-item">
+            <div class="icon-wrapper">
+                <i class="fa-solid fa-user-graduate"></i>
+            </div>
+            <span class="nav-text">عن الأستاذ</span>
+        </a>
+    </nav>
+
+    <!-- المحتوى الرئيسي -->
+    <div class="container">
+        <div class="countdown-section">
+            <div class="countdown-title">⏳ الوقت المتبقي على امتحانات البكالوريا 2027 :</div>
+            
+            <div class="timer-display">
+                <div class="time-box">
+                    <span class="time-number" id="days">00</span>
+                    <span class="time-label">الأيام</span>
+                </div>
+                <div class="time-box">
+                    <span class="time-number" id="hours">00</span>
+                    <span class="time-label">الساعات</span>
+                </div>
+                <div class="time-box">
+                    <span class="time-number" id="minutes">00</span>
+                    <span class="time-label">الدقائق</span>
+                </div>
+                <div class="time-box">
+                    <span class="time-number" id="seconds">00</span>
+                    <span class="time-label">الثواني</span>
+                </div>
+            </div>
+        </div>
+
+        <h2>مرحباً بكم طلابنا</h2>
+        <p>تم إنشاء هذه المنصة لتسهيل وصولكم إلى النوط والاختبارات المؤتمتة الخاصة بمادة الرياضيات. تنقل عبر القائمة في الأسفل لاستكشاف المحتوى.</p>
+        
+        <!-- ⏱️ قسم مؤقت الدراسة بومودورو الدائري المطور -->
+        <div class="pomodoro-box">
+            <div class="pomo-title">
+                <i class="fa-solid fa-stopwatch-20"></i>
+                <span>مؤقت التركيز وتنظيم دراسة الرياضيات</span>
+            </div>
+            
+            <div class="pomo-tabs">
+                <button class="pomo-tab-btn active" id="btn-mode-study" onclick="switchPomoMode('study')">📚 جلسة دراسة</button>
+                <button class="pomo-tab-btn" id="btn-mode-break" onclick="switchPomoMode('break')">☕ استراحة قصيرة</button>
+            </div>
+            
+            <!-- الهيكل الدائري للمؤقت -->
+            <div class="pomo-circle-container">
+                <svg class="pomo-svg" viewBox="0 0 180 180">
+                    <!-- الدائرة الخلفية الرمادية الباهتة -->
+                    <circle class="pomo-circle-bg" cx="90" cy="90" r="80"></circle>
+                    <!-- الدائرة الملونة الأمامية التي ستتناقص -->
+                    <circle class="pomo-circle-progress" id="pomo-progress" cx="90" cy="90" r="80"></circle>
+                </svg>
+                <!-- النص الرقمي بالمنتصف تماماً -->
+                <div class="pomo-time-display" id="pomo-time">25:00</div>
+            </div>
+
+            <div class="pomo-actions">
+                <button class="pomo-act-btn pomo-btn-start" id="pomo-start" onclick="startPomoTimer()">
+                    <i class="fa-solid fa-play"></i> ابدأ التركيز
+                </button>
+                <button class="pomo-act-btn pomo-btn-pause" id="pomo-pause" onclick="pausePomoTimer()">
+                    <i class="fa-solid fa-pause"></i> إيقاف مؤقت
+                </button>
+                <button class="pomo-act-btn pomo-btn-reset" onclick="resetPomoTimer()">
+                    <i class="fa-solid fa-rotate-right"></i> إعادة تعيين
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 🛠️ تنظيف الكاش القديم
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                for(let registration of registrations) { registration.unregister(); }
+            });
+        }
+
+        // 1. برمجة وحفظ خيار الوضع الليلي
+        const themeToggle = document.getElementById('theme-toggle');
+        const toggleIcon = themeToggle.querySelector('i');
+
+        if (localStorage.getItem('platform-theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+            toggleIcon.className = 'fa-solid fa-sun';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('platform-theme', 'dark');
+                toggleIcon.className = 'fa-solid fa-sun'; 
+            } else {
+                localStorage.setItem('platform-theme', 'light');
+                toggleIcon.className = 'fa-solid fa-moon'; 
+            }
+        });
+
+        // 2. كود العداد التنازلي للامتحانات
+        const targetExamDate = new Date("June 1, 2027 08:00:00").getTime();
+        const countdownInterval = setInterval(function() {
+            const now = new Date().getTime();
+            const diff = targetExamDate - now;
+            if (diff > 0) {
+                const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((diff % (1000 * 60)) / 1000);
+                document.getElementById("days").innerText = d < 10 ? "0" + d : d;
+                document.getElementById("hours").innerText = h < 10 ? "0" + h : h;
+                document.getElementById("minutes").innerText = m < 10 ? "0" + m : m;
+                document.getElementById("seconds").innerText = s < 10 ? "0" + s : s;
+            } else {
+                clearInterval(countdownInterval);
+                document.querySelector(".countdown-section").innerHTML = "<div class='countdown-title'>📋 بالتوفيق والنجاح لجميع الطلاب في الامتحانات!</div>";
+            }
+        }, 1000);
+
+        // 3. 🧠 منطق وحسابات مؤقت بومودورو الدائري المطور برامترات رياضية هندسية
+        let pomoInterval = null;
+        let pomoMinutes = 25;
+        let pomoSeconds = 0;
+        let totalSeconds = 25 * 60; // القيمة الابتدائية الإجمالية بالثواني للتحكم بالدائرة
+        let currentPomoMode = 'study'; 
+
+        const circumference = 2 * Math.PI * 80; // محيط الدائرة الرياضي الدقيق = 502.65
+        const progressCircle = document.getElementById('pomo-progress');
+        const pomoTimeDisplay = document.getElementById('pomo-time');
+        const pomoStartBtn = document.getElementById('pomo-start');
+        const pomoPauseBtn = document.getElementById('pomo-pause');
+        const studyTab = document.getElementById('btn-mode-study');
+        const breakTab = document.getElementById('btn-mode-break');
+
+        // ضبط المحيط الابتدائي للدائرة برمجياً لمنع المشاكل
+        progressCircle.style.strokeDasharray = circumference;
+        progressCircle.style.strokeDashoffset = 0;
+
+        function updatePomoDisplay() {
+            // تحديث العرض النصي للساعات والدقائق
+            let m = pomoMinutes < 10 ? "0" + pomoMinutes : pomoMinutes;
+            let s = pomoSeconds < 10 ? "0" + pomoSeconds : pomoSeconds;
+            pomoTimeDisplay.textContent = m + ":" + s;
+
+            // 📐 الحساب الرياضي لنقصان الخط الدائري بشكل متناسب تماماً مع الثواني
+            let currentSecondsLeft = pomoMinutes * 60 + pomoSeconds;
+            let progressFraction = currentSecondsLeft / totalSeconds;
+            // حساب المسافة المقتطعة من الدائرة
+            let offset = circumference * (1 - progressFraction);
+            progressCircle.style.strokeDashoffset = offset;
+        }
+
+        function switchPomoMode(mode) {
+            pausePomoTimer();
+            currentPomoMode = mode;
+            if (mode === 'study') {
+                pomoMinutes = 25;
+                totalSeconds = 25 * 60;
+                studyTab.classList.add('active');
+                breakTab.classList.remove('active');
+            } else {
+                pomoMinutes = 5;
+                totalSeconds = 5 * 60;
+                breakTab.classList.add('active');
+                studyTab.classList.remove('active');
+            }
+            pomoSeconds = 0;
+            updatePomoDisplay();
+        }
+
+        function startPomoTimer() {
+            if (pomoInterval !== null) return;
+            
+            pomoStartBtn.style.display = 'none';
+            pomoPauseBtn.style.display = 'inline-flex';
+
+            pomoInterval = setInterval(() => {
+                if (pomoSeconds === 0) {
+                    if (pomoMinutes === 0) {
+                        clearInterval(pomoInterval);
+                        pomoInterval = null;
+                        alert(currentPomoMode === 'study' ? "🎉 أحسنت! انتهت جلسة الدراسة الحالية، خذ استراحة الآن." : "💪 انتهت الاستراحة، عد إلى حماس الدراسة والتمارين!");
+                        resetPomoTimer();
+                        return;
+                    }
+                    pomoMinutes--;
+                    pomoSeconds = 59;
+                } else {
+                    pomoSeconds--;
+                }
+                updatePomoDisplay();
+            }, 1000);
+        }
+
+        function pausePomoTimer() {
+            clearInterval(pomoInterval);
+            pomoInterval = null;
+            pomoStartBtn.style.display = 'inline-flex';
+            pomoPauseBtn.style.display = 'none';
+        }
+
+        function resetPomoTimer() {
+            pausePomoTimer();
+            if (currentPomoMode === 'study') {
+                pomoMinutes = 25;
+                totalSeconds = 25 * 60;
+            } else {
+                pomoMinutes = 5;
+                totalSeconds = 5 * 60;
+            }
+            pomoSeconds = 0;
+            updatePomoDisplay();
+        }
+        
+        // 🛠️ كود تفعيل وتسجيل الـ Service Worker ليعمل التطبيق بدون إنترنت
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('/sw.js')
+            .then((registration) => {
+                console.log('تم تفعيل نظام التشغيل أوفلاين بنجاح المدى:', registration.scope);
+            })
+            .catch((error) => {
+                console.log('فشل تسجيل نظام الأوفلاين:', error);
+            });
+    });
+}
+
+        
+    </script>
+
+
+
+</body>
+</html>

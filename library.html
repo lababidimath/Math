@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المكتبة الرقمية | الأستاذ محمد لبابيدي</title>
+    <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1a365d">
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js')
+        .then(reg => console.log('تم تسجيل التطبيق بنجاح!'))
+        .catch(err => console.log('فشل تسجيل التطبيق:', err));
+    });
+  }
+</script>
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* 🎨 تعريف المتغيرات الافتراضية (الوضع النهاري) */
+        :root { 
+            --primary-color: #1a365d; 
+            --accent-color: #e53e3e; 
+            --bg-color: #f7fafc; 
+            --text-color: #2d3748; 
+            --box-bg: #ffffff;
+            --card-border: #edf2f7;
+            --success-color: #38a169;
+            --btn-text: #ffffff;
+        }
+        
+        /* 🌟 الألوان الخاصة بالوضع الليلي (ألوان مسطحة ومريحة تماماً بدون أي توهج) */
+        body.dark-mode {
+            --bg-color: #111827;       /* خلفية داكنة هادئة للموقع */
+            --text-color: #f3f4f6;     /* نصوص بيضاء واضحة وبدقة عالية */
+            --box-bg: #1f2937;         /* حاويات داخلية وقوائم رمادية داكنة */
+            --primary-color: #06b6d4;  /* لون سيان صلب للأقسام والعناوين */
+            --accent-color: #f43f5e;   /* لون وردي/أحمر صلب للعناصر النشطة */
+            --card-border: #374151;    /* حدود رمادية متناسقة للفواصل */
+            --success-color: #059669;  /* لون أخضر مطفأ لزر التحميل */
+            --btn-text: #111827;       /* لون نص داكن فوق أزرار السيان لسهولة القراءة */
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0;
+            background-color: var(--bg-color); 
+            color: var(--text-color); 
+            padding-bottom: 90px !important;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        
+        /* 🏛️ المساحة العلوية (الهيدر) */
+        header { 
+            background: #1a365d; 
+            color: white; 
+            padding: 20px; 
+            text-align: center; 
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        
+        body.dark-mode header {
+            background: var(--box-bg);
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        /* تنسيق حاوية الهيدر لتوزيع اللوغو والنص */
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px; 
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .logo-img {
+            width: 80px; 
+            height: auto; 
+            object-fit: cover;
+        }
+
+        .main-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ffffff; 
+            margin: 0;
+            letter-spacing: 0.5px;
+            transition: color 0.3s ease;
+        }
+        
+        body.dark-mode .main-title {
+            color: var(--primary-color);
+        }
+
+        /* 🌙 زر تبديل الوضع الليلي الدائري العائم */
+        .theme-toggle {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: #ffffff;
+            color: #1a365d;
+            border: 2px solid #1a365d;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+        
+        body.dark-mode .theme-toggle {
+            background: var(--primary-color);
+            color: #111827;
+            border-color: var(--primary-color);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        /* 📦 حاوية المحتوى الرئيسي */
+        .container { 
+            max-width: 800px; 
+            margin: 30px auto; 
+            padding: 0 20px; 
+        }
+
+        .container h2 {
+            text-align: center;
+            color: var(--primary-color);
+            font-size: 1.4rem;
+            margin-bottom: 25px;
+            transition: color 0.3s ease;
+        }
+
+        /* 🗂️ تصميم القائمة المنسدلة الذكية (Accordion) */
+        .dropdown-accordion {
+            margin-bottom: 15px;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            border: 1px solid var(--card-border);
+            transition: border-color 0.3s ease;
+        }
+
+        /* زر عنوان القسم الرئيسي */
+        .dropdown-btn {
+            background-color: var(--primary-color);
+            color: var(--btn-text);
+            width: 100%;
+            padding: 15px 20px;
+            text-align: right;
+            border: none;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.3s, color 0.3s;
+        }
+
+        body.dark-mode .dropdown-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* سهم المؤشر حركي */
+        .dropdown-btn::after {
+            content: '▼';
+            font-size: 0.8rem;
+            transition: transform 0.3s ease;
+        }
+
+        .dropdown-btn.active::after {
+            transform: rotate(180deg);
+        }
+
+        /* محتوى القائمة المخفي الذكي التغير */
+        .dropdown-content {
+            background-color: var(--box-bg);
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, background-color 0.3s ease;
+        }
+
+        /* عناصر الملفات وروابط التحميل */
+        .pdf-item { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center;
+            padding: 15px 20px; 
+            border-bottom: 1px solid var(--card-border); 
+            color: var(--text-color);
+            transition: border-color 0.3s, color 0.3s;
+        }
+        
+        .pdf-item:last-child {
+            border-bottom: none;
+        }
+
+        .btn-download { 
+            background: var(--success-color); 
+            color: white; 
+            padding: 6px 16px; 
+            text-decoration: none; 
+            border-radius: 6px; 
+            font-weight: bold; 
+            font-size: 0.9rem;
+            transition: background 0.2s, transform 0.2s;
+        }
+
+        .btn-download:hover { 
+            transform: scale(1.03);
+        }
+
+        /* 📱 شريط التنقل السفلي الموحد والمحمي بالكامل للوضع الداكن */
+        .bottom-nav {
+            position: fixed !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 70px !important;
+            background-color: #ffffff !important;
+            display: flex !important;
+            justify-content: space-around !important; 
+            align-items: center !important;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08) !important;
+            z-index: 99999 !important; 
+            padding: 0 !important;
+            margin: 0 !important;
+            box-sizing: border-box !important;
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        body.dark-mode .bottom-nav {
+            background-color: var(--box-bg) !important;
+            border-top: 1px solid var(--card-border) !important;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        .nav-item {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            color: #9ca3af !important; 
+            text-decoration: none !important;
+            width: 100% !important;
+            height: 100% !important;
+            transition: all 0.25s ease-in-out !important;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .icon-wrapper {
+            font-size: 1.4rem !important; 
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+        }
+
+        .nav-text {
+            font-size: 0.8rem !important;
+            font-weight: 600 !important;
+            margin-top: 5px !important;
+            opacity: 0.8 !important;
+        }
+
+        /* تمييز صفحة المكتبة الحالية كعنصر نشط متفاعل */
+        .nav-item.active {
+            color: var(--accent-color) !important; 
+        }
+        .nav-item.active .icon-wrapper {
+            transform: translateY(-6px) scale(1.2) !important; 
+            color: var(--accent-color) !important;
+        }
+        .nav-item.active .nav-text {
+            font-weight: bold !important;
+            opacity: 1 !important;
+        }
+
+        /* التوافق الحركي للمس والموبايل */
+        .nav-item:active .icon-wrapper {
+            transform: scale(0.9) translateY(-2px) !important;
+        }
+
+        @media (max-width: 600px) {
+            .header-container { flex-direction: column; text-align: center; }
+            .logo-img { width: 70px; }
+            .main-title { font-size: 1.5rem; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <button id="theme-toggle" class="theme-toggle" title="تبديل المظهر">
+        <i class="fa-solid fa-moon"></i>
+    </button>
+
+    <header>
+        <div class="header-container">
+            <img src="logo.png" alt="لوغو منصة الأستاذ محمد لبابيدي" class="logo-img">
+            <div class="header-text">
+                 <h1 class="main-title">مكتبة الملفات والنوط الرقمية 📚</h1>
+            </div>
+        </div>
+    </header>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <div class="icon-wrapper">
+                <i class="fa-solid fa-house"></i>
+            </div>
+            <span class="nav-text">الرئيسية</span>
+        </a>
+        
+        <a href="library.html" class="nav-item active">
+            <div class="icon-wrapper">
+                <i class="fa-solid fa-book-open"></i>
+            </div>
+            <span class="nav-text">المكتبة</span>
+        </a>
+        
+        <a href="profile.html" class="nav-item">
+            <div class="icon-wrapper">
+                <i class="fa-solid fa-user-graduate"></i>
+            </div>
+            <span class="nav-text">عن الأستاذ</span>
+        </a>
+    </nav>
+
+    <div class="container">
+        <h2>اختر القسم المستهدف لتصفح الملفات:</h2>
+
+        <div class="dropdown-accordion">
+            <button class="dropdown-btn" onclick="toggleDropdown(this)">📈 قسم التحليل</button>
+            <div class="dropdown-content">
+                <div class="pdf-item">
+                    <span>مكثفة التوابع والنهايات 2026</span>
+                    <a href="https://docs.google.com/uc?export=download&id=اكتب_معرف_الملف_هنا" class="btn-download" download>تحميل PDF</a>
+                </div>
+                <div class="pdf-item">
+                    <span>شرح التابع الأسّي واللوغاريتمي</span>
+                    <a href="https://docs.google.com/uc?export=download&id=اكتب_معرف_الملف_هنا" class="btn-download" download>تحميل PDF</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="dropdown-accordion">
+            <button class="dropdown-btn" onclick="toggleDropdown(this)">📐 قسم الهندسة</button>
+            <div class="dropdown-content">
+                <div class="pdf-item">
+                    <span>الأشعة في الفراغ - نوطة شاملة</span>
+                    <a href="https://docs.google.com/uc?export=download&id=اكتب_معرف_الملف_هنا" class="btn-download" download>تحميل PDF</a>
+                </div>
+                <div class="pdf-item">
+                    <span>تطبيقات الهندسة التحليلية</span>
+                    <a href="https://docs.google.com/uc?export=download&id=اكتب_معرف_الملف_هنا" class="btn-download" download>تحميل PDF</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="dropdown-accordion">
+            <button class="dropdown-btn" onclick="toggleDropdown(this)">🧮 قسم الجبر</button>
+            <div class="dropdown-content">
+                <div class="pdf-item">
+                    <span>الاحتمالات ونظرية الأعداد</span>
+                    <a href="https://docs.google.com/uc?export=download&id=اكتب_معرف_الملف_هنا" class="btn-download" download>تحميل PDF</a>
+                </div>
+                <div class="pdf-item">
+                    <span>شامل المتتاليات العددية</span>
+                    <a href="https://docs.google.com/uc?export=download&id=اكتب_معرف_الملف_هنا" class="btn-download" download>تحميل PDF</a>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // دالة تشغيل القوائم المنسدلة بسلاسة كاملة
+        function toggleDropdown(button) {
+            button.classList.toggle("active");
+            const content = button.nextElementSibling;
+            
+            if (content.style.maxHeight) {
+                content.style.maxHeight = null;
+            } else {
+                content.style.maxHeight = content.scrollHeight + "px";
+            }
+        }
+
+        // كود إدارة وتطبيق المظهر الليلي وحفظه في الذاكرة المشتركة للمنصة
+        document.addEventListener("DOMContentLoaded", function() {
+            const themeToggle = document.getElementById('theme-toggle');
+            const toggleIcon = themeToggle.querySelector('i');
+
+            // فحص فوري لتجنب أي وميض أبيض عند الانتقال بين الصفحات
+            if (localStorage.getItem('platform-theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+                toggleIcon.className = 'fa-solid fa-sun';
+            }
+
+            // الاستماع للضغط وتبديل الثيم
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                if (document.body.classList.contains('dark-mode')) {
+                    localStorage.setItem('platform-theme', 'dark');
+                    toggleIcon.className = 'fa-solid fa-sun'; 
+                } else {
+                    localStorage.setItem('platform-theme', 'light');
+                    toggleIcon.className = 'fa-solid fa-moon'; 
+                }
+                
+                // تحديث الارتفاع الأقصى (maxHeight) للأكورديونات المفتوحة لكي لا ينقطع المحتوى أثناء التغيير المفاجئ للألوان
+                document.querySelectorAll('.dropdown-btn.active').forEach(btn => {
+                    const content = btn.nextElementSibling;
+                    if(content) content.style.maxHeight = content.scrollHeight + "px";
+                });
+            });
+        });
+    </script>
+    
+</body>
+</html>

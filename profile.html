@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>عن الأستاذ | محمد لبابيدي</title>
+    <link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#1a365d">
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('sw.js')
+        .then(reg => console.log('تم تسجيل التطبيق بنجاح!'))
+        .catch(err => console.log('فشل تسجيل التطبيق:', err));
+    });
+  }
+</script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <style>
+        /* 🎨 تعريف المتغيرات الافتراضية (الوضع النهاري) */
+        :root { 
+            --primary-color: #1a365d; 
+            --accent-color: #e53e3e;
+            --bg-color: #f7fafc; 
+            --text-color: #2d3748;
+            --box-bg: #ffffff;
+            --card-border: rgba(26, 54, 93, 0.1);
+            --sub-title-color: #fbd38d;
+            --avatar-bg: #edf2f7;
+            --counter-label: #718096;
+        }
+        
+        /* 🌟 الألوان المتناسقة للوضع الليلي (ألوان مسطحة مريحة تماماً وبدون أي توهج) */
+        body.dark-mode {
+            --bg-color: #111827;       /* خلفية الموقع الداكنة الهادئة */
+            --text-color: #f3f4f6;     /* لون النصوص البيضاء الواضحة */
+            --box-bg: #1f2937;         /* خلفية الكروت وعداد الزوار والحاويات */
+            --primary-color: #06b6d4;  /* لون سيان صلب للعناوين والخطوط الهامة */
+            --accent-color: #f43f5e;   /* لون وردي/أحمر صلب للأرقام والعناصر النشطة */
+            --card-border: #374151;    /* ألوان حدود الكروت الداكنة */
+            --sub-title-color: #22d3ee;/* لون العنوان الفرعي في الهيدر */
+            --avatar-bg: #374151;      /* خلفية صورة البروفايل البديلة */
+            --counter-label: #9ca3af;  /* لون نص التسمية للعداد */
+        }
+        
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            background-color: var(--bg-color); 
+            color: var(--text-color); 
+            padding-bottom: 90px !important;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        
+        /* 🏛️ المساحة العلوية (الهيدر) */
+        header { 
+            background: #1a365d; 
+            color: white; 
+            padding: 20px; 
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        
+        body.dark-mode header {
+            background: var(--box-bg);
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        /* 🌙 زر تبديل الوضع الليلي العائم */
+        .theme-toggle {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: #ffffff;
+            color: #1a365d;
+            border: 2px solid #1a365d;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .theme-toggle {
+            background: var(--primary-color);
+            color: #111827;
+            border-color: var(--primary-color);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .header-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .header-text {
+            text-align: right;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .main-title { font-size: 2.2rem !important; font-weight: 800; color: #ffffff; margin: 0; }
+        .sub-title { font-size: 1.6rem !important; font-weight: 600; color: var(--sub-title-color); margin: 0; transition: color 0.3s; }
+
+        .container { 
+            max-width: 800px; 
+            margin: 40px auto; 
+            padding: 0 20px; 
+        }
+        
+        /* 📇 كروت التعريف وقنوات التواصل */
+        .profile-card {
+            background: var(--box-bg);
+            padding: 30px;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.03);
+            border-top: 6px solid var(--primary-color);
+            border-left: 1px solid var(--card-border);
+            border-right: 1px solid var(--card-border);
+            border-bottom: 1px solid var(--card-border);
+            text-align: center;
+            margin-bottom: 30px;
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+
+        body.dark-mode .profile-card {
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+
+        /* ضبط حاوية الصورة الشخصية */
+        .profile-avatar {
+            width: 130px;
+            height: 130px;
+            border-radius: 50%; 
+            margin: 0 auto 15px auto;
+            border: 4px solid var(--box-bg);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            overflow: hidden; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--avatar-bg);
+            color: var(--primary-color);
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        .profile-avatar i { font-size: 3.5rem; }
+
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; 
+            object-position: center top; 
+        }
+
+        .profile-card h3 {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            margin: 10px 0;
+            transition: color 0.3s;
+        }
+
+        .profile-card p {
+            line-height: 1.7;
+            color: var(--text-color);
+            font-size: 1.05rem;
+            opacity: 0.95;
+        }
+
+        /* شبكة أزرار التواصل */
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 25px;
+        }
+
+        .contact-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            padding: 15px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: white;
+            font-weight: bold;
+            font-size: 1.1rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .contact-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn-whatsapp { background-color: #25D366; }
+        .btn-telegram { background-color: #0088cc; }
+        .btn-instagram { background-color: #E1306C; }
+        .btn-phone { background-color: #1a365d; }
+        body.dark-mode .btn-phone { background-color: var(--primary-color); color: #111827; }
+
+        /* 📊 صندوق عداد الزوار الذكي والتفاعلي */
+        .visitor-counter-box {
+            display: flex !important;
+            align-items: center !important;
+            gap: 15px !important;
+            max-width: 280px !important;
+            margin: 25px auto !important;
+            padding: 12px 20px !important;
+            background: var(--box-bg) !important;
+            border-radius: 12px !important;
+            border: 1px solid var(--card-border) !important;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04) !important;
+            direction: rtl !important;
+            transition: background 0.3s, border-color 0.3s;
+        }
+
+        body.dark-mode .visitor-counter-box {
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2) !important;
+        }
+
+        .counter-icon {
+            width: 45px !important;
+            height: 45px !important;
+            background-color: var(--primary-color) !important; 
+            color: #ffffff !important;
+            border-radius: 10px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 1.3rem !important;
+            transition: background-color 0.3s;
+        }
+        
+        body.dark-mode .counter-icon {
+            color: #111827 !important;
+        }
+
+        .counter-text-wrapper {
+            display: flex !important;
+            flex-direction: column !important;
+            text-align: right !important;
+        }
+
+        .counter-label {
+            font-size: 0.75rem !important;
+            color: var(--counter-label) !important;
+            font-weight: 600 !important;
+            transition: color 0.3s;
+        }
+
+        .counter-number {
+            font-size: 1.4rem !important;
+            font-weight: 800 !important;
+            color: var(--accent-color) !important; 
+            font-family: 'Segoe UI', sans-serif !important;
+            line-height: 1.2 !important;
+            margin-top: 2px !important;
+            transition: color 0.3s;
+        }
+
+        /* 📱 شريط التنقل السفلي الثابت (تمت حمايته ودعمه بالكامل للوضع الليلي) */
+        .bottom-nav {
+            position: fixed !important; bottom: 0 !important; left: 0 !important;
+            width: 100% !important; height: 70px !important; background-color: #ffffff !important;
+            display: flex !important; justify-content: space-around !important; align-items: center !important;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08) !important; z-index: 99999 !important;
+            transition: background-color 0.3s, border-color 0.3s;
+        }
+
+        body.dark-mode .bottom-nav {
+            background-color: var(--box-bg) !important;
+            border-top: 1px solid var(--card-border) !important;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        .nav-item {
+            display: flex !important; flex-direction: column !important; align-items: center !important;
+            justify-content: center !important; color: #9ca3af !important; text-decoration: none !important;
+            width: 100% !important; height: 100% !important; transition: all 0.25s ease-in-out !important;
+        }
+
+        .icon-wrapper { font-size: 1.5rem !important; height: 28px; display: flex; align-items: center; justify-content: center; transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important; }
+        .nav-text { font-size: 0.8rem !important; font-weight: 600 !important; margin-top: 5px !important; opacity: 0.8 !important; }
+        
+        .nav-item.active { color: var(--accent-color) !important; }
+        .nav-item.active .icon-wrapper { transform: translateY(-6px) scale(1.2) !important; color: var(--accent-color) !important; }
+        .nav-item.active .nav-text { font-weight: bold !important; opacity: 1 !important; }
+
+        @media (max-width: 600px) {
+            .main-title { font-size: 1.8rem !important; }
+            .sub-title { font-size: 1.3rem !important; }
+            .header-container { flex-direction: column; text-align: center; }
+            .header-text { text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <button id="theme-toggle" class="theme-toggle" title="تبديل المظهر">
+        <i class="fa-solid fa-moon"></i>
+    </button>
+
+    <header>
+        <div class="header-container">
+            <div class="header-text">
+                <h1 class="main-title">المنصة التعليمية</h1>
+                <h2 class="sub-title">للأستاذ محمد لبابيدي</h2>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        
+        <div class="profile-card">
+            <div class="profile-avatar">
+                <img src="teacher.jpg" alt="الأستاذ محمد لبابيدي" class="avatar-img">
+            </div>
+            <h3>الأستاذ محمد لبابيدي</h3>
+            <p>مدرس مادة الرياضيات للمرحلتين الأساسية والثانوية. متخصّص في تبسيط المنهاج السوري وتطوير مهارات الطلاب الفكرية والتحليلية للوصول إلى التميز ونيل العلامة التامة في امتحانات شهادة التعليم الأساسي والبكالوريا.</p>
+        </div>
+
+        <div class="profile-card">
+            <h3>🌐 قنوات ومواقع التواصل الرسمي</h3>
+            <p>يمكنكم التواصل معنا مباشرة أو متابعة السلاسل التعليمية اليومية عبر المنصات التالية:</p>
+            
+            <div class="contact-grid">
+                <a href="https://wa.me/00000000" class="contact-btn btn-whatsapp" target="_blank">
+                    <i class="fa-brands fa-whatsapp"></i> واتساب
+                </a>
+                
+                <a href="https://t.me/YourChannel" class="contact-btn btn-telegram" target="_blank">
+                    <i class="fa-brands fa-telegram"></i> تليغرام
+                </a>
+                
+                <a href="https://instagram.com/YourUsername" class="contact-btn btn-instagram" target="_blank">
+                    <i class="fa-brands fa-instagram"></i> إنستغرام
+                </a>
+                
+                <a href="tel:00000000" class="contact-btn btn-phone">
+                    <i class="fa-solid fa-phone"></i> اتصال مباشر
+                </a>
+            </div>
+        </div>
+
+        <div class="visitor-counter-box">
+            <div class="counter-icon">
+                <i class="fa-solid fa-users-viewfinder"></i>
+            </div>
+            <div class="counter-text-wrapper">
+                <span class="counter-label">إجمالي زيارات المنصة</span>
+                <span id="visitorCount" class="counter-number">0</span>
+            </div>
+        </div>
+
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <div class="icon-wrapper">
+                <i class="fa-solid fa-house"></i>
+            </div>
+            <span class="nav-text">الرئيسية</span>
+        </a>
+        
+        <a href="library.html" class="nav-item">
+            <div class="icon-wrapper">
+                <i class="fa-solid fa-book-open"></i>
+            </div>
+            <span class="nav-text">المكتبة</span>
+        </a>
+        
+        <a href="profile.html" class="nav-item active">
+            <div class="icon-wrapper">
+                <i class="fa-solid fa-user-graduate"></i>
+            </div>
+            <span class="nav-text">عن الأستاذ</span>
+        </a>
+    </nav>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // ==== أولاً: برمجة ومزامنة خيار الوضع الليلي الفورية ====
+            const themeToggle = document.getElementById('theme-toggle');
+            const toggleIcon = themeToggle.querySelector('i');
+
+            // فحص الاختيار المخزن بالذاكرة للموقع لتطبيقه مباشرة دون وميض
+            if (localStorage.getItem('platform-theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+                toggleIcon.className = 'fa-solid fa-sun';
+            }
+
+            // الاستماع للنقر وتغيير الحالة وحفظها بالـ localStorage
+            themeToggle.addEventListener('click', () => {
+                document.body.classList.toggle('dark-mode');
+                if (document.body.classList.contains('dark-mode')) {
+                    localStorage.setItem('platform-theme', 'dark');
+                    toggleIcon.className = 'fa-solid fa-sun'; 
+                } else {
+                    localStorage.setItem('platform-theme', 'light');
+                    toggleIcon.className = 'fa-solid fa-moon'; 
+                }
+            });
+
+            // ==== ثانياً: كود حساب عداد الزوار وجلب البيانات ====
+            const countElement = document.getElementById('visitorCount');
+            
+            // 1. جلب الرقم الإجمالي التراكمي للموقع من الذاكرة المستمرة
+            let totalVisits = parseInt(localStorage.getItem('platform_total_visits'));
+            if (isNaN(totalVisits)) {
+                totalVisits = 1240; // الرقم التأسيسي المبدئي للمنصة
+                localStorage.setItem('platform_total_visits', totalVisits);
+            }
+            
+            // 2. التحقق برمجياً: هل هذا الطالب دخل الموقع لأول مرة بالجلسة الحالية؟
+            let isNewSession = sessionStorage.getItem('active_session');
+            
+            if (!isNewSession) {
+                totalVisits = totalVisits + 1;
+                localStorage.setItem('platform_total_visits', totalVisits);
+                sessionStorage.setItem('active_session', 'true');
+            }
+            
+            // 3. تشغيل العداد التفاعلي التصاعدي
+            animateCounter(countElement, totalVisits);
+        });
+
+        // دالة الأنيميشن لجعل رقم العداد يرتفع تدريجياً وبسلاسة
+        function animateCounter(element, targetValue) {
+            let startValue = targetValue - 40; 
+            if(startValue < 0) startValue = 0;
+            let duration = 1200; 
+            let startTime = null;
+
+            function step(currentTime) {
+                if (!startTime) startTime = currentTime;
+                let progress = Math.min((currentTime - startTime) / duration, 1);
+                let currentValue = Math.floor(progress * (targetValue - startValue) + startValue);
+                
+                element.innerText = currentValue.toLocaleString('en-US');
+                
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            }
+            window.requestAnimationFrame(step);
+        }
+    </script>
+</body>
+</html>
