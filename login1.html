@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تسجيل الدخول | منصة الأستاذ محمد لبابيدي</title>
+    
+    <!-- ربط مكتبة الأيقونات Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        /* 🎨 الألوان المستخرجة بدقة من الصفحة الرئيسية لمنصتك */
+        :root { 
+            --primary-color: #1a365d;    /* الكحلي الداكن المعتمد في الهيدر */
+            --accent-color: #e53e3e;     /* الأحمر المعتمد في صناديق العداد */
+            --bg-color: #f7fafc;         /* الخلفية النهارية الناصعة للمنصة */
+            --text-color: #ffffff;       /* لون الخط الرمادي الداكن المعتمد */
+            --box-bg: #1a365d
+
+;           /* خلفية الكارد بيضاء */
+            --card-border: #e2e8f0;      /* حدود الحقول الرمادية الخفيفة */
+            --whatsapp-color: #25d366;   /* لون واتساب الرسمي للأزرار */
+        }
+        
+        /* 🌙 ألوان الوضع الليلي المتطابقة تماماً مع الصفحة الرئيسية */
+        body.dark-mode {
+            --bg-color: #111827;       
+            --text-color: #f3f4f6;     
+            --box-bg: #1f2937;         
+            --primary-color: #06b6d4;  /* اللون السماوي المضيء في ليل المنصة */
+            --accent-color: #f43f5e;   /* اللون الوردي/الأحمر لليل المنصة */
+            --card-border: #374151;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            background-color: var(--bg-color); 
+            color: var(--text-color); 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 20px;
+            box-sizing: border-box;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .login-container {
+            width: 100%;
+            max-width: 420px;
+            background: var(--box-bg);
+            border-radius: 12px; /* مطابقة لـ border-radius الخاص بحاويات الصفحة الرئيسية */
+            padding: 40px 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+            border: 1px solid var(--card-border);
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .login-container {
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+        }
+
+        /* 🌙 زر تبديل الوضع الليلي العائم (نفس تصميم الصفحة الرئيسية تماماً) */
+        .theme-toggle {
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            background: #ffffff;
+            color: #1a365d;
+            border: 2px solid #1a365d;
+            cursor: pointer;
+            z-index: 10000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        body.dark-mode .theme-toggle {
+            background: var(--primary-color);
+            color: #111827;
+            border-color: var(--primary-color);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+
+        .logo-area {
+            margin-bottom: 25px;
+        }
+
+        .logo-area img {
+            width: 85px;
+            height: auto;
+        }
+
+        .login-title {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: var(--text-color); 
+            margin: 10px 0 5px 0;
+            transition: color 0.3s;
+        }
+
+        .login-desc {
+            font-size: 0.95rem;
+            color: var(--text-color);
+            opacity: 0.9;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .input-group {
+            margin-bottom: 22px;
+            text-align: right;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: var(--text-color); 
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 14px 18px;
+            border-radius: 8px;
+            border: 1px solid var(--card-border);
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-size: 1rem;
+            font-weight: 600;
+            box-sizing: border-box;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        /* تأثير التركيز متناسق مع الحقول */
+        .input-field:focus {
+            border-color: var(--primary-color);
+        }
+
+        .otp-inputs-container {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            direction: ltr;
+            margin: 25px 0;
+        }
+
+        .otp-digit {
+            width: 55px;
+            height: 60px;
+            border-radius: 8px;
+            border: 1px solid var(--card-border);
+            background-color: var(--bg-color);
+            color: var(--text-color); 
+            font-size: 1.6rem;
+            font-weight: bold;
+            text-align: center;
+            outline: none;
+            transition: all 0.2s;
+        }
+
+        .otp-digit:focus {
+            border-color: var(--primary-color);
+        }
+
+        .btn-action {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s ease;
+        }
+
+        .btn-action:hover {
+            opacity: 0.9;
+        }
+
+        .btn-whatsapp {
+            background-color: var(--whatsapp-color);
+            color: white;
+        }
+
+        .btn-verify {
+            background-color: var(--primary-color); 
+            color: white;
+        }
+        
+        body.dark-mode .btn-verify {
+            color: #111827; /* توافق خط الزر عند تحول الكحلي لسماوي مضيء بالليل */
+        }
+
+        .error-msg {
+            color: var(--accent-color); 
+            font-size: 0.9rem;
+            font-weight: bold;
+            margin-top: 15px;
+            min-height: 20px;
+            transition: color 0.3s;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- زر التبديل للوضع الليلي والنهاري المتوافق والمثبت بالزاوية -->
+    <button id="theme-toggle" class="theme-toggle" title="تبديل المظهر">
+        <i class="fa-solid fa-moon"></i>
+    </button>
+
+    <div class="login-container">
+        <div class="logo-area">
+            <img src="logo.png" alt="شعار المنصة" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3449/3449692.png'">
+        </div>
+
+        <!-- 📱 القسم الأول: إدخال البيانات -->
+        <div id="phone-section">
+            <h2 class="login-title">أهلاً بك يا بطل</h2>
+            <p class="login-desc">سجل دخولك الآن لتتمكن من متابعة دروسك واختباراتك الرياضية.</p>
+            
+            <div class="input-group">
+                <label for="student-name">اسم الطالب الثلاثي:</label>
+                <input type="text" id="student-name" class="input-field" placeholder="أدخل اسمك الثلاثي">
+            </div>
+
+            <div class="input-group">
+                <label for="student-phone">رقم الهاتف المحمول:</label>
+                <input type="tel" id="student-phone" class="input-field" placeholder="09xxxxxxxx" maxlength="10" style="direction: ltr; text-align: left;">
+            </div>
+
+            <button class="btn-action btn-whatsapp" onclick="requestWhatsAppOTP()">
+                <i class="fa-brands fa-whatsapp" style="font-size: 1.3rem;"></i>
+                إرسال رمز التفعيل عبر واتساب
+            </button>
+            
+            <p id="phone-error" class="error-msg"></p>
+        </div>
+
+        <!-- 🔐 القسم الثاني: تأكيد الرمز -->
+        <div id="otp-section" class="hidden">
+            <h2 class="login-title">تأكيد رمز التحقق</h2>
+            <p class="login-desc" id="otp-description"></p>
+            
+            <div class="otp-inputs-container">
+                <input type="text" class="otp-digit" maxlength="1" oninput="this.nextElementSibling?.focus()">
+                <input type="text" class="otp-digit" maxlength="1" oninput="this.nextElementSibling?.focus()">
+                <input type="text" class="otp-digit" maxlength="1" oninput="this.nextElementSibling?.focus()">
+                <input type="text" class="otp-digit" maxlength="1">
+            </div>
+
+            <button class="btn-action btn-verify" onclick="verifyWhatsAppOTP()">
+                <i class="fa-solid fa-circle-check"></i>
+                تأكيد الرمز والدخول
+            </button>
+            
+            <p id="otp-error" class="error-msg"></p>
+        </div>
+    </div>
+
+    <script>
+        // 🚀 منع تكرار تسجيل الدخول والدخول التلقائي المستمر
+        if (localStorage.getItem("user_logged_in") === "true") {
+            window.location.href = "index.html";
+        }
+
+        // ⚙️ المزامنة المتطابقة لثيم المنصة عبر الـ localStorage والأيقونات
+        const themeToggle = document.getElementById('theme-toggle');
+        const toggleIcon = themeToggle.querySelector('i');
+
+        if (localStorage.getItem('platform-theme') === 'dark') {
+            document.body.classList.add('dark-mode');
+            toggleIcon.className = 'fa-solid fa-sun';
+        }
+
+        themeToggle.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+            if (document.body.classList.contains('dark-mode')) {
+                localStorage.setItem('platform-theme', 'dark');
+                toggleIcon.className = 'fa-solid fa-sun'; 
+            } else {
+                localStorage.setItem('platform-theme', 'light');
+                toggleIcon.className = 'fa-solid fa-moon'; 
+            }
+        });
+
+        let generatedOTP = "", targetPhone = "", savedStudentName = "";
+
+        // دالة إرسال الرمز عبر سكريبت Green-API
+        function requestWhatsAppOTP() {
+            const nameInput = document.getElementById("student-name").value.trim();
+            const phoneInput = document.getElementById("student-phone").value.trim();
+            const errorElement = document.getElementById("phone-error");
+            
+            if (nameInput.length < 5) {
+                errorElement.textContent = "❌ يرجى كتابة اسمك الثلاثي بشكل واضح!";
+                return;
+            }
+
+            if (!/^09\d{8}$/.test(phoneInput)) {
+                errorElement.textContent = "❌ يرجى إدخال رقم هاتف صحيح مكون من 10 أرقام (مثل: 0933xxxxxx)";
+                return;
+            }
+            
+            errorElement.style.color = "var(--text-color)";
+            errorElement.textContent = "⏳ جاري إرسال رمز التحقق...";
+            targetPhone = phoneInput;
+            savedStudentName = nameInput;
+
+            let internationalPhone = "963" + targetPhone.substring(1);
+            generatedOTP = Math.floor(1000 + Math.random() * 9000).toString();
+            
+            // ⚙️ إعدادات Green-API الخاصة بك
+            const idInstance = "YOUR_ID_INSTANCE";       
+            const apiTokenInstance = "YOUR_API_TOKEN_INSTANCE"; 
+            
+            const messageText = `أهلاً بك يا بطل: *${savedStudentName}* في منصة الأستاذ محمد لبابيدي التعليمية 📐\n\nرمز التحقق الخاص بك هو: *${generatedOTP}*`;
+
+            fetch(`https://api.green-api.com/waInstance${idInstance}/sendMessage/${apiTokenInstance}`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    "chatId": `${internationalPhone}@c.us`, 
+                    "message": messageText
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.idMessage) {
+                    errorElement.textContent = "";
+                    document.getElementById("phone-section").classList.add("hidden");
+                    document.getElementById("otp-description").textContent = `أدخل الرمز المرسل إلى الرقم: ${targetPhone.substring(0,4)}***${targetPhone.substring(7)}`;
+                    document.getElementById("otp-section").classList.remove("hidden");
+                } else {
+                    errorElement.style.color = "var(--accent-color)";
+                    errorElement.textContent = "❌ فشل إرسال الرسالة، تأكد من اتصال حساب Green-API.";
+                }
+            })
+            .catch(error => {
+                errorElement.style.color = "var(--accent-color)";
+                errorElement.textContent = "❌ حدث خطأ في الاتصال بالشبكة.";
+            });
+        }
+
+        // دالة التحقق من الرمز والولوج
+        function verifyWhatsAppOTP() {
+            const digitInputs = document.querySelectorAll(".otp-digit");
+            const errorElement = document.getElementById("otp-error");
+            let enteredCode = "";
+            
+            digitInputs.forEach(input => enteredCode += input.value.trim());
+
+            if (enteredCode === generatedOTP) {
+                localStorage.setItem("user_logged_in", "true");
+                localStorage.setItem("user_phone", targetPhone);
+                localStorage.setItem("user_name", savedStudentName);
+
+                window.location.href = "index.html";
+            } else {
+                errorElement.textContent = "❌ رمز التحقق غير صحيح، يرجى المحاولة مرة أخرى.";
+                digitInputs.forEach(input => input.value = "");
+                digitInputs[0].focus();
+            }
+        }
+    </script>
+</body>
+</html>
