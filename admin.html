@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة التحكم الشاملة المحسنة | الأستاذ محمد لبابيدي</title>
+    <!-- السطر الجديد المحمي الذي يعمل بدون إنترنت (أوفلاين) -->
+<link rel="stylesheet" href="css/all.min.css">
+
+    
+    <style>
+        /* 🎨 الألوان والتنسيقات العامة للمنصة */
+        :root {
+            --primary: #1a365d;
+            --accent: #06b6d4;
+            --success: #25d366;
+            --danger: #e53e3e;
+            --warning: #f59e0b;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --text: #1e293b;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        header h1 { margin: 0; font-size: 1.8rem; }
+        header p { margin: 5px 0 0 0; opacity: 0.9; }
+
+        /* 🧭 شريط التنقل العلوي */
+        .admin-nav {
+            display: flex;
+            justify-content: flex-start;
+            background: #ffffff;
+            border-bottom: 2px solid #e2e8f0;
+            overflow-x: auto;
+            white-space: nowrap;
+            padding: 0 10px;
+            scrollbar-width: none;
+        }
+
+        .admin-nav::-webkit-scrollbar { display: none; }
+
+        .nav-btn {
+            padding: 15px 28px;
+            border: none;
+            background: none;
+            font-size: 1.05rem;
+            font-weight: bold;
+            color: #64748b;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .nav-btn:hover { color: var(--primary); background: #f8fafc; }
+        .nav-btn.active { color: var(--primary); border-bottom: 3px solid var(--primary); background: #f1f5f9; }
+
+        .container { max-width: 1000px; margin: 30px auto; padding: 0 20px; }
+
+        .panel-section {
+            display: none;
+            background: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+        }
+
+        .panel-section.active { display: block; }
+
+        h2 { 
+            color: var(--primary); margin-top: 0; border-bottom: 2px solid #f1f5f9; 
+            padding-bottom: 10px; display: flex; align-items: center; gap: 10px; 
+        }
+
+        .form-group { margin-bottom: 18px; text-align: right; }
+        label { display: block; font-weight: bold; margin-bottom: 6px; color: #475569; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #cbd5e1; border-radius: 8px; box-sizing: border-box; font-size: 1rem; font-family: inherit; }
+        
+        input.ltr-input, textarea.ltr-input { text-align: left; direction: ltr; }
+        .hint-text { font-size: 0.85rem; color: #64748b; margin-top: 4px; display: block; }
+
+        button.btn-submit {
+            width: 100%; padding: 13px; background: var(--primary); color: white; border: none; 
+            border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 1rem; transition: background 0.2s;
+        }
+        button.btn-submit:hover { background: #2a4365; }
+
+        .list-container { margin-top: 25px; }
+        .item-row {
+            display: flex; align-items: center; justify-content: space-between; 
+            padding: 12px 15px; background: #f8fafc; margin-bottom: 10px; 
+            border-radius: 8px; border: 1px solid #e2e8f0;
+        }
+        
+        .btn-delete { background: var(--danger); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; }
+        .btn-delete:hover { opacity: 0.9; }
+        .btn-edit { background: var(--warning); color: white; border: none; padding: 6px 12px; border-radius: 6px; cursor: pointer; font-weight: bold; margin-left: 5px; }
+        .btn-edit:hover { opacity: 0.9; }
+
+        /* 📦 تنسيق القوائم المنسدلة الذكية (الأكورديون) للمسائل المؤرشفة */
+        .tab-accordion {
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+        }
+
+        .tab-accordion summary {
+            padding: 15px;
+            font-weight: bold;
+            color: var(--primary);
+            background: #f1f5f9;
+            cursor: pointer;
+            outline: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            user-select: none;
+        }
+
+        .tab-accordion summary::-webkit-details-marker { display: none; }
+        .tab-accordion summary::after {
+            content: '\f107';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            transition: transform 0.3s;
+        }
+
+        .tab-accordion[open] summary::after {
+            transform: rotate(180deg);
+        }
+
+        .tab-accordion-content {
+            padding: 15px;
+            background: #ffffff;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        /* 📋 التنسيقات لجدول الطلاب وباقي الجداول */
+        .table-responsive { overflow-x: auto; width: 100%; border-radius: 12px; border: 1px solid #e2e8f0; margin-top: 15px; }
+        .student-table { width: 100%; border-collapse: collapse; text-align: right; }
+        .student-table th, .student-table td { padding: 15px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
+        .student-table th { background: #f1f5f9; color: var(--primary); font-weight: bold; }
+        
+        /* 📊 كروت الإحصائيات السريعة لتبويب الطلاب */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+        .stat-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            padding: 18px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+        .stat-info h3 { margin: 0; font-size: 1.8rem; font-weight: bold; color: var(--primary); }
+        .stat-info p { margin: 5px 0 0 0; font-size: 0.9rem; color: #64748b; font-weight: bold; }
+        .stat-icon { font-size: 2rem; color: var(--primary); opacity: 0.7; }
+
+        /* 🔍 شريط البحث المتقدم للطلاب */
+        .search-box {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            padding: 12px 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+        .search-input {
+            flex: 1;
+            padding: 10px 12px;
+            border-radius: 6px;
+            border: 1px solid #cbd5e1;
+            background: #f8fafc;
+            color: var(--text);
+            font-size: 0.95rem;
+            outline: none;
+        }
+
+        /* 🏷️ شارات الحالة المطورة للطلاب */
+        .badge {
+            padding: 6px 12px;
+            border-radius: 50px;
+            font-size: 0.85rem;
+            font-weight: bold;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .badge-active { background: #dcfce7; color: #166534; }
+        .badge-inactive { background: #fee2e2; color: #991b1b; }
+
+        /* 🔘 أزرار العمليات والتحكم داخل الجدول */
+        .btn-action {
+            padding: 8px 14px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 0.85rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+            transition: all 0.2s;
+        }
+        .btn-action-toggle { background: var(--primary); color: white; }
+        .btn-action-delete { background: var(--danger); color: white; }
+        .btn-action:hover { opacity: 0.9; transform: translateY(-1px); }
+
+        .no-data { text-align: center; padding: 40px; font-weight: bold; color: #64748b; }
+        .btn-toggle-status { background: var(--accent); color: white; border: none; padding: 5px 10px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+
+        .preview-btn {
+            display: inline-flex; align-items: center; gap: 8px; background-color: #007bff; color: white;
+            text-decoration: none; padding: 10px 18px; border-radius: 8px; font-size: 14px; font-weight: bold;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); transition: all 0.3s ease;
+        }
+        .preview-btn:hover { background-color: #0056b3; transform: translateY(-2px); }
+
+        .codegen-result {
+            background: #f1f5f9; padding: 15px; font-size: 1.5rem; font-weight: bold; color: var(--primary);
+            border: 2px dashed var(--accent); border-radius: 8px; text-align: center; letter-spacing: 1px; user-select: all; margin-top: 8px;
+        }
+
+        .edit-banner {
+            background: #fef3c7; border: 1px solid #f59e0b; padding: 10px; 
+            border-radius: 8px; margin-bottom: 15px; display: none; text-align: right; font-weight: bold; color: #b45309;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" target="_blank" class="preview-btn">👁️ معاينة التغييرات في الموقع</a>
+        <h1><i class="fa-solid fa-sliders"></i> لوحة الإدارة والتحكم الكاملة للمنصة</h1>
+        <p>المهندس التعليمي: الأستاذ محمد لبابيدي</p>
+    </header>
+
+    <nav class="admin-nav">
+        <button class="nav-btn active" onclick="switchTab(event, 'ads-panel')"><i class="fa-solid fa-rectangle-ad"></i> إدارة الإعلانات</button>
+        <button class="nav-btn" onclick="switchTab(event, 'news-panel')"><i class="fa-solid fa-bullhorn"></i> الأخبار العاجلة</button>
+        <button class="nav-btn" onclick="switchTab(event, 'tabs-panel')"><i class="fa-solid fa-folder-plus"></i> إنشاء التبويبات</button>
+        <button class="nav-btn" onclick="switchTab(event, 'content-panel')"><i class="fa-solid fa-cloud-arrow-up"></i> رفع الملفات والفيديوهات</button>
+        <button class="nav-btn" onclick="switchTab(event, 'latex-panel')"><i class="fa-solid fa-square-root-variable"></i> إضافة المسائل والحلول (LaTeX)</button>
+        <button class="nav-btn" onclick="switchTab(event, 'students-panel')"><i class="fa-solid fa-users"></i> الطلاب والاشتراكات</button>
+        <button class="nav-btn" onclick="switchTab(event, 'keygen-panel')"><i class="fa-solid fa-key"></i> توليد الأكواد السرية</button>
+    </nav>
+
+    <div class="container">
+
+        <!-- لوحة الإعلانات -->
+        <div id="ads-panel" class="panel-section active">
+            <h2><i class="fa-solid fa-rectangle-ad" style="color: var(--accent);"></i> إدارة إعلانات السلايدر المتحرك عبر روابط الإنترنت</h2>
+            <div class="form-group">
+                <label>رابط الصورة المباشر من الإنترنت (URL):</label>
+                <input type="url" id="ad-img-url" class="ltr-input" placeholder="مثال: https://site.com/images/ad1.jpg">
+            </div>
+            <div class="form-group">
+                <label>رابط توجيه الطالب عند النقر (اختياري):</label>
+                <input type="text" id="ad-click-url" placeholder="https://wa.me/...">
+            </div>
+            <button class="btn-submit" onclick="addAd()">إضافة ونشر الإعلان فوراً</button>
+            <h3 style="margin-top:30px; color: var(--primary);">الإعلانات المعروضة حالياً:</h3>
+            <div class="list-container" id="ads-list">جاري تحميل السلايدر الإعلاني...</div>
+        </div>
+
+        <!-- الأخبار العاجلة -->
+        <div id="news-panel" class="panel-section">
+            <h2><i class="fa-solid fa-bullhorn" style="color: var(--accent);"></i> إدارة شريط الأخبار العاجلة</h2>
+            <div class="form-group">
+                <label>نص الخبر العاجل:</label>
+                <input type="text" id="urgent-text" placeholder="🔥 تم رفع نموذج امتحان تجريبي...">
+            </div>
+            <button class="btn-submit" onclick="addUrgentNews()">نشر الخبر العاجل الآن</button>
+            <h3 style="margin-top:30px; color: var(--primary);">الأخبار العاجلة المنشورة حالياً:</h3>
+            <div class="list-container" id="admin-news-list">جاري تحميل الأخبار العاجلة...</div>
+        </div>
+
+        <!-- إنشاء التبويبات -->
+        <div id="tabs-panel" class="panel-section">
+            <h2><i class="fa-solid fa-folder-plus" style="color: var(--accent);"></i> إنشاء تبويبات وأقسام المنصة الهيكلية</h2>
+            <div class="form-group">
+                <label style="color: var(--accent);">موقع التبويب داخل الشجرة التعليمية (اختر الأب البديل):</label>
+                <select id="tab-parent"><option value="root">📁 إنشاء كتبويب رئيسي مستقل (بدون أب)</option></select>
+            </div>
+            <div class="form-group">
+                <label>اسم التبويب الجديد:</label>
+                <input type="text" id="tab-name" placeholder="اكتب اسم التبويب">
+            </div>
+            <div class="form-group">
+                <label>نص تعريفي أو نبذة عن التبويب (تظهر للطلاب):</label>
+                <textarea id="tab-desc" rows="2" placeholder="اكتب نبذة مختصرة تشرح محتويات التبويب..."></textarea>
+            </div>
+            <div class="form-group">
+                <label>نوع التبويب البنيوي داخل القسم:</label>
+                <select id="tab-type">
+                    <option value="pdf">تبويب مخصص للملفات الورقية وملخصات الـ (PDF)</option>
+                    <option value="video">تبويب مخصص لفيديوهات الشرح ومقاطع الدروس</option>
+                    <option value="exercises">تبويب مخصص لمسائل وتمارين الكتب المحلولة (LaTeX)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>صلاحية الوصول الافتراضية عند النشر:</label>
+                <select id="tab-status">
+                    <option value="free">🔓 مفتوح لجميع الطلاب تلقائياً (مجاني للكل)</option>
+                    <option value="locked">🔒 مقفل (متاح فقط للطلاب المشتركين النشطين)</option>
+                    <option value="specific">📱 متاح لمجموعة طلاب محددين</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>اسم ملف صورة أو لوغو التبويب المحلي (اختياري):</label>
+                <input type="text" id="tab-image" class="ltr-input" placeholder="مثال: math.png">
+            </div>
+            <button class="btn-submit" onclick="addCategoryTab()">إنشاء التبويب وتعميمه فوراً</button>
+            <h3 style="margin-top:30px; color: var(--primary);">شجرة التحكم والتصفح المتداخل للأقسام والتبويبات:</h3>
+            <div class="list-container" id="tabs-list">جاري جلب بنية الأقسام المحدثة...</div>
+        </div>
+
+        <!-- رفع الفيديوهات والملفات -->
+        <div id="content-panel" class="panel-section">
+            <h2><i class="fa-solid fa-cloud-arrow-up" style="color: var(--accent);"></i> إضافة المحتوى والدروس داخل أي مستوى من الأقسام</h2>
+            <div class="form-group">
+                <label style="color: var(--success);">اختر التبويب المستهدف لرفع هذا الملف بداخلة:</label>
+                <select id="content-target-tab"><option value="">جاري جلب الهيكلية الشجرية الكاملة للتبويبات...</option></select>
+            </div>
+            <div class="form-group">
+                <label>عنوان الدرس أو الملف المرفوع:</label>
+                <input type="text" id="content-title" placeholder="مثال: حل المسألة الأولى عامة صفحة 120">
+            </div>
+            <div class="form-group">
+                <label id="url-label">رابط المحتوى المباشر:</label>
+                <input type="text" id="content-url" class="ltr-input" placeholder="https://...">
+            </div>
+            <button class="btn-submit" onclick="uploadContentItem()">حفظ ونشر المحتوى للمشتركين</button>
+            <h3 style="margin-top:30px; color: var(--primary);">الأرشيف الكلي للمحتويات المنشورة:</h3>
+            <div class="list-container" id="content-list">جاري تحميل المحتويات...</div>
+        </div>
+
+        <!-- 📐 لوحة تدوين وتعديل مسائل الـ LaTeX المجمّعة -->
+        <div id="latex-panel" class="panel-section">
+            <h2><i class="fa-solid fa-square-root-variable" style="color: var(--accent);"></i> لوحة نشر وتدوين المسائل الرياضية المحلولة (LaTeX)</h2>
+            
+            <div class="edit-banner" id="latex-edit-banner">
+                <i class="fa-solid fa-pen-to-square"></i> أنت الآن في وضع تعديل المسألة! سيتم تحديث الحقول مباشرة بدلاً من تكرار النشر.
+                <button type="button" style="background:none; border:none; color:var(--danger); float:left; font-weight:bold; cursor:pointer;" onclick="cancelLatexEdit()">إلغاء التعديل</button>
+            </div>
+
+            <input type="hidden" id="edit-exercise-key" value="">
+
+            <div class="form-group">
+                <label style="color: var(--accent);">اختر التبويب أو الوحدة المستهدفة لعرض المسألة بداخلها:</label>
+                <select id="latex-target-tab"><option value="">جاري جلب قائمة الأقسام والوحدات التعليمية...</option></select>
+            </div>
+
+            <div class="form-group">
+                <label>عنوان المسألة الفرعي أو رقم الصفحة:</label>
+                <input type="text" id="latex-exercise-title" placeholder="مثال: تمرين (4) - صفحة 55">
+            </div>
+
+            <div class="form-group">
+                <label>نص السؤال أو نص المسألة الرياضية:</label>
+                <textarea id="latex-question-text" class="ltr-input" rows="4" placeholder="اكتب النص العربي العادي واستخدم الـ $ أو $$ للمعادلات..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label style="color: var(--success);">خطوات الحل النموذجي المفصل:</label>
+                <textarea id="latex-solution-text" class="ltr-input" rows="7" placeholder="اكتب حل المسألة بالتفصيل والخطوات الرياضية المنظمة هنا..."></textarea>
+            </div>
+
+            <div class="form-group">
+                <label>رقم ترتيب عرض المسألة (لترتيب تسلسلي صحيح للطلاب كباقة متناسقة):</label>
+                <input type="number" id="latex-exercise-order" placeholder="مثال: 1 (لجعله يظهر أول مسألة بالقسم)" value="1">
+            </div>
+
+            <button class="btn-submit" style="background: var(--accent);" id="btn-latex-submit" onclick="publishLatexExercise()">حفظ التدوين وتصدير الحل للمكتبة فوراً</button>
+            
+            <h3 style="margin-top:30px; color: var(--primary);">أرشيف التبويبات والمسائل المحلولة (مجمّعة حسب الأقسام):</h3>
+            <div class="list-container" id="latex-exercises-list">جاري تحميل مصفوفة التمارين الموثقة...</div>
+        </div>
+
+        <!-- لوحة الطلاب والاشتراكات -->
+        <div id="students-panel" class="panel-section">
+            <h2><i class="fa-solid fa-users" style="color: var(--accent);"></i> التحكم بصلاحيات الطلاب وتأكيد دفع الاشتراك</h2>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-info"><h3 id="total-students-count">0</h3><p>إجمالي الطلاب المسجلين</p></div>
+                    <i class="fa-solid fa-users stat-icon"></i>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-info"><h3 id="active-students-count" style="color: #166534;">0</h3><p>الاشتراكات النشطة</p></div>
+                    <i class="fa-solid fa-circle-check stat-icon" style="color: #25d366;"></i>
+                </div>
+            </div>
+            <div class="search-box">
+                <i class="fa-solid fa-magnifying-glass" style="color: #64748b;"></i>
+                <input type="text" id="search-student-input" class="search-input" placeholder="ابحث عن طالب بالاسم الثلاثي أو رقم الهاتف..." oninput="filterStudentsTable()">
+            </div>
+            <div class="table-responsive">
+                <table class="student-table">
+                    <thead>
+                        <tr>
+                            <th>اسم الطالب الثلاثي</th>
+                            <th>رقم الهاتف</th>
+                            <th>آخر تسجيل دخول</th>
+                            <th>حالة الاشتراك العام</th>
+                            <th>التحكم بالنفاذ</th>
+                        </tr>
+                    </thead>
+                    <tbody id="students-table-body">
+                        <tr><td colspan="5" class="no-data">⏳ جاري تحميل سجلات الطلاب من خادم Firebase...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- توليد الأكواد السرية -->
+        <div id="keygen-panel" class="panel-section">
+            <h2><i class="fa-solid fa-key" style="color: var(--accent);"></i> لوحة توليد أكواد الطلاب الحصرية للملفات والتبويبات</h2>
+            <div class="form-group">
+                <label>رقم هاتف الطالب المعتمد:</label>
+                <input type="text" id="student-input" placeholder="مثال: 0933111222">
+            </div>
+            <div class="form-group">
+                <label style="color: var(--accent);">القسم أو التبويب المراد شحن الكود له:</label>
+                <select id="student-tab-select"><option value="">-- جاري جلب الأقسام والتبويبات المتاحة لربط الكود... --</option></select>
+            </div>
+            <button class="btn-submit" onclick="generateStudentKey()">توليد كود التفعيل المخصص فوراً</button>
+            <div class="form-group" style="margin-top: 25px;">
+                <label>الكود الناتج للتبويب المختار:</label>
+                <div class="codegen-result" id="key-output">--- اضغط لتوليد الكود ---</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
+    <script>
+        let pass = prompt("الرجاء إدخل الكود السري لإدارة المنصة (الأستاذ محمد لبابيدي):");
+        if (pass !== "123456") { 
+            document.body.innerHTML = "<h1 style='text-align:center;color:red;margin-top:100px;'>⚠️ خطأ في المصادقة!</h1>";
+        }
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyA1...",
+            authDomain: "lababidi-math.firebaseapp.com",
+            databaseURL: "https://lababidimath-74afd-default-rtdb.firebaseio.com/",
+            projectId: "lababidi-math",
+            storageBucket: "lababidi-math.appspot.com",
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let navigationStack = []; 
+        let cachedTabs = {};
+        let localStudentsArray = [];
+        let cachedExercises = {}; 
+
+        function switchTab(evt, sectionId) {
+            document.querySelectorAll('.panel-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(sectionId).classList.add('active');
+            evt.currentTarget.classList.add('active');
+        }
+
+        /* ──────────────── 📢 1. إدارة الإعلانات والأخبار ──────────────── */
+        function addAd() {
+            const img = document.getElementById('ad-img-url').value.trim();
+            const link = document.getElementById('ad-click-url').value.trim();
+            if(!img) return alert("الرجاء إدخل رابط الصورة المباشر!");
+            db.ref('ads').push({ image: img, link: link }).then(() => {
+                alert("تم حفظ ونشر الإعلان بنجاح!"); 
+                document.getElementById('ad-img-url').value = ""; document.getElementById('ad-click-url').value = "";
+            });
+        }
+        db.ref('ads').on('value', snap => {
+            const list = document.getElementById('ads-list'); list.innerHTML = "";
+            if(!snap.val()) return list.innerHTML = "<p>لا توجد إعلانات حالياً.</p>";
+            Object.keys(snap.val()).forEach(key => {
+                const adData = snap.val()[key];
+                list.innerHTML += `<div class="item-row"><span>🖼️ ${adData.image}</span><button class="btn-delete" onclick="deleteItem('ads/${key}')">حذف الإعلان</button></div>`;
+            });
+        });
+
+        function addUrgentNews() {
+            const input = document.getElementById('urgent-text'); const txt = input.value.trim();
+            if (!txt) return alert("اكتب النص أولاً!");
+            db.ref('news').push({ text: txt, timestamp: firebase.database.ServerValue.TIMESTAMP }).then(() => { input.value = ""; alert("تم النشر!"); });
+        }
+        db.ref('news').on('value', snap => {
+            const list = document.getElementById('admin-news-list'); list.innerHTML = "";
+            if (!snap.val()) return list.innerHTML = "<p>لا توجد أخبار حالياً.</p>";
+            Object.keys(snap.val()).forEach(key => {
+                list.innerHTML += `<div class="item-row"><span>📢 ${snap.val()[key].text}</span><button class="btn-delete" onclick="deleteItem('news/${key}')">حذف</button></div>`;
+            });
+        });
+
+        /* ──────────────── 🗂️ 2. نظام التبويبات المطور للأعماق اللانهائية ──────────────── */
+        function addCategoryTab() {
+            const parentId = document.getElementById('tab-parent').value;
+            const name = document.getElementById('tab-name').value.trim();
+            const description = document.getElementById('tab-desc').value.trim();
+            const type = document.getElementById('tab-type').value;
+            const accessType = document.getElementById('tab-status').value;
+            const tabImageFile = document.getElementById('tab-image').value.trim();
+
+            if(!name) return alert("يرجى كتابة اسم التبويب أولاً!");
+
+            const tabData = { 
+                name: name, description: description, type: type, accessType: accessType,
+                isFree: (accessType === 'free'), imageUrl: tabImageFile || "", parentId: parentId === 'root' ? null : parentId
+            };
+
+            db.ref('tabs').push(tabData).then(() => {
+                alert("تم إنشاء وتثبيت التبويب بنجاح!");
+                document.getElementById('tab-name').value = ""; document.getElementById('tab-desc').value = ""; document.getElementById('tab-image').value = "";
+            });
+        }
+
+        db.ref('tabs').on('value', snap => {
+            cachedTabs = snap.val() || {};
+            updateSelectMenus();
+            renderTabsTree();
+            if(cachedExercises) renderGroupedExercises(); 
+        });
+
+        function buildTreeOptions(parentId, depth = 0) {
+            let html = "";
+            const indent = "&nbsp;&nbsp;&nbsp;&nbsp;".repeat(depth) + (depth > 0 ? "└── " : "");
+            Object.keys(cachedTabs).forEach(key => {
+                const tab = cachedTabs[key];
+                if ((parentId === null && (!tab.parentId || tab.parentId === 'root')) || tab.parentId === parentId) {
+                    let typeLabel = tab.type === 'video' ? 'فيديو' : (tab.type === 'exercises' ? 'حلول LaTeX' : 'ملفات');
+                    html += `<option value="${key}">${indent}${tab.name} [${typeLabel}]</option>`;
+                    html += buildTreeOptions(key, depth + 1); 
+                }
+            });
+            return html;
+        }
+
+        function updateSelectMenus() {
+            const menus = ['tab-parent', 'content-target-tab', 'latex-target-tab', 'student-tab-select'];
+            menus.forEach(id => {
+                const menu = document.getElementById(id);
+                if (menu) {
+                    let html = id === 'tab-parent' ? '<option value="root">📁 إنشاء كتبويب رئيسي مستقل (بدون أب)</option>' : '<option value="">-- اختر التبويب المستهدف --</option>';
+                    html += buildTreeOptions(null, 0);
+                    menu.innerHTML = html;
+                }
+            });
+        }
+
+        function renderTabsTree() {
+            const list = document.getElementById('tabs-list'); list.innerHTML = "";
+            const currentParentId = navigationStack.length > 0 ? navigationStack[navigationStack.length - 1] : null;
+
+            if (currentParentId !== null) {
+                list.innerHTML += `<button onclick="handleNavigationPop()" class="preview-btn" style="background:#475569; margin-bottom:20px; border:none; cursor:pointer;"><i class="fa-solid fa-arrow-right"></i> العودة للقسم السابق</button>`;
+                const currentTab = cachedTabs[currentParentId];
+                if (currentTab) {
+                    let subTabsHtml = "";
+                    Object.keys(cachedTabs).forEach(key => {
+                        if(cachedTabs[key].parentId === currentParentId) subTabsHtml += renderTabCard(key, cachedTabs[key], true);
+                    });
+                    list.innerHTML += renderTabCard(currentParentId, currentTab, false, subTabsHtml || `<p style="color:#64748b; padding:10px;">⚠️ لا يوجد تبويبات فرعية بالداخل حالياً.</p>`);
+                }
+            } else {
+                Object.keys(cachedTabs).forEach(key => {
+                    if (!cachedTabs[key].parentId || cachedTabs[key].parentId === 'root') {
+                        let count = Object.values(cachedTabs).filter(t => t.parentId === key).length;
+                        list.innerHTML += renderMainTabCover(key, cachedTabs[key], count);
+                    }
+                });
+            }
+        }
+
+        function renderMainTabCover(key, tab, childCount) {
+            let currentAccess = tab.accessType || (tab.isFree ? "free" : "locked");
+            let status = currentAccess === 'free' ? '🔓 مجاني للكل' : (currentAccess === 'specific' ? '📱 طلاب محددين' : '🔒 مقفل');
+            return `<div style="background: var(--card-bg); padding: 20px; border-radius: 12px; border: 2px solid #e2e8f0; margin-bottom: 15px; cursor: pointer;" onclick="enterParentTab('${key}')">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div>
+                        <span style="font-size: 1.2rem; font-weight: bold; color: var(--primary);"><i class="fa-solid fa-folder-open" style="color: #eab308; margin-left:5px;"></i> ${tab.name}</span>
+                        <div style="margin-top: 5px;"><span class="badge badge-active">${status}</span> <span style="font-size:0.85rem; background:#e2e8f0; padding:2px 8px; border-radius:4px;">يتضمن (${childCount}) فروع</span></div>
+                    </div>
+                    <div onclick="event.stopPropagation();">
+                        <button class="btn-toggle-status" onclick="modifyTabAccess('${key}')">الصلاحية</button>
+                        <button class="btn-delete" onclick="deleteCategoryTab('${key}')">حذف</button>
+                    </div>
+                </div>
+            </div>`;
+        }
+
+        function renderTabCard(key, tab, isSub = false, subTabsContent = "") {
+            let currentAccess = tab.accessType || (tab.isFree ? "free" : "locked");
+            let status = currentAccess === 'free' ? '🔓 مفتوح للجميع' : (currentAccess === 'specific' ? '📱 خاص' : '🔒 مقفل للمشتركين');
+            return `<div style="border: ${isSub ? "1px dashed #cbd5e1" : "2px solid var(--primary)"}; padding: 15px; margin-bottom: 15px; background: #f8fafc; border-radius:8px;">
+                <div style="display: flex; align-items: center; justify-content: space-between;">
+                    <div><b>${isSub ? '└── 📄 فرعي: ' : '📁 الحالي: '} ${tab.name}</b> <span style="font-size:0.8rem; color:#64748b;">(${status})</span></div>
+                    <div>
+                        ${isSub ? `<button class="preview-btn" style="font-size:0.8rem; padding:6px 12px;" onclick="enterParentTab('${key}')">إدارة الفروع ➡️</button>` : ''}
+                        <button class="btn-toggle-status" onclick="modifyTabAccess('${key}')">الصلاحية</button>
+                        <button class="btn-delete" onclick="deleteCategoryTab('${key}')">حذف</button>
+                    </div>
+                </div>
+                ${subTabsContent ? `<div style="margin-top: 15px; background: #e2e8f0; padding: 15px; border-radius: 8px;">${subTabsContent}</div>` : ''}
+            </div>`;
+        }
+
+        function enterParentTab(mainKey) { navigationStack.push(mainKey); renderTabsTree(); }
+        function handleNavigationPop() { navigationStack.pop(); renderTabsTree(); }
+        function modifyTabAccess(tabId) {
+            let choice = prompt("⚙️ تعديل صلاحية التبويب:\n1 = مفتوح للجميع (مجاني)\n2 = مقفل للمشتركين العموميين\n3 = خاص لطلاب محددين برقم الهاتف\n\nاكتب الرقم المطلوب:");
+            if(!choice) return;
+            let accessType = choice === "1" ? "free" : (choice === "2" ? "locked" : "specific");
+            db.ref('tabs/' + tabId).update({ accessType: accessType, isFree: (accessType === 'free') });
+        }
+        function executeRecursiveTabCleanUp(targetId) {
+            db.ref('lessons').orderByChild('tabId').equalTo(targetId).once('value', snap => { snap.forEach(l => l.ref.remove()); });
+            db.ref('math_exercises').orderByChild('tabId').equalTo(targetId).once('value', snap => { snap.forEach(e => e.ref.remove()); });
+            Object.keys(cachedTabs).forEach(key => { if (cachedTabs[key].parentId === targetId) executeRecursiveTabCleanUp(key); });
+            db.ref('tabs/' + targetId).remove();
+        }
+        function deleteCategoryTab(tabId) {
+            if(confirm("⚠️ هل أنت متأكد من مسح هذا التبويب وكل المحتويات والملفات الفرعية التابعة له نهائياً؟")) {
+                executeRecursiveTabCleanUp(tabId); navigationStack = []; renderTabsTree();
+            }
+        }
+
+        /* ──────────────── 📚 3. إدارة رفع المحتويات ──────────────── */
+        function uploadContentItem() {
+            const tabId = document.getElementById('content-target-tab').value;
+            const title = document.getElementById('content-title').value.trim();
+            const url = document.getElementById('content-url').value.trim();
+            if(!tabId || !title || !url) return alert("يرجى ملء جميع الحقول واختيار التبويب المستهدف!");
+            db.ref('lessons').push({ tabId: tabId, title: title, url: url, type: cachedTabs[tabId]?.type || 'pdf' }).then(() => {
+                alert("تم النشر بنجاح!"); document.getElementById('content-title').value = ""; document.getElementById('content-url').value = "";
+            });
+        }
+        db.ref('lessons').on('value', snap => {
+            const list = document.getElementById('content-list'); list.innerHTML = "";
+            if(!snap.val()) return list.innerHTML = "<p>لا يوجد محتوى حالياً.</p>";
+            Object.keys(snap.val()).forEach(key => { list.innerHTML += `<div class="item-row"><span>📌 <b>${snap.val()[key].title}</b></span><button class="btn-delete" onclick="deleteItem('lessons/${key}')">حذف</button></div>`; });
+        });
+
+        /* ──────────────── 📐 4. لوحة نشر وتعديل المسائل وتجميعها بذكاء داخل التبويبات ──────────────── */
+        function publishLatexExercise() {
+            const tabId = document.getElementById('latex-target-tab').value;
+            const title = document.getElementById('latex-exercise-title').value.trim();
+            const question = document.getElementById('latex-question-text').value.trim();
+            const solution = document.getElementById('latex-solution-text').value.trim();
+            const order = parseInt(document.getElementById('latex-exercise-order').value) || 1;
+            const editKey = document.getElementById('edit-exercise-key').value;
+
+            if (!tabId || !title || !question || !solution) {
+                return alert("يرجى تعبئة كافة الحقول البرمجية واختيار التبويب المستهدف!");
+            }
+
+            const exerciseData = { tabId: tabId, title: title, question: question, solution: solution, order: order };
+
+            if (editKey) {
+                db.ref('math_exercises/' + editKey).update(exerciseData).then(() => {
+                    alert("✅ تم تحديث المسألة الرياضية بنجاح!");
+                    cancelLatexEdit();
+                });
+            } else {
+                db.ref('math_exercises').push(exerciseData).then(() => {
+                    alert("✅ تم نشر المسألة الرياضية الجديدة بنجاح!");
+                    clearLatexForm();
+                });
+            }
+        }
+
+        function startEditExercise(key) {
+            const ex = cachedExercises[key];
+            if (!ex) return;
+
+            document.getElementById('edit-exercise-key').value = key;
+            document.getElementById('latex-target-tab').value = ex.tabId || "";
+            document.getElementById('latex-exercise-title').value = ex.title || "";
+            document.getElementById('latex-question-text').value = ex.question || "";
+            document.getElementById('latex-solution-text').value = ex.solution || "";
+            document.getElementById('latex-exercise-order').value = ex.order || 1;
+
+            document.getElementById('latex-edit-banner').style.display = 'block';
+            document.getElementById('btn-latex-submit').innerText = "تحديث التعديلات الحالية";
+            document.getElementById('btn-latex-submit').style.backgroundColor = "var(--warning)";
+            
+            document.getElementById('latex-panel').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function cancelLatexEdit() {
+            document.getElementById('edit-exercise-key').value = "";
+            document.getElementById('latex-edit-banner').style.display = 'none';
+            document.getElementById('btn-latex-submit').innerText = "حفظ التدوين وتصدير الحل للمكتبة فوراً";
+            document.getElementById('btn-latex-submit').style.backgroundColor = "var(--accent)";
+            clearLatexForm();
+        }
+
+        function clearLatexForm() {
+            document.getElementById('latex-exercise-title').value = "";
+            document.getElementById('latex-question-text').value = "";
+            document.getElementById('latex-solution-text').value = "";
+            document.getElementById('latex-exercise-order').value = "1";
+        }
+
+        db.ref('math_exercises').on('value', snap => {
+            cachedExercises = snap.val() || {};
+            renderGroupedExercises();
+        });
+
+        function renderGroupedExercises() {
+            const list = document.getElementById('latex-exercises-list');
+            list.innerHTML = "";
+            
+            if (Object.keys(cachedExercises).length === 0) {
+                list.innerHTML = "<p class='no-data'>لا توجد أي مسائل أو تدوينات LaTeX مضافة حالياً.</p>";
+                return;
+            }
+
+            const groups = {};
+            Object.keys(cachedExercises).forEach(key => {
+                const ex = cachedExercises[key];
+                if (!groups[ex.tabId]) {
+                    groups[ex.tabId] = [];
+                }
+                groups[ex.tabId].push({ id: key, ...ex });
+            });
+
+            Object.keys(groups).forEach(tabId => {
+                groups[tabId].sort((a, b) => (a.order || 0) - (b.order || 0));
+            });
+
+            Object.keys(groups).forEach(tabId => {
+                const tabName = cachedTabs[tabId] ? cachedTabs[tabId].name : "أقسام عامة / غير مصنفة";
+                const exercisesInTab = groups[tabId];
+
+                let groupWrapper = document.createElement('details');
+                groupWrapper.className = 'tab-accordion';
+                
+                let summary = document.createElement('summary');
+                summary.innerHTML = `<span><i class="fa-solid fa-folder-tree" style="color: #eab308; margin-left: 8px;"></i> وحدة: ${tabName} <span style="background: var(--primary); color:white; font-size:0.8rem; padding:2px 7px; border-radius:10px; margin-right:5px;">(${exercisesInTab.length} مسائل)</span></span>`;
+                groupWrapper.appendChild(summary);
+
+                let contentDiv = document.createElement('div');
+                contentDiv.className = 'tab-accordion-content';
+
+                exercisesInTab.forEach(ex => {
+                    contentDiv.innerHTML += `
+                        <div class="item-row" style="background: #f8fafc; margin-bottom: 8px; border-right: 4px solid var(--accent);">
+                            <span>
+                                <i class="fa-solid fa-calculator" style="color: var(--accent); margin-left: 5px;"></i> 
+                                <b>${ex.title}</b> 
+                                <small style="color: #64748b; margin-right: 8px;">[الترتيب بالباقة: ${ex.order}]</small>
+                            </span>
+                            <div>
+                                <button class="btn-edit" onclick="startEditExercise('${ex.id}')"><i class="fa-solid fa-pen-to-square"></i> تعديل</button>
+                                <button class="btn-delete" onclick="deleteItem('math_exercises/${ex.id}')"><i class="fa-solid fa-trash-can"></i> حذف</button>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                groupWrapper.appendChild(contentDiv);
+                list.appendChild(groupWrapper);
+            });
+        }
+
+        /* ──────────────── 🎓 5. نظام الطلاب والاشتراكات المطور ──────────────── */
+        db.ref('students').on('value', snap => {
+            localStudentsArray = []; let total = 0; let active = 0;
+            if(!snap.val()) return document.getElementById('students-table-body').innerHTML = "<tr><td colspan='5' class='no-data'>❌ لا يوجد طلاب مسجلين.</td></tr>";
+            Object.keys(snap.val()).forEach(key => {
+                const s = snap.val()[key]; 
+                const isActive = s.active === true;
+                const isVip = s.vip === true; // قراءة حالة الـ VIP من قاعدة البيانات
+                
+                total++; if (isActive) active++;
+                localStudentsArray.push({ 
+                    id: key, 
+                    name: s.name || "بدون اسم", 
+                    phone: s.phone || "غير متوفر", 
+                    lastLogin: s.lastLogin || "لم يسجل دخول بعد", 
+                    active: isActive, 
+                    vip: isVip 
+                });
+            });
+            document.getElementById("total-students-count").textContent = total;
+            document.getElementById("active-students-count").textContent = active;
+            renderStudentsTable(localStudentsArray);
+        });
+
+        function renderStudentsTable(students) {
+            const tbody = document.getElementById('students-table-body'); tbody.innerHTML = "";
+            students.forEach(s => {
+                // شارة ذهبية مميزة للطالب الـ VIP
+                const vipBadge = s.vip ? `<span class="badge" style="background: #fef3c7; color: #b45309; border: 1px solid #f59e0b; margin-right: 8px;"><i class="fa-solid fa-crown"></i> VIP</span>` : '';
+                
+                tbody.innerHTML += `<tr>
+                    <td><b>${s.name}</b> ${vipBadge}</td>
+                    <td>${s.phone}</td>
+                    <td>${s.lastLogin}</td>
+                    <td><span class="badge ${s.active ? 'badge-active' : 'badge-inactive'}">${s.active ? 'نشط' : 'موقوف'}</span></td>
+                    <td>
+                        <button class="btn-action btn-action-toggle" onclick="toggleStudentAccess('${s.id}', ${s.active})">${s.active ? 'إيقاف الحساب' : 'تفعيل الاشتراك + VIP'}</button>
+                        <button class="btn-action btn-action-delete" onclick="deleteStudent('${s.id}', '${s.name}')">حذف</button>
+                    </td>
+                </tr>`;
+            });
+        }
+        
+        function filterStudentsTable() {
+            const query = document.getElementById("search-student-input").value.trim().toLowerCase();
+            const filtered = localStudentsArray.filter(s => s.name.toLowerCase().includes(query) || s.phone.includes(query));
+            renderStudentsTable(filtered);
+        }
+        
+        function toggleStudentAccess(id, status) { 
+            const newStatus = !status;
+            // شحن الحقلين active و vip معاً في قاعدة البيانات لمنح الصلاحيات الكاملة
+            db.ref('students/' + id).update({ 
+                active: newStatus,
+                vip: newStatus 
+            }); 
+        }
+        
+        function deleteStudent(id, name) { if(confirm(`هل تود حذف حساب الطالب: ${name} نهائياً؟`)) db.ref('students/' + id).remove(); }
+        function deleteItem(path) { if(confirm("هل أنت متأكد من الحذف النهائي؟")) db.ref(path).remove(); }
+
+        /* ──────────────── 🔑 6. نظام توليد الأكواد السرية ──────────────── */
+        const SECRET_SALT = "Prof_Lababidi_Math_2027";
+        function generateStudentKey() {
+            const studentId = document.getElementById("student-input").value.trim().replace(/\s+/g, '');
+            const tabId = document.getElementById("student-tab-select").value;
+            if(!studentId || !tabId) return alert("يرجى إدخال رقم الهاتف واختيار القسم!");
+            let hash = 0; let fullString = studentId + tabId + SECRET_SALT;
+            for (let i = 0; i < fullString.length; i++) { hash = (hash << 5) - hash + fullString.charCodeAt(i); hash |= 0; }
+            document.getElementById("key-output").innerText = "LABA-" + Math.abs(hash).toString(16).toUpperCase();
+        }
+    </script>
+</body>
+</html>

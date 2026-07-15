@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>المكتبة الرقمية | الأستاذ محمد لبابيدي</title>
+   <!-- السطر الجديد المحمي الذي يعمل بدون إنترنت (أوفلاين) -->
+<link rel="stylesheet" href="css/all.min.css">
+
+    
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            options: {
+                ignoreHtmlClass: 'tex2jax_ignore',
+                processHtmlClass: 'tex2jax_process'
+            },
+            chtml: {
+                displayAlign: 'right',
+                displayIndent: '10px'
+            }
+        };
+    </script>
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        /* 🎨 المتغيرات الافتراضية (الوضع النهاري) */
+        :root { 
+            --primary-color: #1a365d; 
+            --accent-color: #e53e3e; 
+            --bg-color: #f7fafc; 
+            --text-color: #2d3748; 
+            --box-bg: #ffffff;
+            --card-border: #edf2f7;
+            --success-color: #38a169;
+            --btn-text: #ffffff;
+            --danger-color: #e53e3e;
+            --overlay-bg: rgba(0, 0, 0, 0.4);
+        }
+        
+        /* 🌟 الوضع الليلي المطور */
+        body.dark-mode {
+            --bg-color: #111827;       
+            --text-color: #f3f4f6;     
+            --box-bg: #1f2937;         
+            --primary-color: #06b6d4;  
+            --accent-color: #f43f5e;   
+            --card-border: #374151;    
+            --success-color: #059669;  
+            --btn-text: #111827;       
+            --danger-color: #f43f5e;
+            --overlay-bg: rgba(0, 0, 0, 0.7);
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0;
+            background-color: var(--bg-color); 
+            color: var(--text-color); 
+            padding-bottom: 90px !important;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        
+        header { 
+            background: #1a365d; 
+            color: white; 
+            padding: 20px; 
+            text-align: center; 
+            transition: background 0.3s ease, border-color 0.3s ease;
+        }
+        
+        body.dark-mode header {
+            background: var(--box-bg);
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px; 
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .logo-img { width: 80px; height: auto; object-fit: cover; }
+
+        .main-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ffffff; 
+            margin: 0;
+            transition: color 0.3s ease;
+        }
+        body.dark-mode .main-title { color: var(--primary-color); }
+
+        .container { max-width: 800px; margin: 30px auto; padding: 0 20px; }
+        .container h2 { text-align: center; color: var(--primary-color); font-size: 1.4rem; margin-bottom: 25px; }
+
+        .section-description-text {
+            text-align: center; font-size: 0.95rem; color: var(--text-color); opacity: 0.8;
+            margin-top: -15px; margin-bottom: 25px; line-height: 1.6; max-width: 600px;
+            margin-left: auto; margin-right: auto; display: none; animation: fadeIn 0.4s ease;
+        }
+
+        .navigation-action-area { display: flex; justify-content: flex-start; margin-bottom: 20px; min-height: 40px; }
+
+        .btn-back-platform {
+            background: var(--box-bg); color: var(--primary-color); border: 2px solid var(--card-border);
+            padding: 8px 18px; border-radius: 50px; font-weight: bold; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 8px; font-size: 0.9rem;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-back-platform:hover { background: var(--primary-color); color: #ffffff; border-color: var(--primary-color); transform: translateX(-4px); }
+        body.dark-mode .btn-back-platform:hover { color: #111827; }
+
+        .fade-slide-animation { animation: elegantSlideIn 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes elegantSlideIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* 🗂️ تصميم المربعات */
+        .tabs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
+
+        .tab-square {
+            aspect-ratio: 1 / 1; background: var(--box-bg); border: 2px solid var(--card-border);
+            border-radius: 16px; display: flex; flex-direction: column; align-items: center;
+            justify-content: center; gap: 12px; cursor: pointer; transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02); padding: 15px; text-align: center; position: relative; box-sizing: border-box;
+        }
+        .tab-square span { font-weight: bold; font-size: 1rem; color: var(--text-color); }
+        .tab-square i.main-icon { font-size: 2.5rem; color: var(--primary-color); }
+        .tab-custom-img { width: 75px; height: 75px; object-fit: cover; border-radius: 12px; transition: transform 0.3s; }
+        .tab-square:hover .tab-custom-img { transform: scale(1.05); }
+
+        .tab-square.active { border-color: var(--accent-color); background-color: rgba(26, 54, 93, 0.05); }
+        body.dark-mode .tab-square.active { border-color: var(--primary-color); background-color: rgba(6, 182, 212, 0.1); }
+
+        .tab-square.locked { background: var(--box-bg); border-color: var(--card-border); }
+        .lock-badge { position: absolute; top: 12px; left: 12px; color: var(--danger-color); font-size: 1.1rem; z-index: 5; }
+
+        /* 💎 تصميم النافذة العائمة للمودال */
+        .activation-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--overlay-bg);
+            backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center;
+            z-index: 100000; opacity: 0; visibility: hidden; transition: all 0.3s ease;
+        }
+        .activation-modal-overlay.open { opacity: 1; visibility: visible; }
+
+        .activation-modal-card {
+            background: var(--box-bg); border: 1px solid var(--card-border); width: 90%; max-width: 400px;
+            border-radius: 20px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); text-align: center;
+            box-sizing: border-box; transform: translateY(30px); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .activation-modal-overlay.open .activation-modal-card { transform: translateY(0); }
+
+        .modal-icon-header {
+            width: 60px; height: 60px; background: rgba(229, 62, 62, 0.1); color: var(--danger-color);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; margin: 0 auto 15px auto;
+        }
+        body.dark-mode .modal-icon-header { background: rgba(244, 63, 94, 0.15); }
+
+        .activation-modal-card h4 { margin: 0 0 10px 0; color: var(--text-color); font-size: 1.2rem; }
+        .activation-modal-card p { margin: 0 0 20px 0; font-size: 0.9rem; color: var(--text-color); opacity: 0.7; line-height: 1.5; }
+
+        .input-group-container { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; text-align: right; }
+        .input-group-container label { font-size: 0.85rem; font-weight: bold; color: var(--text-color); opacity: 0.8; margin-right: 4px; }
+        
+        .modal-input-field {
+            width: 100%; padding: 12px; font-size: 1.05rem; border: 2px solid var(--card-border);
+            background: var(--bg-color); color: var(--text-color); border-radius: 10px;
+            box-sizing: border-box; transition: border-color 0.2s; text-align: center; font-weight: bold;
+        }
+        .modal-input-field:focus { border-color: var(--primary-color); outline: none; }
+        #modal-input-code { text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .modal-actions { display: flex; gap: 10px; }
+        .btn-modal-submit { flex: 2; background: var(--primary-color); color: white; border: none; padding: 12px; font-size: 0.95rem; border-radius: 10px; cursor: pointer; font-weight: bold; }
+        body.dark-mode .btn-modal-submit { color: #111827; }
+        .btn-modal-cancel { flex: 1; background: var(--bg-color); color: var(--text-color); border: 1px solid var(--card-border); padding: 12px; font-size: 0.95rem; border-radius: 10px; cursor: pointer; }
+
+        /* المحتويات والنوط */
+        .files-section { background: var(--box-bg); border-radius: 12px; padding: 20px; border: 1px solid var(--card-border); display: none; animation: fadeIn 0.4s ease; }
+        .files-section h3 { margin-top: 0; color: var(--primary-color); font-size: 1.2rem; border-bottom: 2px solid var(--card-border); padding-bottom: 10px; margin-bottom: 15px; }
+        .pdf-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 10px; border-bottom: 1px solid var(--card-border); color: var(--text-color); }
+        .btn-preview { background: var(--success-color); color: #ffffff; padding: 8px 16px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; border: none; }
+        
+        /* 📐 صناديق عرض التمارين الرياضية المحسنة (نظام الأكورديون الذكي الموفر للمساحة) */
+        .latex-exercise-card {
+            background: var(--box-bg); border: 1px solid var(--card-border); 
+            border-radius: 14px; margin-bottom: 15px; width: 100%; box-sizing: border-box;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.01); overflow: hidden;
+        }
+        
+        .exercise-header-clickable {
+            background: rgba(26, 54, 93, 0.03); padding: 15px 18px; display: flex; 
+            align-items: center; justify-content: space-between; cursor: pointer; user-select: none;
+            transition: background-color 0.2s;
+        }
+        .exercise-header-clickable:hover { background: rgba(26, 54, 93, 0.07); }
+        body.dark-mode .exercise-header-clickable { background: rgba(6, 182, 212, 0.02); }
+        body.dark-mode .exercise-header-clickable:hover { background: rgba(6, 182, 212, 0.06); }
+
+        .exercise-toggle-content {
+            display: none; padding: 18px; border-top: 1px solid var(--card-border); background: var(--box-bg);
+        }
+
+        .exercise-problem-box {
+            background: var(--bg-color); padding: 15px; border-radius: 10px; 
+            border-right: 4px solid var(--primary-color); line-height: 1.7; font-size: 1rem;
+            overflow-x: auto; white-space: normal; word-break: break-word; max-width: 100%; margin-bottom: 12px;
+        }
+        .exercise-solution-box {
+            display: none; background: rgba(56, 161, 105, 0.06); padding: 15px; 
+            border-radius: 10px; border-right: 4px solid var(--success-color); 
+            line-height: 1.7; margin-top: 12px; animation: elegantSlideIn 0.3s ease;
+            overflow-x: auto; max-width: 100%;
+        }
+
+        .exercise-problem-box::-webkit-scrollbar, 
+        .exercise-solution-box::-webkit-scrollbar {
+            height: 5px;
+        }
+        .exercise-problem-box::-webkit-scrollbar-thumb, 
+        .exercise-solution-box::-webkit-scrollbar-thumb {
+            background: var(--card-border); border-radius: 10px;
+        }
+
+        /* شريط التنقل السفلي */
+        .bottom-nav {
+            position: fixed !important; bottom: 0 !important; left: 0 !important; width: 100% !important; height: 70px !important;
+            background-color: #ffffff !important; display: flex !important; justify-content: space-around !important; align-items: center !important;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08) !important; z-index: 99999 !important; padding: 0 !important; margin: 0 !important; box-sizing: border-box !important;
+        }
+        body.dark-mode .bottom-nav { background-color: var(--box-bg) !important; border-top: 1px solid var(--card-border) !important; }
+        .nav-item { display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; color: #9ca3af !important; text-decoration: none !important; width: 100% !important; height: 100% !important; }
+        .icon-wrapper { font-size: 1.4rem !important; height: 28px; display: flex; align-items: center; justify-content: center; transition: transform 0.3s !important; }
+        .nav-text { font-size: 0.8rem !important; font-weight: 600 !important; margin-top: 5px !important; }
+        .nav-item.active { color: var(--accent-color) !important; }
+        .nav-item.active .icon-wrapper { transform: translateY(-6px) scale(1.2) !important; color: var(--accent-color) !important; }
+
+        @media (max-width: 600px) {
+            .header-container { flex-direction: column; text-align: center; }
+            .logo-img { width: 70px; }
+            .main-title { font-size: 1.5rem; }
+            .tabs-grid { gap: 10px; }
+            .tab-square { border-radius: 12px; padding: 10px; gap: 8px; }
+            .tab-square i.main-icon { font-size: 2rem; }
+            .tab-custom-img { width: 55px; height: 55px; border-radius: 8px; }
+            .tab-square span { font-size: 0.85rem; }
+        }
+    </style>
+</head>
+<body class="tex2jax_ignore">
+
+    <header>
+        <div class="header-container">
+            <img src="logo.png" alt="لوغو المنصة" class="logo-img">
+            <div class="header-text">
+                 <h1 class="main-title">مكتبة الملفات والنوط الرقمية 📚</h1>
+            </div>
+        </div>
+    </header>
+
+    <div class="activation-modal-overlay" id="activation-modal">
+        <div class="activation-modal-card">
+            <div class="modal-icon-header">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <h4 id="modal-tab-title">تفعيل محتوى مغلق</h4>
+            <p>أدخل رقم هاتفك المسجل، وسيتم التحقق من تفعيلك التلقائي فوراً بذكاء:</p>
+            
+            <div class="input-group-container">
+                <label for="modal-input-phone"><i class="fa-solid fa-phone"></i> رقم هاتف الطالب:</label>
+                <input type="tel" id="modal-input-phone" class="modal-input-field" placeholder="09XXXXXXXX">
+                
+                <label for="modal-input-code"><i class="fa-solid fa-key"></i> كود التفعيل اليدوي (إذا لم تكن مفعلاً تلقائياً):</label>
+                <input type="text" id="modal-input-code" class="modal-input-field" placeholder="LABA-XXXXXX" maxlength="15">
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-modal-submit" id="modal-btn-confirm">تأكيد وتفعيل القسم</button>
+                <button class="btn-modal-cancel" onclick="closeActivationModal()">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item">
+            <div class="icon-wrapper"><i class="fa-solid fa-house"></i></div>
+            <span class="nav-text">الرئيسية</span>
+        </a>
+        <a href="library.html" class="nav-item active">
+            <div class="icon-wrapper"><i class="fa-solid fa-book-open"></i></div>
+            <span class="nav-text">المكتبة</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <div class="icon-wrapper"><i class="fa-solid fa-user-graduate"></i></div>
+            <span class="nav-text">عن الأستاذ</span>
+        </a>
+        <a href="settings.html" class="nav-item">
+            <div class="icon-wrapper"><i class="fa-solid fa-gear"></i></div>
+            <span class="nav-text">الإعدادات</span>
+        </a>
+    </nav>
+
+    <div class="container">
+        <div class="navigation-action-area" id="back-action-area"></div>
+        <h2 id="library-section-title">اختر القسم المستهدف لتصفح الملفات:</h2>
+        <p id="library-section-description" class="section-description-text"></p>
+        
+        <div class="tabs-grid fade-slide-animation" id="dynamic-tabs">
+            <p style="grid-column: span 2; text-align: center; color: #94a3b8;">جاري تحميل الأقسام الدراسية...</p>
+        </div>
+        
+        <div class="files-section" id="files-section">
+            <h3 id="selected-tab-title">المحتويات</h3>
+            <div id="files-list" class="tex2jax_process"></div>
+        </div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyA1...",
+            authDomain: "lababidi-math.firebaseapp.com",
+            databaseURL: "https://lababidimath-74afd-default-rtdb.firebaseio.com/",
+            projectId: "lababidi-math",
+            storageBucket: "lababidi-math.appspot.com",
+            messagingSenderId: "852...",
+            appId: "1:852..."
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        
+        const SECRET_SALT = "Prof_Lababidi_Math_2027";
+        
+        let allTabsData = {}; 
+        let navigationStack = []; 
+        let currentStudentData = { name: "طالب زائر", isActivated: false, isVip: false, allowedTabs: {} }; 
+        let currentActiveTabId = null;
+        let pendingTabIdToActivate = null;
+        let activeLiveRef = null; 
+
+        let currentLessonsRef = null;
+        let currentExercisesRef = null;
+
+        function isTabAllowed(tabId) {
+            const tab = allTabsData[tabId];
+            if (!tab) return false;
+            
+            // 🌟 فتح فوري وكامل لجميع التبويبات إذا كانت حالة الحساب VIP
+            if (currentStudentData && (currentStudentData.isVip === true || currentStudentData.isVip === 'true')) {
+                return true;
+            }
+            
+            const isLocallyUnlocked = localStorage.getItem('unlocked_' + tabId) === 'true';
+            const isStudentGlobalActive = (currentStudentData && currentStudentData.isActivated === true);
+            
+            const unlockedForAll = (tab.isFree === true || tab.isFree === 'true' || tab.unlockedForAll === true || tab.unlockedForAll === 'true' || tab.accessType === 'free');
+            const unlockedForSubscribers = isStudentGlobalActive && (tab.forSubscribers === true || tab.forSubscribers === 'true' || tab.accessType === 'locked');
+            
+            const unlockedForSpecificStudent = currentStudentData && currentStudentData.allowedTabs && 
+                (currentStudentData.allowedTabs[tabId] === true || currentStudentData.allowedTabs[tabId] === 'true' || currentStudentData.allowedTabs[tabId] === 1);
+            
+            return unlockedForAll || unlockedForSubscribers || unlockedForSpecificStudent || isLocallyUnlocked;
+        }
+
+        function loadStudentSession() {
+            const sessionData = localStorage.getItem('currentStudent');
+            if (sessionData) {
+                currentStudentData = JSON.parse(sessionData);
+            }
+            
+            const savedKey = localStorage.getItem('student_key');
+            const savedPhone = localStorage.getItem('student_phone');
+
+            if (savedKey) {
+                setupSingleLiveSync(savedKey);
+            } else if (savedPhone) {
+                resolveStudentKeyAndSync(savedPhone.replace(/\s+/g, ''));
+            } else {
+                fetchTabsFromFirebase();
+            }
+        }
+
+        function handleDeactivation() {
+            currentStudentData = { name: "طالب زائر", isActivated: false, isVip: false, allowedTabs: {} };
+            localStorage.setItem('currentStudent', JSON.stringify(currentStudentData));
+            
+            localStorage.removeItem('student_key');
+            localStorage.removeItem('student_phone');
+            
+            if (activeLiveRef) {
+                activeLiveRef.off();
+                activeLiveRef = null;
+            }
+            
+            if (currentActiveTabId && !isTabAllowed(currentActiveTabId)) {
+                currentActiveTabId = null;
+                const filesSection = document.getElementById('files-section');
+                if (filesSection) filesSection.style.display = 'none';
+                const filesList = document.getElementById('files-list');
+                if (filesList) filesList.innerHTML = '';
+            }
+            
+            renderTabsHierarchy();
+        }
+
+        function resolveStudentKeyAndSync(cleanPhone) {
+            const phoneAsNum = Number(cleanPhone);
+            
+            db.ref('students/' + cleanPhone).once('value', snap => {
+                if (snap.exists()) {
+                    localStorage.setItem('student_key', cleanPhone);
+                    setupSingleLiveSync(cleanPhone);
+                    return;
+                }
+                
+                db.ref('students').orderByChild('phone').equalTo(cleanPhone).once('value', searchSnap => {
+                    if (searchSnap.exists()) {
+                        searchSnap.forEach(childSnap => {
+                            localStorage.setItem('student_key', childSnap.key);
+                            setupSingleLiveSync(childSnap.key);
+                        });
+                        return;
+                    }
+                    
+                    if (!isNaN(phoneAsNum)) {
+                        db.ref('students').orderByChild('phone').equalTo(phoneAsNum).once('value', numSnap => {
+                            if (numSnap.exists()) {
+                                numSnap.forEach(childSnap => {
+                                    localStorage.setItem('student_key', childSnap.key);
+                                    setupSingleLiveSync(childSnap.key);
+                                });
+                            } else {
+                                handleDeactivation();
+                            }
+                        });
+                    } else {
+                        handleDeactivation();
+                    }
+                });
+            });
+        }
+
+        function setupSingleLiveSync(studentKey) {
+            if (!studentKey) return;
+            if (activeLiveRef) activeLiveRef.off();
+            
+            activeLiveRef = db.ref('students/' + studentKey);
+            activeLiveRef.on('value', snap => {
+                if (snap.exists()) {
+                    syncStudentActivation(snap.val());
+                } else {
+                    handleDeactivation();
+                }
+            });
+
+            fetchTabsFromFirebase();
+        }
+
+        function syncStudentActivation(serverData) {
+            if (!serverData) {
+                handleDeactivation();
+                return;
+            }
+            if (!currentStudentData) currentStudentData = {};
+
+            // 🌟 استخلاص حالة الـ VIP من السيرفر بمرونة عالية
+            const isVip = 
+                serverData.isVip === true || serverData.isVip === 'true' ||
+                serverData.status === 'vip' || serverData.status === 'VIP' ||
+                serverData.subscription === 'vip' || serverData.subscription === 'VIP';
+
+            const isExplicitlyDeactivated = 
+                serverData.isActivated === false || serverData.isActivated === 'false' ||
+                serverData.active === false || serverData.active === 'false' ||
+                serverData.activated === false || serverData.activated === 'false' ||
+                serverData.status === 'غير نشط' || serverData.status === 'inactive' || serverData.status === 'منتهي';
+
+            const hasActiveMarker = 
+                serverData.isActivated === true || serverData.isActivated === 'true' || 
+                serverData.active === true || serverData.active === 'true' || 
+                serverData.status === 'active' || serverData.status === 'نشط' ||
+                serverData.activated === true || serverData.activated === 'true' ||
+                isVip; // حساب الـ VIP يعتبر نشطاً حكماً
+
+            const isActive = hasActiveMarker && !isExplicitlyDeactivated;
+
+            if (isActive || isVip) {
+                currentStudentData.isActivated = true;
+                currentStudentData.isVip = isVip; 
+                currentStudentData.allowedTabs = serverData.allowedTabs || {}; 
+                currentStudentData.name = serverData.name || currentStudentData.name;
+                currentStudentData.phone = serverData.phone || currentStudentData.phone;
+            } else {
+                if (serverData.allowedTabs && Object.keys(serverData.allowedTabs).length > 0) {
+                    currentStudentData.isActivated = false; 
+                    currentStudentData.isVip = false;
+                    currentStudentData.allowedTabs = serverData.allowedTabs;
+                    currentStudentData.name = serverData.name || currentStudentData.name;
+                    currentStudentData.phone = serverData.phone || currentStudentData.phone;
+                } else {
+                    handleDeactivation();
+                    return;
+                }
+            }
+            localStorage.setItem('currentStudent', JSON.stringify(currentStudentData));
+            
+            if (currentActiveTabId && !isTabAllowed(currentActiveTabId)) {
+                currentActiveTabId = null;
+                const filesSection = document.getElementById('files-section');
+                if (filesSection) filesSection.style.display = 'none';
+            }
+            
+            renderTabsHierarchy();
+        }
+
+        function fetchTabsFromFirebase() {
+            db.ref('tabs').once('value', snap => {
+                allTabsData = snap.val() || {};
+                renderTabsHierarchy();
+            });
+        }
+
+        function hasChildTabs(tabId) {
+            return Object.values(allTabsData).some(tab => tab.parentId === tabId);
+        }
+
+        function renderTabsHierarchy() {
+            const navContainer = document.getElementById('dynamic-tabs');
+            const sectionTitle = document.getElementById('library-section-title');
+            const sectionDesc = document.getElementById('library-section-description');
+            const backArea = document.getElementById('back-action-area');
+
+            if (!navContainer) return;
+            navContainer.innerHTML = "";
+
+            if (Object.keys(allTabsData).length === 0) {
+                navContainer.innerHTML = '<p style="grid-column: span 2; text-align:center; color:#64748b;">لا توجد أقسام منشورة حالياً.</p>';
+                return;
+            }
+
+            const currentParentId = navigationStack.length > 0 ? navigationStack[navigationStack.length - 1] : null;
+
+            if (currentParentId === null) {
+                sectionTitle.innerText = "اختر القسم المستهدف لتصفح الملفات:";
+                sectionDesc.style.display = 'none';
+                backArea.innerHTML = ""; 
+
+                Object.keys(allTabsData).forEach(key => {
+                    const tab = allTabsData[key];
+                    if (!tab.parentId || tab.parentId === 'root') buildTabSquare(key, tab, navContainer);
+                });
+            } else {
+                const parentTab = allTabsData[currentParentId];
+                sectionTitle.innerText = `الأقسام الفرعية المتاحة لـ: ${parentTab ? parentTab.name : ''}`;
+                sectionDesc.innerText = (parentTab && parentTab.description) ? parentTab.description : "";
+                sectionDesc.style.display = (parentTab && parentTab.description) ? 'block' : 'none';
+                
+                backArea.innerHTML = `<button class="btn-back-platform" onclick="handleNavigationPop()"><i class="fa-solid fa-arrow-right"></i> العودة للقسم السابق</button>`;
+
+                Object.keys(allTabsData).forEach(key => {
+                    const tab = allTabsData[key];
+                    if (tab.parentId === currentParentId) {
+                        buildTabSquare(key, tab, navContainer);
+                    }
+                });
+            }
+        }
+
+        function buildTabSquare(key, tab, container) {
+            let isAllowed = isTabAllowed(key); 
+            const square = document.createElement('div');
+            let mediaHtml = tab.imageUrl ? `<img src="${tab.imageUrl}" class="tab-custom-img" onerror="handleMissingTabImage(this, '${tab.type}')">` : `<i class="${tab.type === 'video' ? 'fa-solid fa-circle-play main-icon' : (tab.type === 'exercises' ? 'fa-solid fa-square-root-variable main-icon' : 'fa-solid fa-file-pdf main-icon')}"></i>`;
+
+            if (!isAllowed) {
+                square.className = 'tab-square locked';
+                square.innerHTML = `<div class="lock-badge"><i class="fa-solid fa-lock"></i></div>${mediaHtml}<span>${tab.name}</span>`;
+                square.onclick = () => openActivationModal(key, tab.name);
+            } else {
+                square.className = `tab-square ${key === currentActiveTabId ? 'active' : ''}`;
+                square.innerHTML = `${mediaHtml}<span>${tab.name}</span>`;
+                square.onclick = () => {
+                    if (hasChildTabs(key)) {
+                        const filesSection = document.getElementById('files-section');
+                        if (filesSection) filesSection.style.display = 'none';
+                        currentActiveTabId = null;
+
+                        navigationStack.push(key);
+                        renderTabsHierarchy();
+                    } else {
+                        document.querySelectorAll('.tab-square').forEach(s => s.classList.remove('active'));
+                        square.classList.add('active');
+                        currentActiveTabId = key;
+                        loadLessonsForTab(key, tab.name);
+                    }
+                };
+            }
+            container.appendChild(square);
+        }
+
+        function openActivationModal(tabId, tabName) {
+            pendingTabIdToActivate = tabId;
+            document.getElementById('modal-tab-title').innerText = `تفعيل قسم: ${tabName}`;
+            
+            let savedPhone = (currentStudentData && currentStudentData.phone) ? currentStudentData.phone : (localStorage.getItem('student_phone') || "");
+            document.getElementById('modal-input-phone').value = savedPhone.trim();
+            document.getElementById('modal-input-code').value = "";
+            
+            document.getElementById('activation-modal').classList.add('open');
+            if(savedPhone.trim() !== "") {
+                document.getElementById('modal-input-code').focus();
+            } else {
+                document.getElementById('modal-input-phone').focus();
+            }
+        }
+
+        function closeActivationModal() {
+            document.getElementById('activation-modal').classList.remove('open');
+            pendingTabIdToActivate = null;
+        }
+
+        function checkPhoneActivationOnTheFly(rawPhone) {
+            const cleanPhone = rawPhone.replace(/\s+/g, '');
+            if (cleanPhone.length < 9) return;
+
+            const phoneAsNum = Number(cleanPhone);
+            const targetTabId = pendingTabIdToActivate;
+
+            const processInstantUnlock = (serverData, actualKey) => {
+                // 🌟 فحص حالة الـ VIP عند الفحص السريع بالهاتف
+                const isVip = 
+                    serverData.isVip === true || serverData.isVip === 'true' ||
+                    serverData.status === 'vip' || serverData.status === 'VIP' ||
+                    serverData.subscription === 'vip' || serverData.subscription === 'VIP';
+
+                const isExplicitlyDeactivated = 
+                    serverData.isActivated === false || serverData.isActivated === 'false' ||
+                    serverData.active === false || serverData.active === 'false' ||
+                    serverData.status === 'غير نشط' || serverData.status === 'inactive' || serverData.status === 'منتهي';
+
+                const hasActiveMarker = 
+                    serverData.isActivated === true || serverData.isActivated === 'true' || 
+                    serverData.active === true || serverData.active === 'true' || 
+                    serverData.status === 'active' || serverData.status === 'نشط' ||
+                    isVip;
+
+                const isActive = hasActiveMarker && !isExplicitlyDeactivated;
+                const hasSpecificTabAccess = serverData.allowedTabs && 
+                    (serverData.allowedTabs[targetTabId] === true || serverData.allowedTabs[targetTabId] === 'true' || serverData.allowedTabs[targetTabId] === 1);
+
+                if (isActive || hasSpecificTabAccess || isVip) {
+                    localStorage.setItem('student_phone', cleanPhone);
+                    localStorage.setItem('student_key', actualKey); 
+                    
+                    currentStudentData = {
+                        isActivated: isActive,
+                        isVip: isVip,
+                        allowedTabs: serverData.allowedTabs || {},
+                        name: serverData.name || "طالب متميز",
+                        phone: cleanPhone
+                    };
+                    localStorage.setItem('currentStudent', JSON.stringify(currentStudentData));
+                    
+                    closeActivationModal();
+                    renderTabsHierarchy();
+                    
+                    if (targetTabId && allTabsData[targetTabId]) {
+                        currentActiveTabId = targetTabId;
+                        loadLessonsForTab(targetTabId, allTabsData[targetTabId].name);
+                    }
+
+                    setupSingleLiveSync(actualKey);
+                    setTimeout(() => {
+                        alert(`🎯 تم التعرف على تفعيلك التلقائي بنجاح! مرحباً بك يا ${serverData.name || 'طالبنا المتميز'}.`);
+                    }, 100);
+                }
+            };
+
+            db.ref('students/' + cleanPhone).once('value', snap => { 
+                if(snap.exists()) {
+                    processInstantUnlock(snap.val(), cleanPhone); 
+                } else {
+                    db.ref('students').orderByChild('phone').equalTo(cleanPhone).once('value', snap2 => { 
+                        if(snap2.exists()) {
+                            snap2.forEach(c => processInstantUnlock(c.val(), c.key)); 
+                        } else if(!isNaN(phoneAsNum)) {
+                            db.ref('students').orderByChild('phone').equalTo(phoneAsNum).once('value', snap3 => { 
+                                if(snap3.exists()) snap3.forEach(c => processInstantUnlock(c.val(), c.key)); 
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        document.getElementById('modal-input-phone').addEventListener('input', function(e) {
+            if(e.target.value.trim().length >= 9) {
+                checkPhoneActivationOnTheFly(e.target.value);
+            }
+        });
+
+        document.getElementById('modal-btn-confirm').addEventListener('click', () => {
+            if (!pendingTabIdToActivate) return;
+            
+            const phoneField = document.getElementById('modal-input-phone');
+            const codeField = document.getElementById('modal-input-code');
+            const rawPhone = phoneField.value.trim();
+            const typedKey = codeField.value.trim().toUpperCase();
+            
+            const tabId = pendingTabIdToActivate;
+            const tabName = allTabsData[tabId] ? allTabsData[tabId].name : "";
+
+            if (rawPhone === "") {
+                alert("الرجاء إدخال رقم الهاتف أولاً!");
+                return;
+            }
+
+            const cleanPhone = rawPhone.replace(/\s+/g, '');
+            localStorage.setItem('student_phone', cleanPhone);
+
+            if(typedKey !== "") {
+                let fullString = cleanPhone + tabId + SECRET_SALT;
+                let hash = 0;
+                for (let i = 0; i < fullString.length; i++) {
+                    hash = (hash << 5) - hash + fullString.charCodeAt(i);
+                    hash |= 0;
+                }
+                const expectedKey = "LABA-" + Math.abs(hash).toString(16).toUpperCase();
+
+                if (typedKey === expectedKey) {
+                    localStorage.setItem('unlocked_' + tabId, 'true');
+                    closeActivationModal();
+                    
+                    renderTabsHierarchy();
+                    currentActiveTabId = tabId;
+                    loadLessonsForTab(tabId, tabName);
+                    
+                    setTimeout(() => {
+                        alert(`🎉 تم تفعيل قسم [ ${tabName} ] بنجاح بواسطة الكود.`);
+                    }, 80);
+                } else {
+                    alert("❌ كود التفعيل اليدوي المدخل غير صحيح!");
+                }
+            } else {
+                checkPhoneActivationOnTheFly(cleanPhone);
+                setTimeout(() => {
+                    if (document.getElementById('activation-modal').classList.contains('open')) {
+                         alert("❌ لم يتم العثور على تفعيل تلقائي لهذا الرقم على السيرفر لهذا القسم بالتحديد!");
+                    }
+                }, 1000);
+            }
+        });
+
+        function handleNavigationPop() { 
+            navigationStack.pop(); 
+            currentActiveTabId = null; 
+            const filesSection = document.getElementById('files-section');
+            if (filesSection) filesSection.style.display = 'none';
+            renderTabsHierarchy(); 
+        }
+        
+        function handleMissingTabImage(imgElement, type) { 
+            const i = document.createElement('i'); 
+            i.className = type === 'video' ? 'fa-solid fa-circle-play main-icon' : (type === 'exercises' ? 'fa-solid fa-square-root-variable main-icon' : 'fa-solid fa-file-pdf main-icon'); 
+            imgElement.replaceWith(i); 
+        }
+
+        /* ──────────────── 📐 نظام الجلب والتصيير المتجاوب والـ LaTeX ──────────────── */
+        function loadLessonsForTab(tabId, tabName) {
+            const filesSection = document.getElementById('files-section');
+            const selectedTitle = document.getElementById('selected-tab-title');
+            const filesList = document.getElementById('files-list');
+            
+            if (!filesSection || !selectedTitle || !filesList) return;
+            
+            selectedTitle.innerText = `📚 محتويات: ${tabName}`;
+            filesList.innerHTML = '<p style="text-align:center; color:#94a3b8;">جاري مراجعة الملفات والمسائل المتاحة للقسم...</p>';
+            filesSection.style.display = 'block';
+
+            if (currentLessonsRef) currentLessonsRef.off();
+            if (currentExercisesRef) currentExercisesRef.off();
+
+            let localLessons = {};
+            let localExercises = {};
+
+            currentLessonsRef = db.ref('lessons').orderByChild('tabId').equalTo(tabId);
+            currentExercisesRef = db.ref('math_exercises').orderByChild('tabId').equalTo(tabId);
+
+            const mergeAndRenderAll = () => {
+                filesList.innerHTML = "";
+
+                if (Object.keys(localLessons).length === 0 && Object.keys(localExercises).length === 0) {
+                    filesList.innerHTML = '<p style="text-align:center; color:#64748b; padding:10px;">لا توجد ملفات أو نوط أو مسائل مضافة في هذا القسم حالياً.</p>';
+                    return;
+                }
+
+                // 1. عرض النوط والفيديوهات
+                Object.keys(localLessons).forEach(key => {
+                    const lesson = localLessons[key];
+                    const pdfItem = document.createElement('div');
+                    pdfItem.className = 'pdf-item';
+                    
+                    let secureUrl = lesson.url.includes('drive.google.com') ? lesson.url.replace('/view?usp=sharing', '/preview').replace('/view', '/preview') : lesson.url;
+                    let iconHtml = `<i class="fa-solid fa-file-pdf" style="color: #e53e3e; margin-left: 8px;"></i>`;
+                    let btnText = `تصفح النوطة آمن`;
+                    
+                    if (lesson.type === 'video') {
+                        iconHtml = `<i class="fa-solid fa-circle-play" style="color: #06b6d4; margin-left: 8px;"></i>`;
+                        btnText = `مشاهدة الشرح التفاعلي`;
+                    }
+
+                    pdfItem.innerHTML = `<span>${iconHtml} ${lesson.title}</span><a href="${secureUrl}" target="_blank" class="btn-preview">${btnText}</a>`;
+                    filesList.appendChild(pdfItem);
+                });
+
+                // 2. عرض المسائل الرياضية المكتوبة بصيغة LaTeX وترتيبها بنظام الأكورديون
+                const sortedExercises = Object.keys(localExercises).map(key => ({ id: key, ...localExercises[key] }))
+                                              .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+                sortedExercises.forEach(ex => {
+                    const exerciseCard = document.createElement('div');
+                    exerciseCard.className = 'latex-exercise-card';
+                    
+                    exerciseCard.innerHTML = `
+                        <div class="exercise-header-clickable" onclick="toggleExerciseAccordion('${ex.id}')">
+                            <span style="font-weight: bold; color: var(--primary-color);">
+                                <i class="fa-solid fa-calculator" style="color: var(--accent-color); margin-left: 6px;"></i> ${ex.title}
+                            </span>
+                            <i class="fa-solid fa-chevron-down" style="color: #9ca3af; transition: transform 0.2s;" id="chevron-${ex.id}"></i>
+                        </div>
+                        
+                        <div class="exercise-toggle-content" id="exercise-content-${ex.id}">
+                            <div class="exercise-problem-box">
+                                ${ex.question}
+                            </div>
+                            <button class="btn-preview" style="align-self: flex-start; background-color: var(--primary-color); border: none; cursor: pointer;" onclick="toggleSolutionDisplay('${ex.id}')">
+                                <i class="fa-solid fa-eye" id="icon-${ex.id}"></i> <span id="btn-text-${ex.id}" style="color: white;">عرض الحل النموذجي</span>
+                            </button>
+                            <div class="exercise-solution-box" id="solution-container-${ex.id}">
+                                <strong style="color: var(--success-color); display: block; margin-bottom: 6px;"><i class="fa-solid fa-square-check"></i> خطوات الحل المعتمدة:</strong>
+                                <div style="color: var(--text-color);">${ex.solution}</div>
+                            </div>
+                        </div>
+                    `;
+                    filesList.appendChild(exerciseCard);
+                });
+
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    window.MathJax.typesetPromise([filesList]).catch(err => console.log(err));
+                }
+            };
+
+            currentLessonsRef.on('value', snap => {
+                localLessons = snap.val() || {};
+                mergeAndRenderAll();
+            });
+
+            currentExercisesRef.on('value', snap => {
+                localExercises = snap.val() || {};
+                mergeAndRenderAll();
+            });
+        }
+
+        function toggleExerciseAccordion(key) {
+            const targetContentBox = document.getElementById(`exercise-content-${key}`);
+            const targetChevron = document.getElementById(`chevron-${key}`);
+            
+            if (!targetContentBox) return;
+
+            if (targetContentBox.style.display === 'none' || targetContentBox.style.display === '') {
+                document.querySelectorAll('.exercise-toggle-content').forEach(box => {
+                    if (box.id !== `exercise-content-${key}`) {
+                        box.style.display = 'none';
+                        const otherKey = box.id.replace('exercise-content-', '');
+                        const otherChevron = document.getElementById(`chevron-${otherKey}`);
+                        if (otherChevron) otherChevron.style.transform = 'rotate(0deg)';
+                        
+                        const solBox = document.getElementById(`solution-container-${otherKey}`);
+                        const btnText = document.getElementById(`btn-text-${otherKey}`);
+                        const eyeIcon = document.getElementById(`icon-${otherKey}`);
+                        if (solBox) solBox.style.display = 'none';
+                        if (btnText) btnText.innerText = 'عرض الحل النموذجي';
+                        if (eyeIcon) eyeIcon.className = 'fa-solid fa-eye';
+                    }
+                });
+
+                targetContentBox.style.display = 'block';
+                if (targetChevron) targetChevron.style.transform = 'rotate(180deg)';
+            } else {
+                targetContentBox.style.display = 'none';
+                if (targetChevron) targetChevron.style.transform = 'rotate(0deg)';
+                
+                const solBox = document.getElementById(`solution-container-${key}`);
+                const btnText = document.getElementById(`btn-text-${key}`);
+                const eyeIcon = document.getElementById(`icon-${key}`);
+                if (solBox) solBox.style.display = 'none';
+                if (btnText) btnText.innerText = 'عرض الحل النموذجي';
+                if (eyeIcon) eyeIcon.className = 'fa-solid fa-eye';
+            }
+        }
+
+        function toggleSolutionDisplay(key) {
+            const container = document.getElementById(`solution-container-${key}`);
+            const text = document.getElementById(`btn-text-${key}`);
+            const icon = document.getElementById(`icon-${key}`);
+
+            if (!container) return;
+
+            if (container.style.display === 'none' || container.style.display === '') {
+                container.style.display = 'block';
+                text.innerText = 'إخفاء الحل';
+                icon.className = 'fa-solid fa-eye-slash';
+            } else {
+                container.style.display = 'none';
+                text.innerText = 'عرض الحل النموذجي';
+                icon.className = 'fa-solid fa-eye';
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            if (localStorage.getItem('platform-theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
+            loadStudentSession();
+        });
+    </script>
+</body>
+</html>

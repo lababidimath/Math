@@ -1,0 +1,1207 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة الأستاذ محمد لبابيدي | الرئيسية</title>
+    
+    <script>
+        // 🛡️ حماية التطبيق المحتضن محلياً: تحييد الـ Service Worker تماماً لمنع المكتبات الخارجية من إطلاق الأخطاء
+        if (window.location.protocol === 'file:') {
+            try {
+                Object.defineProperty(navigator, 'serviceWorker', {
+                    get: function () { return undefined; },
+                    configurable: true
+                });
+                console.log("🔒 تم تحييد Service Worker بنجاح لمنع أخطاء بيئة الـ WebView المحلية.");
+            } catch (e) {
+                console.log("تنبيه: لم يتم تحييد الخدمة برمجيًا.");
+            }
+        }
+
+        // 🌗 تطبيق الوضع الليلي فوراً قبل تحميل الجسم لمنع وميض الشاشة البيضاء المفاجئ
+        if (localStorage.getItem('platform-theme') === 'dark') {
+            document.documentElement.classList.add('dark-mode');
+        }
+        
+        // 🔐 إذا كان الطالب لم يسجل دخوله بعد، يتم توجيهه تلقائياً لصفحة الدخول
+        if (localStorage.getItem("user_logged_in") !== "true") {
+            window.location.href = "login1.html";
+        }
+    </script>
+    
+   <!-- السطر الجديد المحمي الذي يعمل بدون إنترنت (أوفلاين) -->
+<link rel="stylesheet" href="css/all.min.css">
+
+
+    <style>        
+        :root { 
+            --primary-color: #1a365d; 
+            --accent-color: #e53e3e; 
+            --bg-color: #f7fafc; 
+            --text-color: #2d3748; 
+            --box-bg: #ffffff;
+            --card-border: #e2e8f0;
+            --pomo-bg: #edf2f7;
+            --slider-bg: #e2e8f0; 
+            --slider-btn-bg: rgba(0, 0, 0, 0.4);
+            --slider-btn-color: #ffffff;
+            --motivation-bg: #e2e8f0; 
+            --motivation-text: #2c5282;
+        }
+        
+        /* 🌟 الألوان الخاصة بالوضع الليلي */
+        html.dark-mode body, html.dark-mode {
+            --bg-color: #111827;       
+            --text-color: #f3f4f6;     
+            --box-bg: #1f2937;         
+            --primary-color: #06b6d4;  
+            --accent-color: #f43f5e;   
+            --card-border: #374151;
+            --pomo-bg: #111827;
+            --slider-bg: #374151; 
+            --slider-btn-bg: rgba(255, 255, 255, 0.15);
+            --slider-btn-color: #06b6d4;
+            --motivation-bg: #2d3748; 
+            --motivation-text: #22d3ee;
+        }
+
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
+            margin: 0; 
+            background-color: var(--bg-color); 
+            color: var(--text-color); 
+            text-align: center; 
+            padding-bottom: 90px !important; 
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+        
+        header { 
+            background: #1a365d; 
+            color: white; 
+            padding: 30px; 
+            transition: background 0.3s;
+        }
+        
+        html.dark-mode header {
+            background: #1f2937;
+            border-bottom: 2px solid var(--primary-color);
+        }
+
+        /* شريط الأخبار المتحرك */
+        .ticker-wrap {
+            width: 100%;
+            overflow: hidden; 
+            background-color: #feebc8; 
+            border-bottom: 2px solid #fbd38d;
+            box-sizing: border-box;
+            padding: 10px 0;
+            direction: ltr; 
+            transition: all 0.3s;
+        }
+        
+        html.dark-mode .ticker-wrap {
+            background-color: #2d200a;
+            border-bottom: 2px solid #b45309;
+        }
+
+        .ticker {
+            display: inline-block;
+            white-space: nowrap; 
+            animation: ticker-move-left-to-right 15s linear infinite; 
+        }
+
+        .ticker:hover { animation-play-state: paused; }
+
+        .ticker__item {
+            display: inline-block;
+            padding: 0 3rem; 
+            font-size: 1rem;
+            color: #c05621; 
+            font-weight: bold;
+            direction: rtl; 
+        }
+        
+        html.dark-mode .ticker__item {
+            color: #fbbf24;
+        }
+
+        @keyframes ticker-move-left-to-right {
+            0% { transform: translate3d(-100%, 0, 0); }
+            100% { transform: translate3d(100vw, 0, 0); }
+        }
+        
+        .header-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px; 
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .logo-img {
+            width: 80px; 
+            height: auto; 
+            object-fit: cover;
+        }
+
+        .header-text {
+            text-align: right; 
+            display: flex;
+            flex-direction: column;
+            gap: 5px; 
+        }
+
+        .main-title {
+            font-size: 2.4rem;
+            font-weight: bold;
+            color: #ffffff; 
+            margin: 0;
+        }
+        
+        html.dark-mode .main-title {
+            color: var(--primary-color);
+        }
+
+        .hero-desc {
+            font-size: 1rem;
+            color: #ffffff;
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+        
+        .container { 
+            max-width: 800px; 
+            margin: 30px auto; 
+            padding: 20px; 
+            background: var(--box-bg); 
+            border-radius: 12px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
+            transition: all 0.3s;
+        }
+        
+        html.dark-mode .container {
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            border: 1px solid #374151;
+        }
+
+        /* 📢 تصميم سلايدر الإعلانات المطور والمحمي من أخطاء الـ RTL */
+        .slider-wrapper {
+            position: relative;
+            width: 100%;
+            height: 320px;
+            background-color: var(--slider-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            margin-bottom: 25px;
+            display: none; 
+            transition: background 0.3s, border 0.3s;
+            cursor: grab;
+            touch-action: pan-y;
+            direction: ltr; /* حماية حركة الـ TranslateX داخل البيئة العربية */
+        }
+        .slider-wrapper:active {
+            cursor: grabbing;
+        }
+        .slider-container {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .slide-item {
+            min-width: 100%;
+            height: 100%;
+            position: relative;
+            user-select: none;
+        }
+        .slide-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+            pointer-events: auto;
+        }
+
+        /* 🔍 النافذة المنبثقة الاحترافية لتكبير الإعلان */
+        .ad-modal {
+            display: none; 
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(15, 23, 42, 0.95); 
+            z-index: 100000;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .ad-modal.show {
+            display: flex;
+            opacity: 1;
+        }
+        .modal-wrapper {
+            position: relative;
+            max-width: 90%;
+            max-height: 85%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .ad-modal img {
+            max-width: 100%;
+            max-height: 85vh;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+        .ad-modal.show img {
+            transform: scale(1);
+        }
+        .close-modal-btn {
+            position: absolute;
+            top: -50px; left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.15);
+            width: 45px; height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        .close-modal-btn:hover { background: rgba(255, 255, 255, 0.3); }
+        
+        /* 🔔 التنسيق الفاخر لإشعار الـ Toast المنبثق من الأعلى */
+        .notification-toast {
+            position: fixed;
+            top: -120px; 
+            left: 50%;
+            transform: translateX(-50%);
+            width: 90%;
+            max-width: 460px;
+            background: var(--box-bg);
+            border-right: 5px solid var(--accent-color);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            border-radius: 10px;
+            padding: 16px;
+            z-index: 200000;
+            transition: top 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            text-align: right;
+            box-sizing: border-box;
+        }
+        .notification-toast.show {
+            top: 25px; 
+        }
+        .noti-icon-box {
+            color: var(--accent-color);
+            font-size: 1.6rem;
+            margin-top: 2px;
+        }
+        .noti-info-wrap {
+            flex: 1;
+        }
+        .noti-head-title {
+            font-weight: 800;
+            margin: 0 0 4px 0;
+            font-size: 1.1rem;
+            color: var(--text-color);
+        }
+        .noti-main-body {
+            margin: 0;
+            font-size: 0.92rem;
+            color: var(--text-color);
+            opacity: 0.85;
+            line-height: 1.4;
+        }
+        .noti-close-x-btn {
+            background: none;
+            border: none;
+            color: #a0aec0;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0 4px;
+            transition: color 0.2s;
+        }
+        .noti-close-x-btn:hover { color: var(--accent-color); }
+
+        /* تصميم قسم العداد التنازلي البكالوريا */
+        .countdown-section { 
+            background: linear-gradient(135deg, #1a365d, #2a4365); 
+            color: white; 
+            padding: 25px; 
+            border-radius: 12px; 
+            margin-bottom: 20px; 
+            box-shadow: 0 4px 15px rgba(26, 54, 93, 0.2);
+            transition: all 0.3s;
+        }
+        
+        html.dark-mode .countdown-section {
+            background: #1f2937;
+            border: 1px solid #374151;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .countdown-title {
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .timer-display { 
+            display: flex; 
+            justify-content: center; 
+            gap: 15px; 
+            direction: ltr; 
+        }
+        
+        .time-box {
+            background: var(--accent-color);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 8px;
+            min-width: 75px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: all 0.3s;
+        }
+
+        .time-number {
+            display: block;
+            font-size: 2rem;
+            font-weight: bold;
+            line-height: 1.2;
+        }
+
+        .time-label {
+            display: block;
+            font-size: 0.85rem;
+            margin-top: 5px;
+            opacity: 0.9;
+        }
+
+        /* ✨ تصميم صندوق العبارات التحفيزية */
+        .motivation-box {
+            background-color: var(--motivation-bg);
+            border: 1px solid var(--card-border);
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
+            transition: all 0.3s ease;
+        }
+        .motivation-icon {
+            color: var(--accent-color);
+            font-size: 1.3rem;
+        }
+        .motivation-text {
+            color: var(--motivation-text);
+            font-size: 1.05rem;
+            font-weight: 700;
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        /* ⏱️ التنسيقات الدائرية لمؤقت بومودورو */
+        .pomodoro-box {
+            background-color: var(--pomo-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 25px auto 10px auto;
+            max-width: 500px;
+            transition: all 0.3s ease;
+        }
+
+        .pomo-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: var(--text-color);
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .pomo-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .pomo-tab-btn {
+            background: transparent;
+            border: 1px solid var(--card-border);
+            color: var(--text-color);
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s ease;
+        }
+
+        .pomo-tab-btn.active {
+            background-color: var(--primary-color);
+            color: #ffffff;
+            border-color: var(--primary-color);
+        }
+
+        html.dark-mode .pomo-tab-btn.active {
+            color: #111827;
+        }
+
+        .pomo-circle-container {
+            position: relative;
+            width: 180px;
+            height: 180px;
+            margin: 15px auto;
+        }
+
+        .pomo-svg {
+            transform: rotate(-90deg); 
+            width: 100%;
+            height: 100%;
+        }
+
+        .pomo-circle-bg {
+            fill: none;
+            stroke: var(--card-border);
+            stroke-width: 8;
+        }
+
+        .pomo-circle-progress {
+            fill: none;
+            stroke: var(--accent-color); 
+            stroke-width: 8;
+            stroke-linecap: round; 
+            stroke-dasharray: 502.65; 
+            stroke-dashoffset: 0;
+            transition: stroke-dashoffset 0.3s linear; 
+        }
+
+        .pomo-time-display {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 2.2rem;
+            font-weight: bold;
+            font-family: monospace, sans-serif;
+            color: var(--text-color);
+            letter-spacing: 1px;
+            direction: ltr;
+        }
+
+        .pomo-actions {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 5px;
+        }
+
+        .pomo-act-btn {
+            border: none;
+            padding: 8px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            transition: background 0.2s;
+        }
+
+        .pomo-btn-start {
+            background-color: #28a745;
+            color: white;
+        }
+        .pomo-btn-start:hover { background-color: #218838; }
+
+        .pomo-btn-pause {
+            background-color: #ffc107;
+            color: #212529;
+            display: none;
+        }
+
+        .pomo-btn-reset {
+            background-color: #6c757d;
+            color: white;
+        }
+        .pomo-btn-reset:hover { background-color: #5a6268; }
+
+        .signature-box {
+            text-align: left;
+            font-weight: bold;
+            margin-top: 20px;
+            color: var(--primary-color);
+            font-size: 1.05rem;
+        }
+
+        /* شريط التنقل السفلي الثابت */
+        .bottom-nav {
+            position: fixed !important;
+            bottom: 0 !important;
+            left: 0 !important;
+            width: 100% !important;
+            height: 70px !important;
+            background-color: #ffffff !important;
+            display: flex !important;
+            justify-content: space-around !important; 
+            align-items: center !important;
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.08) !important;
+            z-index: 99999 !important; 
+            padding: 0 !important;
+            margin: 0 !important;
+            box-sizing: border-box !important;
+            transition: background 0.3s;
+        }
+        
+        html.dark-mode .bottom-nav {
+            background-color: #1f2937 !important;
+            border-top: 1px solid #374151;
+            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.3) !important;
+        }
+
+        .nav-item {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            color: #9ca3af !important; 
+            text-decoration: none !important;
+            width: 100% !important;
+            height: 100% !important;
+            transition: all 0.25s ease-in-out !important;
+        }
+
+        .icon-wrapper {
+            font-size: 1.4rem !important; 
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
+        }
+
+        .nav-text {
+            font-size: 0.8rem !important;
+            font-weight: 600 !important;
+            margin-top: 5px !important;
+            opacity: 0.8 !important;
+        }
+
+        .nav-item.active {
+            color: var(--accent-color) !important; 
+        }
+
+        .nav-item.active .icon-wrapper {
+            transform: translateY(-6px) scale(1.2) !important; 
+            color: var(--accent-color) !important;
+        }
+
+        @media (max-width: 600px) {
+            .header-container { flex-direction: column; text-align: center; }
+            .header-text { text-align: center; }
+            .main-title { font-size: 1.8rem; }
+            .logo-img { width: 70px; }
+            .timer-display { gap: 8px; }
+            .time-box { min-width: 60px; padding: 8px 10px; }
+            .time-number { font-size: 1.5rem; }
+            .time-label { font-size: 0.75rem; }
+            .slider-wrapper { height: 180px; }
+            .motivation-text { font-size: 0.95rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 🔔 هيكلية صندوق الإشعارات الجديد -->
+    <div id="app-notification-toast" class="notification-toast">
+        <div class="noti-icon-box"><i class="fa-solid fa-bell fa-bounce"></i></div>
+        <div class="noti-info-wrap">
+            <h4 id="noti-title" class="noti-head-title">تنبيه جديد</h4>
+            <p id="noti-body" class="noti-main-body">جاري تحميل تفاصيل الإشعار البث المباشر...</p>
+        </div>
+        <button class="noti-close-x-btn" onclick="closeNotification()">&times;</button>
+    </div>
+
+    <div class="ticker-wrap" id="ticker-wrap" style="display: none;">
+        <div class="ticker" id="ticker-container"></div>
+    </div>
+
+    <header>
+        <div class="header-container">
+            <img src="logo.png" alt="لوغو منصة الأستاذ محمد لبابيدي" class="logo-img">
+            <div class="header-text">
+                <h2 class="main-title">المنصة التعليمية </h2>
+                <h2 class="main-title">للأستاذ محمد لبابيدي</h2>
+                <p class="hero-desc">التميز والتفوق في مادة الرياضيات لطلاب البكالوريا</p>
+            </div>
+        </div>
+    </header>
+
+    <nav class="bottom-nav">
+        <a href="index.html" class="nav-item active">
+            <div class="icon-wrapper"><i class="fa-solid fa-house"></i></div>
+            <span class="nav-text">الرئيسية</span>
+        </a>
+        <a href="library.html" class="nav-item">
+            <div class="icon-wrapper"><i class="fa-solid fa-book-open"></i></div>
+            <span class="nav-text">المكتبة</span>
+        </a>
+        <a href="profile.html" class="nav-item">
+            <div class="icon-wrapper"><i class="fa-solid fa-user-graduate"></i></div>
+            <span class="nav-text">عن الأستاذ</span>
+        </a>
+        <a href="settings.html" class="nav-item">
+            <div class="icon-wrapper"><i class="fa-solid fa-gear"></i></div>
+            <span class="nav-text">الإعدادات</span>
+        </a>
+    </nav>
+
+    <div class="container">
+        <div class="slider-wrapper" id="slider-wrapper">
+            <div class="slider-container" id="slider-container"></div>
+        </div>
+
+        <div class="countdown-section">
+            <div class="countdown-title">⏳ الوقت المتبقي على امتحانات البكالوريا 2027 :</div>
+            <div class="timer-display">
+                <div class="time-box"><span class="time-number" id="days">00</span><span class="time-label">الأيام</span></div>
+                <div class="time-box"><span class="time-number" id="hours">00</span><span class="time-label">الساعات</span></div>
+                <div class="time-box"><span class="time-number" id="minutes">00</span><span class="time-label">الدقائق</span></div>
+                <div class="time-box"><span class="time-number" id="seconds">00</span><span class="time-label">الثواني</span></div>
+            </div>
+        </div>
+
+        <div class="motivation-box">
+            <i class="fa-solid fa-lightbulb motivation-icon"></i>
+            <p class="motivation-text" id="motivation-text">يا بطل البكالوريا، تنظيم وقتك اليوم هو مفتاح تفوقك غداً!</p>
+        </div>
+
+        <h2>مرحباً بكم طلابنا</h2>
+        <p>تم إنشاء هذه المنصة لتسهيل وصولكم إلى النوط والاختبارات المؤتمتة الخاصة بمادة الرياضيات. تنقل عبر القائمة في الأسفل لاستكشاف المحتوى.</p>
+        
+        
+        <div class="pomodoro-box">
+            <div class="pomo-title">
+                <i class="fa-solid fa-stopwatch-20"></i>
+                <span>مؤقت التركيز وتنظيم دراسة الرياضيات</span>
+            </div>
+            <div class="pomo-tabs">
+                <button class="pomo-tab-btn active" id="btn-mode-study" onclick="switchPomoMode('study')">📚 جلسة دراسة</button>
+                <button class="pomo-tab-btn" id="btn-mode-break" onclick="switchPomoMode('break')">☕ استراحة قصيرة</button>
+            </div>
+            <div class="pomo-circle-container">
+                <svg class="pomo-svg" viewBox="0 0 180 180">
+                    <circle class="pomo-circle-bg" cx="90" cy="90" r="80"></circle>
+                    <circle class="pomo-circle-progress" id="pomo-progress" cx="90" cy="90" r="80"></circle>
+                </svg>
+                <div class="pomo-time-display" id="pomo-time">25:00</div>
+            </div>
+            <div class="pomo-actions">
+                <button class="pomo-act-btn pomo-btn-start" id="pomo-start" onclick="startPomoTimer()">
+                    <i class="fa-solid fa-play"></i> ابدأ التركيز
+                </button>
+                <button class="pomo-act-btn pomo-btn-pause" id="pomo-pause" onclick="pausePomoTimer()">
+                    <i class="fa-solid fa-pause"></i> إيقاف مؤقت
+                </button>
+                <button class="pomo-act-btn pomo-btn-reset" onclick="resetPomoTimer()">
+                    <i class="fa-solid fa-rotate-right"></i> إعادة تعيين
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="imageModal" class="ad-modal" onclick="closeAdModal()">
+        <div class="modal-wrapper" onclick="event.stopPropagation()">
+            <span class="close-modal-btn" onclick="closeAdModal()">&times;</span>
+            <img id="modalImg" src="" alt="معاينة الإعلان كاملاً">
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-database-compat.js"></script>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "AIzaSyA1...",
+            authDomain: "lababidi-math.firebaseapp.com",
+            databaseURL: "https://lababidimath-74afd-default-rtdb.firebaseio.com/",
+            projectId: "lababidi-math",
+            storageBucket: "lababidi-math.appspot.com",
+            messagingSenderId: "852...",
+            appId: "1:852..."
+        };
+
+        const isOnline = navigator.onLine;
+
+        /* ──────────────── 📢 دوال معالجة وبناء البيانات والواجهة ──────────────── */
+
+        // 1. بناء الأخبار العاجلة على الشاشة
+        function renderNews(newsData) {
+            const tickerContainer = document.getElementById('ticker-container');
+            const tickerWrap = document.getElementById('ticker-wrap');
+            if(!newsData) { tickerWrap.style.display = "none"; return; }
+            tickerWrap.style.display = "block";
+            tickerContainer.innerHTML = "";
+            Object.keys(newsData).forEach(key => {
+                tickerContainer.innerHTML += `<div class="ticker__item">🔥 ${newsData[key].text}</div>`;
+            });
+        }
+
+        // 2. بناء وعرض سلايدر الإعلانات
+        function renderAds(adsData) {
+            const sliderContainer = document.getElementById('slider-container');
+            const sliderWrapper = document.getElementById('slider-wrapper');
+            sliderContainer.innerHTML = "";
+            clearInterval(autoSlideInterval); 
+            
+            if(!adsData) { sliderWrapper.style.display = "none"; return; }
+            
+            const keys = Object.keys(adsData);
+            slideCount = keys.length;
+            sliderWrapper.style.display = "block"; 
+            
+            let slidesHtml = [];
+            keys.forEach(key => {
+                const ad = adsData[key];
+                let clickAttr = ad.link && ad.link.trim() !== "" ? `onclick="window.open('${ad.link}', '_blank')"` : `onclick="openAdModal('${ad.image}')"`;
+                slidesHtml.push(`
+                    <div class="slide-item">
+                        <img src="${ad.image}" ${clickAttr} onerror="this.parentElement.style.display='none'">
+                    </div>`);
+            });
+            
+            if (slideCount > 1) {
+                sliderContainer.innerHTML = slidesHtml[slideCount - 1] + slidesHtml.join('') + slidesHtml[0];
+                currentSlide = 1; 
+            } else {
+                sliderContainer.innerHTML = slidesHtml.join('');
+                currentSlide = 0;
+            }
+            
+            sliderContainer.style.transition = 'none';
+            sliderContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
+            
+            if (slideCount > 1) {
+                startAutoSlide(); 
+            }
+        }
+
+        /* ──────────────── 🔔 نظام الإشعارات الفورية الحية ──────────────── */
+        function triggerInAppNotification(title, message, id) {
+            const toast = document.getElementById('app-notification-toast');
+            document.getElementById('noti-title').innerText = title;
+            document.getElementById('noti-body').innerText = message;
+            
+            toast.classList.add('show');
+            if(id !== "pomo") {
+                localStorage.setItem('last_seen_notification_id', id);
+            }
+            
+            setTimeout(() => {
+                closeNotification();
+            }, 8000);
+        }
+
+        function closeNotification() {
+            document.getElementById('app-notification-toast').classList.remove('show');
+        }
+
+        /* ──────────────── 🔄 السلايدر المطور ذو التمرير اللانهائي والسحب الحر ──────────────── */
+        let currentSlide = 1;
+        let slideCount = 0;
+        let autoSlideInterval;
+        let isDragging = false;
+        let startX = 0;
+        let deltaX = 0;
+
+        const sliderContainer = document.getElementById('slider-container');
+        const sliderWrapper = document.getElementById('slider-wrapper');
+
+        sliderContainer.addEventListener('transitionend', () => {
+            if (slideCount <= 1) return;
+            if (currentSlide >= slideCount + 1) {
+                sliderContainer.style.transition = 'none';
+                currentSlide = 1;
+                sliderContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
+            } else if (currentSlide <= 0) {
+                sliderContainer.style.transition = 'none';
+                currentSlide = slideCount;
+                sliderContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
+            }
+        });
+
+        function startAutoSlide() {
+            clearInterval(autoSlideInterval);
+            if (slideCount > 1) {
+                autoSlideInterval = setInterval(() => {
+                    currentSlide++;
+                    sliderContainer.style.transition = 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+                    sliderContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
+                }, 4000); 
+            }
+        }
+
+        /* 📱 التحكم بالسحب اللمسي الحر المتجاوب والماوس */
+        sliderWrapper.addEventListener('pointerdown', e => {
+            if (slideCount <= 1) return;
+            isDragging = true;
+            startX = e.clientX;
+            deltaX = 0;
+            clearInterval(autoSlideInterval);
+            sliderContainer.style.transition = 'none';
+            sliderWrapper.style.cursor = 'grabbing';
+        });
+
+        sliderWrapper.addEventListener('pointermove', e => {
+            if (!isDragging) return;
+            deltaX = e.clientX - startX;
+            
+            if (Math.abs(deltaX) > 10) {
+                sliderContainer.style.pointerEvents = 'none';
+            }
+            
+            let deltaPercent = (deltaX / sliderWrapper.offsetWidth) * 100;
+            let totalTranslate = -(currentSlide * 100) + deltaPercent; 
+            sliderContainer.style.transform = `translateX(${totalTranslate}%)`;
+        });
+
+        const handleSliderRelease = () => {
+            if (!isDragging) return;
+            isDragging = false;
+            sliderWrapper.style.cursor = 'grab';
+            
+            let deltaPercent = (deltaX / sliderWrapper.offsetWidth) * 100;
+            sliderContainer.style.transition = 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)';
+            
+            if (deltaPercent < -15) {
+                currentSlide++; 
+            } else if (deltaPercent > 15) {
+                currentSlide--; 
+            }
+            
+            sliderContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
+            
+            setTimeout(() => {
+                sliderContainer.style.pointerEvents = 'auto';
+            }, 50);
+            
+            startAutoSlide();
+        };
+
+        sliderWrapper.addEventListener('pointerup', handleSliderRelease);
+        sliderWrapper.addEventListener('pointerleave', handleSliderRelease);
+
+        /* ──────────────── النافذة المنبثقة للاعلانات ──────────────── */
+        function openAdModal(imgUrl) {
+            const modal = document.getElementById("imageModal");
+            const modalImg = document.getElementById("modalImg");
+            modalImg.src = imgUrl;
+            modal.style.display = "flex";
+            setTimeout(() => { modal.classList.add("show"); }, 10);
+        }
+
+        function closeAdModal() {
+            const modal = document.getElementById("imageModal");
+            modal.classList.remove("show");
+            setTimeout(() => { modal.style.display = "none"; }, 300);
+        }
+
+        /* 🚀 تشغيل النظام المزدوج (Online/Offline) بقوة وحماية عالية 🚀 */
+        if (isOnline && typeof firebase !== 'undefined') {
+            console.log("📡 نظام البث المباشر نشط: جاري جلب البيانات من السيرفر وحفظ كاش محلي...");
+            try {
+                firebase.initializeApp(firebaseConfig);
+                const db = firebase.database();
+                
+                /* جلب الأخبار وتخزينها */
+                db.ref('news').on('value', snap => {
+                    const newsData = snap.val();
+                    renderNews(newsData);
+                    localStorage.setItem('cached_news', JSON.stringify(newsData));
+                });
+
+                /* جلب الإشعارات المباشرة */
+                db.ref('push_notification').on('value', snap => {
+                    const data = snap.val();
+                    if (!data) return;
+
+                    const lastSeenId = localStorage.getItem('last_seen_notification_id');
+                    if (data.id && data.id !== lastSeenId) {
+                        triggerInAppNotification(data.title, data.message, data.id);
+                    }
+                });
+
+                /* جلب الإعلانات وتخزينها */
+                db.ref('ads').on('value', snap => {
+                    const adsData = snap.val();
+                    renderAds(adsData);
+                    localStorage.setItem('cached_ads', JSON.stringify(adsData));
+                });
+
+            } catch (err) {
+                console.error("⚠️ فشل الاتصال المباشر بقاعدة البيانات، جاري الانتقال لوضع الكاش الاحتياطي:", err);
+                loadOfflineCache();
+            }
+        } else {
+            console.log("🔌 لا يوجد اتصال شبكة (أوفلاين) أو تعذر تحميل مكتبة Firebase: جاري استخدام الكاش المحلي...");
+            loadOfflineCache();
+        }
+
+        // دالة تشغيل الكاش الاحتياطي في وضع الأوفلاين
+        function loadOfflineCache() {
+            // استرجاع الأخبار
+            const cachedNews = localStorage.getItem('cached_news');
+            if (cachedNews) {
+                try {
+                    renderNews(JSON.parse(cachedNews));
+                } catch(e) { 
+                    document.getElementById('ticker-wrap').style.display = "none"; 
+                }
+            } else {
+                document.getElementById('ticker-wrap').style.display = "none";
+            }
+
+            // استرجاع الإعلانات
+            const cachedAds = localStorage.getItem('cached_ads');
+            if (cachedAds) {
+                try {
+                    renderAds(JSON.parse(cachedAds));
+                } catch(e) { 
+                    document.getElementById('slider-wrapper').style.display = "none"; 
+                }
+            } else {
+                document.getElementById('slider-wrapper').style.display = "none";
+            }
+        }
+
+        /* ────────────────────────────────────────────────────────── */
+
+        document.addEventListener("DOMContentLoaded", function() {
+            displayRandomMotivation();
+            initPomoTimer(); // 🔄 فحص التخزين السحابي/المحلي فور تحميل الصفحة لمزامنة الوقت الفعلي
+        });
+
+        const mathQuotes = [
+            "يا بطل البكالوريا، تذكر دائماً أن العلامة التامة تبدأ بخطوة وتركيز في تمرين!",
+            "الرياضيات ليست صعبة، هي فقط تحتاج إلى ورقة وقلم وثقة بالقدرات الجبارة التي تمتلكها.",
+            "كل مسألة معقدة تقوم بحلها اليوم، تقربك خطوة إضافية نحو حلمك وشغفك الكبير.",
+            "لا توجد مسألة مستحيلة الحل، الاستمرارية والمحاولة مراراً وتكراراً تصنع المعجزات.",
+            "مستقبلك المشرق يستحق التعب والتركيز، الأستاذ محمد لبابيدي فخور بجهودك وسعيك المستمر.",
+            "التميز في البكالوريا لا يأتي بالصدفة، بل يأتي من استغلال دقائق مؤقت التركيز الآن!",
+            "اجعل شغفك بالوصول إلى القمة يطرد أي شعور بالكسل.. أنت قادر على فعلها ونيل الصدارة.",
+            "تجاوز عقبات الهندسة والتحليل بالتدريب اليومي، فالعلامة الكاملة تُصنع بالصبر والتحدي.",
+            "من لم تكن له بداية محرقة ... لم تكن له نهاية مشرقة"
+        ];
+
+        function displayRandomMotivation() {
+            const textElement = document.getElementById('motivation-text');
+            const randomIndex = Math.floor(Math.random() * mathQuotes.length);
+            textElement.innerText = mathQuotes[randomIndex];
+        }
+
+        /* العداد التنازلي */
+        const targetExamDate = new Date("June 1, 2027 08:00:00").getTime();
+        const countdownInterval = setInterval(function() {
+            const now = new Date().getTime();
+            const diff = targetExamDate - now;
+            if (diff > 0) {
+                const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((diff % (1000 * 60)) / 1000);
+                document.getElementById("days").innerText = d < 10 ? "0" + d : d;
+                document.getElementById("hours").innerText = h < 10 ? "0" + h : h;
+                document.getElementById("minutes").innerText = m < 10 ? "0" + m : m;
+                document.getElementById("seconds").innerText = s < 10 ? "0" + s : s;
+            } else {
+                clearInterval(countdownInterval);
+                document.querySelector(".countdown-section").innerHTML = "<div class='countdown-title'>📋 بالتوفيق والنجاح لجميع الطلاب في الامتحانات!</div>";
+            }
+        }, 1000);
+
+        /* ──────────────── ⏱️ نظام مؤقت بومودورو المطور فائق الاستمرار والذكاء ──────────────── */
+        let pomoInterval = null;
+        let pomoMinutes = 25;
+        let pomoSeconds = 0;
+        let totalSeconds = 25 * 60; 
+        let currentPomoMode = 'study'; 
+
+        const circumference = 2 * Math.PI * 80; 
+        const progressCircle = document.getElementById('pomo-progress');
+        const pomoTimeDisplay = document.getElementById('pomo-time');
+        const pomoStartBtn = document.getElementById('pomo-start');
+        const pomoPauseBtn = document.getElementById('pomo-pause');
+        const studyTab = document.getElementById('btn-mode-study');
+        const breakTab = document.getElementById('btn-mode-break');
+
+        progressCircle.style.strokeDasharray = circumference;
+
+        function updatePomoDisplay() {
+            let m = pomoMinutes < 10 ? "0" + pomoMinutes : pomoMinutes;
+            let s = pomoSeconds < 10 ? "0" + pomoSeconds : pomoSeconds;
+            pomoTimeDisplay.textContent = m + ":" + s;
+            let currentSecondsLeft = pomoMinutes * 60 + pomoSeconds;
+            let progressFraction = currentSecondsLeft / totalSeconds;
+            let offset = circumference * (1 - progressFraction);
+            progressCircle.style.strokeDashoffset = offset;
+        }
+
+        // دالة التهيئة والمزامنة اللحظية
+        function initPomoTimer() {
+            const savedMode = localStorage.getItem('pomo_mode') || 'study';
+            currentPomoMode = savedMode;
+            
+            if (currentPomoMode === 'study') {
+                studyTab.classList.add('active'); breakTab.classList.remove('active');
+                totalSeconds = 25 * 60;
+            } else {
+                breakTab.classList.add('active'); studyTab.classList.remove('active');
+                totalSeconds = 5 * 60;
+            }
+
+            const savedStatus = localStorage.getItem('pomo_status') || 'stopped';
+
+            if (savedStatus === 'running') {
+                const endTimestamp = parseInt(localStorage.getItem('pomo_end_timestamp'), 10);
+                const now = Date.now();
+                const diffSeconds = Math.round((endTimestamp - now) / 1000);
+
+                if (diffSeconds > 0) {
+                    pomoMinutes = Math.floor(diffSeconds / 60);
+                    pomoSeconds = diffSeconds % 60;
+                    updatePomoDisplay();
+                    resumePomoInterval(endTimestamp);
+                } else {
+                    // انتهى الوقت أثناء انتقال الطالب وتصفحه
+                    handleTimerCompletion();
+                }
+            } else if (savedStatus === 'paused') {
+                const secondsLeft = parseInt(localStorage.getItem('pomo_seconds_left'), 10) || totalSeconds;
+                pomoMinutes = Math.floor(secondsLeft / 60);
+                pomoSeconds = secondsLeft % 60;
+                updatePomoDisplay();
+                pomoStartBtn.style.display = 'inline-flex';
+                pomoPauseBtn.style.display = 'none';
+            } else {
+                pomoMinutes = currentPomoMode === 'study' ? 25 : 5;
+                pomoSeconds = 0;
+                updatePomoDisplay();
+            }
+        }
+
+        function switchPomoMode(mode) {
+            pausePomoTimer();
+            currentPomoMode = mode;
+            localStorage.setItem('pomo_mode', mode);
+            localStorage.setItem('pomo_status', 'stopped');
+            
+            if (mode === 'study') { pomoMinutes = 25; totalSeconds = 25 * 60; studyTab.classList.add('active'); breakTab.classList.remove('active'); } 
+            else { pomoMinutes = 5; totalSeconds = 5 * 60; breakTab.classList.add('active'); studyTab.classList.remove('active'); }
+            pomoSeconds = 0;
+            updatePomoDisplay();
+        }
+
+        function startPomoTimer() {
+            if (pomoInterval !== null) return;
+            
+            const currentSecondsLeft = pomoMinutes * 60 + pomoSeconds;
+            const endTimestamp = Date.now() + (currentSecondsLeft * 1000);
+            
+            localStorage.setItem('pomo_status', 'running');
+            localStorage.setItem('pomo_end_timestamp', endTimestamp);
+            localStorage.setItem('pomo_mode', currentPomoMode);
+
+            resumePomoInterval(endTimestamp);
+        }
+
+        function resumePomoInterval(endTimestamp) {
+            pomoStartBtn.style.display = 'none';
+            pomoPauseBtn.style.display = 'inline-flex';
+            
+            clearInterval(pomoInterval);
+            pomoInterval = setInterval(() => {
+                const now = Date.now();
+                const diffSeconds = Math.round((endTimestamp - now) / 1000);
+
+                if (diffSeconds <= 0) {
+                    clearInterval(pomoInterval);
+                    pomoInterval = null;
+                    handleTimerCompletion();
+                    return;
+                }
+
+                pomoMinutes = Math.floor(diffSeconds / 60);
+                pomoSeconds = diffSeconds % 60;
+                updatePomoDisplay();
+            }, 1000);
+        }
+
+        function pausePomoTimer() {
+            clearInterval(pomoInterval);
+            pomoInterval = null;
+            pomoStartBtn.style.display = 'inline-flex';
+            pomoPauseBtn.style.display = 'none';
+            
+            const currentSecondsLeft = pomoMinutes * 60 + pomoSeconds;
+            localStorage.setItem('pomo_status', 'paused');
+            localStorage.setItem('pomo_seconds_left', currentSecondsLeft);
+        }
+
+        function resetPomoTimer() {
+            clearInterval(pomoInterval);
+            pomoInterval = null;
+            pomoStartBtn.style.display = 'inline-flex';
+            pomoPauseBtn.style.display = 'none';
+            
+            localStorage.setItem('pomo_status', 'stopped');
+            if (currentPomoMode === 'study') { pomoMinutes = 25; totalSeconds = 25 * 60; } 
+            else { pomoMinutes = 5; totalSeconds = 5 * 60; }
+            pomoSeconds = 0;
+            updatePomoDisplay();
+        }
+
+        function handleTimerCompletion() {
+            localStorage.setItem('pomo_status', 'stopped');
+            
+            if (navigator.vibrate) {
+                navigator.vibrate([400, 200, 400, 200, 400]);
+            }
+            
+            const notifyTitle = currentPomoMode === 'study' ? "جلسة رائعة وبطلة! 📚" : "انتهى الوقت المخصص للراحة ☕";
+            const notifyMsg = currentPomoMode === 'study' ? "لقد أنهيت جلسة دراسة الرياضيات بنجاح، خذ استراحة قصيرة الآن." : "هيا بنا نعود بكل طاقة وحماس لاستكمال حل التمارين!";
+            triggerInAppNotification(notifyTitle, notifyMsg, "pomo");
+            
+            resetPomoTimer();
+        }
+    
+        if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost')) {
+            navigator.serviceWorker.register('sw.js')
+            .then(reg => { console.log("✅ تم تشغيل نظام الأوفلاين بنجاح."); })
+            .catch(err => { console.error("❌ فشل تسجيل نظام الأوفلاين:", err); });
+        } else {
+            console.log("📱 التطبيق يعمل كـ APK محلي، تم تخطي السيرفس وركر للحفاظ على استقرار النظام.");
+        }
+    </script>
+</body>
+</html>
