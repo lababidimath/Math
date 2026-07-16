@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>المكتبة الرقمية | الأستاذ محمد لبابيدي</title>
    <!-- السطر الجديد المحمي الذي يعمل بدون إنترنت (أوفلاين) -->
-<link rel="stylesheet" href="css/all.min.css">
+<link rel="stylesheet" href="all.min.css">
 
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -523,10 +523,34 @@
             renderTabsHierarchy();
         }
 
+        /* 🔄 نظام جلب التبويبات والمزامنة المحلية المحسنة (أوفلاين/أونلاين) */
         function fetchTabsFromFirebase() {
-            db.ref('tabs').once('value', snap => {
-                allTabsData = snap.val() || {};
+            // 1. محاولة تحميل التبويبات فوراً من الذاكرة المحلية (أوفلاين أو لتسريع الفتح)
+            const cachedTabs = localStorage.getItem('laba_cached_tabs');
+            if (cachedTabs) {
+                try {
+                    allTabsData = JSON.parse(cachedTabs) || {};
+                    renderTabsHierarchy();
+                } catch (e) {
+                    console.log("خطأ في قراءة الأقسام المخزنة مؤقتاً:", e);
+                }
+            }
+
+            // 2. تحديث التبويبات صامتاً من السيرفر عند وجود اتصال بالإنترنت وحفظها للكاش
+            db.ref('tabs').once('value').then(snap => {
+                const liveData = snap.val() || {};
+                allTabsData = liveData;
+                localStorage.setItem('laba_cached_tabs', JSON.stringify(liveData));
                 renderTabsHierarchy();
+            }).catch(err => {
+                console.log("أنت تعمل حالياً بوضع الأوفلاين. تم استخدام النسخة المخزنة مؤخراً.");
+                // إذا فتح التطبيق لأول مرة والإنترنت منقطع تماماً وبدون كاش
+                if (!cachedTabs) {
+                    const navContainer = document.getElementById('dynamic-tabs');
+                    if (navContainer) {
+                        navContainer.innerHTML = '<p style="grid-column: span 2; text-align:center; color:#e53e3e; font-weight: bold;">⚠️ يرجى الاتصال بالإنترنت للمرة الأولى لتحميل الأقسام الدراسية.</p>';
+                    }
+                }
             });
         }
 
@@ -774,7 +798,7 @@
             imgElement.replaceWith(i); 
         }
 
-        /* ──────────────── 📐 نظام الجلب والتصيير المتجاوب والـ LaTeX ──────────────── */
+        /* ──────────────── 📐 نظام الجلب والتصيير المتجاوب والـ LaTeX (أوفلاين) ──────────────── */
         function loadLessonsForTab(tabId, tabName) {
             const filesSection = document.getElementById('files-section');
             const selectedTitle = document.getElementById('selected-tab-title');
@@ -783,7 +807,6 @@
             if (!filesSection || !selectedTitle || !filesList) return;
             
             selectedTitle.innerText = `📚 محتويات: ${tabName}`;
-            filesList.innerHTML = '<p style="text-align:center; color:#94a3b8;">جاري مراجعة الملفات والمسائل المتاحة للقسم...</p>';
             filesSection.style.display = 'block';
 
             if (currentLessonsRef) currentLessonsRef.off();
@@ -792,8 +815,16 @@
             let localLessons = {};
             let localExercises = {};
 
-            currentLessonsRef = db.ref('lessons').orderByChild('tabId').equalTo(tabId);
-            currentExercisesRef = db.ref('math_exercises').orderByChild('tabId').equalTo(tabId);
+            // 1. استرجاع البيانات الفوري من الكاش المحلي (أوفلاين) ليعمل دون ثانية انتظار واحدة!
+            const cachedLessons = localStorage.getItem(`laba_lessons_${tabId}`);
+            const cachedExercises = localStorage.getItem(`laba_exercises_${tabId}`);
+
+            if (cachedLessons) {
+                try { localLessons = JSON.parse(cachedLessons) || {}; } catch(e){}
+            }
+            if (cachedExercises) {
+                try { localExercises = JSON.parse(cachedExercises) || {}; } catch(e){}
+            }
 
             const mergeAndRenderAll = () => {
                 filesList.innerHTML = "";
@@ -859,14 +890,29 @@
                 }
             };
 
+            // عرض البيانات المحفوظة محلياً فوراً (سريع جداً للأوفلاين والأونلاين)
+            mergeAndRenderAll();
+
+            // الاستماع للتغييرات الحية في السيرفر وتحديث الكاش المحلي ديناميكياً
+            currentLessonsRef = db.ref('lessons').orderByChild('tabId').equalTo(tabId);
+            currentExercisesRef = db.ref('math_exercises').orderByChild('tabId').equalTo(tabId);
+
             currentLessonsRef.on('value', snap => {
-                localLessons = snap.val() || {};
+                const liveData = snap.val() || {};
+                localLessons = liveData;
+                localStorage.setItem(`laba_lessons_${tabId}`, JSON.stringify(liveData));
                 mergeAndRenderAll();
+            }, err => {
+                console.log("استخدام الدروس المخزنة مؤقتاً في وضع عدم الاتصال.");
             });
 
             currentExercisesRef.on('value', snap => {
-                localExercises = snap.val() || {};
+                const liveData = snap.val() || {};
+                localExercises = liveData;
+                localStorage.setItem(`laba_exercises_${tabId}`, JSON.stringify(liveData));
                 mergeAndRenderAll();
+            }, err => {
+                console.log("استخدام المسائل المخزنة مؤقتاً في وضع عدم الاتصال.");
             });
         }
 
