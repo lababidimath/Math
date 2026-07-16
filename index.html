@@ -31,7 +31,7 @@
     </script>
     
    <!-- السطر الجديد المحمي الذي يعمل بدون إنترنت (أوفلاين) -->
-<link rel="stylesheet" href="css/all.min.css">
+<link rel="stylesheet" href="all.min.css">
 
 
     <style>        
@@ -1195,13 +1195,14 @@
             resetPomoTimer();
         }
     
-        if ('serviceWorker' in navigator && (window.location.protocol === 'https:' || window.location.hostname === 'localhost')) {
-            navigator.serviceWorker.register('sw.js')
-            .then(reg => { console.log("✅ تم تشغيل نظام الأوفلاين بنجاح."); })
-            .catch(err => { console.error("❌ فشل تسجيل نظام الأوفلاين:", err); });
-        } else {
-            console.log("📱 التطبيق يعمل كـ APK محلي، تم تخطي السيرفس وركر للحفاظ على استقرار النظام.");
-        }
+        if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js')
+        .then(reg => { console.log("✅ تم تشغيل نظام الأوفلاين بنجاح وتحصين المنصة."); })
+        .catch(err => { console.error("❌ فشل تسجيل نظام الأوفلاين:", err); });
+    });
+}
+
     </script>
 </body>
 </html>
