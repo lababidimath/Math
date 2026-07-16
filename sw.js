@@ -2,7 +2,7 @@ const CACHE_NAME = 'lababidi-math-cache-v1';
 
 // الملفات الأساسية التي سيتم حفظها في جهاز الطالب ليعمل التطبيق بدون إنترنت
 const ASSETS_TO_CACHE = [
-  './',               // حفظ المسار الرئيسي لضمان فتح التطبيق مباشرة
+  './',               // حفظ المسار الرئيسي لضمان فتح التطبيق مباشرة أوفلاين
   './index.html',
   './login1.html',
   './all.min.css',
@@ -40,9 +40,9 @@ self.addEventListener('activate', event => {
   self.clients.claim();
 });
 
-// 3. اعتراض الطلبات وتطبيق استراتيجية (الشبكة أولاً مع العودة للكاش عند الأوفلاين)
+// 3. اعتراض الطلبات وتطبيق استراتيجيات مخصصة (تجاوز حظر الـ VPN للمكتبة)
 self.addEventListener('fetch', event => {
-  // استثناء طلبات قاعدة بيانات Firebase و Green-API من الكاش لضمان دقتها
+  // استثناء طلبات قاعدة بيانات Firebase و Green-API من الكاش لضمان دقتها وقبول طلبات GET فقط
   if (
     event.request.method !== 'GET' || 
     event.request.url.includes('firebaseio.com') || 
@@ -51,31 +51,59 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  event.respondWith(
-    fetch(event.request)
-      .then(networkResponse => {
-        // إذا كان هناك إنترنت، نقوم بتحديث الكاش بالنسخة الجديدة
-        if (networkResponse.status === 200) {
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then(cache => {
-            cache.put(event.request, responseToCache);
-          });
+  // التحقق مما إذا كان الطلب يخص صفحة المكتبة أو الملفات الثابتة المخزنة بالكاش
+  const isLibraryOrStatic = ASSETS_TO_CACHE.some(asset => {
+    // تحويل المسار النسبي ليتطابق مع رابط الطلب الكامل
+    const cleanAsset = asset.replace('./', '');
+    return event.request.url.includes(cleanAsset) || event.request.url.endsWith('.pdf');
+  });
+
+  if (isLibraryOrStatic) {
+    // أ) استراتيجية (الكاش أولاً): لصفحة المكتبة وملفاتها لمنع تعليق الصفحة بدون VPN
+    event.respondWith(
+      caches.match(event.request).then(cachedResponse => {
+        if (cachedResponse) {
+          return cachedResponse; // تسليم الصفحة فوراً من ذاكرة هاتف الطالب
         }
-        return networkResponse;
-      })
-      .catch(() => {
-        // عند انقطاع الإنترنت، يتم جلب الملف من الكاش فوراً ليعمل التطبيق بسلاسة
-        return caches.match(event.request).then(cachedResponse => {
-          if (cachedResponse) {
-            return cachedResponse;
+        // إذا لم تكن مخزنة، يتم جلبها من الشبكة وحفظها للمرات القادمة
+        return fetch(event.request).then(networkResponse => {
+          if (networkResponse.status === 200) {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(event.request, responseToCache);
+            });
           }
-          
-          // تأمين التحقق من نوع الملف لمنع حدوث خطأ برمجي (TypeError)
-          const acceptHeader = event.request.headers.get('accept');
-          if (acceptHeader && acceptHeader.includes('text/html')) {
-            return caches.match('./index.html');
-          }
+          return networkResponse;
         });
       })
-  );
+    );
+  } else {
+    // ب) استراتيجية (الشبكة أولاً): لباقي الصفحات التفاعلية لضمان تحديث البيانات
+    event.respondWith(
+      fetch(event.request)
+        .then(networkResponse => {
+          if (networkResponse.status === 200) {
+            const responseToCache = networkResponse.clone();
+            caches.open(CACHE_NAME).then(cache => {
+              cache.put(event.request, responseToCache);
+            });
+          }
+          return networkResponse;
+        })
+        .catch(() => {
+          // عند انقطاع الإنترنت أو فشل الاتصال (حجب الشبكة)
+          return caches.match(event.request).then(cachedResponse => {
+            if (cachedResponse) {
+              return cachedResponse;
+            }
+            
+            // التحقق الآمن من نوع الملف لتجنب توقف السيرفس وركر (TypeError)
+            const acceptHeader = event.request.headers.get('accept');
+            if (acceptHeader && acceptHeader.includes('text/html')) {
+              return caches.match('./index.html');
+            }
+          });
+        })
+    );
+  }
 });
