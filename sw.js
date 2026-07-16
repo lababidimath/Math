@@ -2,11 +2,11 @@ const CACHE_NAME = 'lababidi-math-cache-v1';
 
 // الملفات الأساسية التي سيتم حفظها في جهاز الطالب ليعمل التطبيق بدون إنترنت
 const ASSETS_TO_CACHE = [
+  './',               // حفظ المسار الرئيسي لضمان فتح التطبيق مباشرة
   './index.html',
   './login1.html',
   './all.min.css',
   './logo.png',
-  // أضف هنا أي صفحات أخرى تريد تفعيلها أوفلاين (مثل ملفات المكتبة أو الملفات التعريفية)
   './library.html',
   './profile.html',
   './settings.html'
@@ -69,8 +69,10 @@ self.addEventListener('fetch', event => {
           if (cachedResponse) {
             return cachedResponse;
           }
-          // إذا طلب الطالب صفحة غير مسجلة بالكاش وهو أوفلاين، يتم توجيهه للرئيسية كاحتياط
-          if (event.request.headers.get('accept').includes('text/html')) {
+          
+          // تأمين التحقق من نوع الملف لمنع حدوث خطأ برمجي (TypeError)
+          const acceptHeader = event.request.headers.get('accept');
+          if (acceptHeader && acceptHeader.includes('text/html')) {
             return caches.match('./index.html');
           }
         });
