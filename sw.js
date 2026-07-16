@@ -1,70 +1,79 @@
-// اسم الكاش الخاص بمنصتك (يمكنك تغييره عند إجراء تحديثات جذرية)
-const CACHE_NAME = 'lababidi-platform-cache-v1';
+const CACHE_NAME = 'lababidi-math-cache-v1';
 
-// الملفات الأساسية التي يجب حفظها ليعمل الموقع أوفلاين بشكله الكامل
+// الملفات الأساسية التي سيتم حفظها في جهاز الطالب ليعمل التطبيق بدون إنترنت
 const ASSETS_TO_CACHE = [
-    '/',
-    '/index.html',
-    '/library.html',
-    '/profile.html',
-    '/logo.png', // تأكد من مطابقة اسم اللوغو الخاص بك
-    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css'
+  './index.html',
+  './login1.html',
+  './all.min.css',
+  './logo.png',
+  // أضف هنا أي صفحات أخرى تريد تفعيلها أوفلاين (مثل ملفات المكتبة أو الملفات التعريفية)
+  './library.html',
+  './profile.html',
+  './settings.html'
 ];
 
-// 1. مرحلة التثبيت: حفظ الملفات الأساسية في كاش الهاتف لأول مرة
-self.addEventListener('install', (event) => {
-    event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => {
-            console.log('تم حفظ الهيكل الأساسي للموقع في الكاش بنجاح!');
-            return cache.addAll(ASSETS_TO_CACHE);
-        }).then(() => self.skipWaiting())
-    );
+// 1. تثبيت الـ Service Worker وحفظ الملفات الأساسية في الكاش
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => {
+      console.log('⏳ جاري حفظ ملفات المنصة في الذاكرة المؤقتة لعملها أوفلاين...');
+      return cache.addAll(ASSETS_TO_CACHE);
+    })
+  );
+  self.skipWaiting();
 });
 
-// 2. مرحلة التنشيط: حذف أي كاش قديم إذا قمت بتغيير اسم الـ CACHE_NAME مستقبلاً
-self.addEventListener('activate', (event) => {
-    event.waitUntil(
-        caches.keys().then((keys) => {
-            return Promise.all(
-                keys.map((key) => {
-                    if (key !== CACHE_NAME) {
-                        console.log('تم تنظيف الكاش القديم:', key);
-                        return caches.delete(key);
-                    }
-                })
-            );
-        }).then(() => self.clients.claim())
-    );
+// 2. تفعيل النظام وتنظيف أي كاش قديم عند تحديث التطبيق
+self.addEventListener('activate', event => {
+  event.waitUntil(
+    caches.keys().then(keys => {
+      return Promise.all(
+        keys.map(key => {
+          if (key !== CACHE_NAME) {
+            console.log('🧹 تم تنظيف الكاش القديم:', key);
+            return caches.delete(key);
+          }
+        })
+      );
+    })
+  );
+  self.clients.claim();
 });
 
-// 3. مرحلة جلب البيانات (الاستراتيجية الذكية): الإنترنت أولاً، وإذا انقطع فمن الكاش
-self.addEventListener('fetch', (event) => {
-    // نتحقق فقط من الطلبات العادية (GET) لتجنب مشاكل طلبات الـ POST وغيرها
-    if (event.request.method !== 'GET') return;
+// 3. اعتراض الطلبات وتطبيق استراتيجية (الشبكة أولاً مع العودة للكاش عند الأوفلاين)
+self.addEventListener('fetch', event => {
+  // استثناء طلبات قاعدة بيانات Firebase و Green-API من الكاش لضمان دقتها
+  if (
+    event.request.method !== 'GET' || 
+    event.request.url.includes('firebaseio.com') || 
+    event.request.url.includes('api.green-api.com')
+  ) {
+    return;
+  }
 
-    event.respondWith(
-        fetch(event.request)
-            .then((networkResponse) => {
-                // إذا نجح الاتصال بالإنترنت، نحدث النسخة المخزنة في الكاش تلقائياً
-                if (networkResponse && networkResponse.status === 200) {
-                    const responseClone = networkResponse.clone();
-                    caches.open(CACHE_NAME).then((cache) => {
-                        cache.put(event.request, responseClone);
-                    });
-                }
-                return networkResponse;
-            })
-            .catch(() => {
-                // في حال فشل الاتصال بالإنترنت تماماً، نقوم بالبحث عن الملف في الكاش
-                return caches.match(event.request).then((cachedResponse) => {
-                    if (cachedResponse) {
-                        return cachedResponse;
-                    }
-                    // إذا كان الطلب لصفحة HTML غير مسجلة صراحة، نعيده للصفحة الرئيسية
-                    if (event.request.headers.get('accept').includes('text/html')) {
-                        return caches.match('/index.html');
-                    }
-                });
-            })
-    );
+  event.respondWith(
+    fetch(event.request)
+      .then(networkResponse => {
+        // إذا كان هناك إنترنت، نقوم بتحديث الكاش بالنسخة الجديدة
+        if (networkResponse.status === 200) {
+          const responseToCache = networkResponse.clone();
+          caches.open(CACHE_NAME).then(cache => {
+            cache.put(event.request, responseToCache);
+          });
+        }
+        return networkResponse;
+      })
+      .catch(() => {
+        // عند انقطاع الإنترنت، يتم جلب الملف من الكاش فوراً ليعمل التطبيق بسلاسة
+        return caches.match(event.request).then(cachedResponse => {
+          if (cachedResponse) {
+            return cachedResponse;
+          }
+          // إذا طلب الطالب صفحة غير مسجلة بالكاش وهو أوفلاين، يتم توجيهه للرئيسية كاحتياط
+          if (event.request.headers.get('accept').includes('text/html')) {
+            return caches.match('./index.html');
+          }
+        });
+      })
+  );
 });
