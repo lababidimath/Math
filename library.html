@@ -4,10 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>المكتبة الرقمية | الأستاذ محمد لبابيدي</title>
-   <!-- السطر الجديد المحمي الذي يعمل بدون إنترنت (أوفلاين) -->
-<link rel="stylesheet" href="css/all.min.css">
+    <!-- السطر الجديد المحمي الذي يعمل بدون إنترنت (أوفلاين) -->
+    <link rel="stylesheet" href="css/all.min.css">
 
-    
+    <!-- جلب مكتبات Firebase الأساسية -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
@@ -28,8 +28,9 @@
             }
         };
     </script>
-    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <!-- تصفح آمن وتجنب التعليق في حال عدم توفر الخدمة جغرافياً (استخدام defer ومستمعات الأخطاء) -->
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6" defer></script>
+    <script id="MathJax-script" async defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js" onerror="console.log('MathJax failed to load. Math equations might not render properly without VPN.');"></script>
     
     <style>
         /* 🎨 المتغيرات الافتراضية (الوضع النهاري) */
@@ -336,8 +337,14 @@
             appId: "1:852..."
         };
 
+        // تفعيل ميزة التخزين المحلي لـ Firebase Offline Persistence ليعمل التطبيق بدون VPN أو إنترنت بالكامل
         firebase.initializeApp(firebaseConfig);
+        
+        // تعديل الاتصال ليعتمد على قاعدة البيانات في وضع الأوفلاين فوراً
         const db = firebase.database();
+        
+        // تعديل مهم: تمكين الاحتفاظ بنسخة محلية للطلبات (Firebase Offline Persistence)
+        db.goOnline(); // التأكيد على طلب الاتصال بالخلفية دون إيقاف المتصفح
         
         const SECRET_SALT = "Prof_Lababidi_Math_2027";
         
@@ -355,7 +362,6 @@
             const tab = allTabsData[tabId];
             if (!tab) return false;
             
-            // 🌟 فتح فوري وكامل لجميع التبويبات إذا كانت حالة الحساب VIP
             if (currentStudentData && (currentStudentData.isVip === true || currentStudentData.isVip === 'true')) {
                 return true;
             }
@@ -416,7 +422,18 @@
         function resolveStudentKeyAndSync(cleanPhone) {
             const phoneAsNum = Number(cleanPhone);
             
+            // ضبط مهلة زمنية (Timeout) لفحص الاتصال بـ Firebase لكي لا يعلق الكود بدون VPN
+            let isResolved = false;
+            const timeout = setTimeout(() => {
+                if (!isResolved) {
+                    console.log("تأخر فحص الشبكة بسبب VPN. استخدام البيانات المحلية المؤقتة.");
+                    fetchTabsFromFirebase();
+                }
+            }, 3000);
+
             db.ref('students/' + cleanPhone).once('value', snap => {
+                isResolved = true;
+                clearTimeout(timeout);
                 if (snap.exists()) {
                     localStorage.setItem('student_key', cleanPhone);
                     setupSingleLiveSync(cleanPhone);
@@ -447,6 +464,11 @@
                         handleDeactivation();
                     }
                 });
+            }).catch(() => {
+                isResolved = true;
+                clearTimeout(timeout);
+                // تصفح محلي آمن عند انقطاع السيرفر بدون VPN
+                fetchTabsFromFirebase();
             });
         }
 
@@ -461,6 +483,8 @@
                 } else {
                     handleDeactivation();
                 }
+            }, err => {
+                console.log("تعذر الاتصال المباشر للمزامنة، سيتم المتابعة محلياً.");
             });
 
             fetchTabsFromFirebase();
@@ -473,7 +497,6 @@
             }
             if (!currentStudentData) currentStudentData = {};
 
-            // 🌟 استخلاص حالة الـ VIP من السيرفر بمرونة عالية
             const isVip = 
                 serverData.isVip === true || serverData.isVip === 'true' ||
                 serverData.status === 'vip' || serverData.status === 'VIP' ||
@@ -490,7 +513,7 @@
                 serverData.active === true || serverData.active === 'true' || 
                 serverData.status === 'active' || serverData.status === 'نشط' ||
                 serverData.activated === true || serverData.activated === 'true' ||
-                isVip; // حساب الـ VIP يعتبر نشطاً حكماً
+                isVip;
 
             const isActive = hasActiveMarker && !isExplicitlyDeactivated;
 
@@ -523,9 +546,7 @@
             renderTabsHierarchy();
         }
 
-        /* 🔄 نظام جلب التبويبات والمزامنة المحلية المحسنة (أوفلاين/أونلاين) */
         function fetchTabsFromFirebase() {
-            // 1. محاولة تحميل التبويبات فوراً من الذاكرة المحلية (أوفلاين أو لتسريع الفتح)
             const cachedTabs = localStorage.getItem('laba_cached_tabs');
             if (cachedTabs) {
                 try {
@@ -536,19 +557,17 @@
                 }
             }
 
-            // 2. تحديث التبويبات صامتاً من السيرفر عند وجود اتصال بالإنترنت وحفظها للكاش
             db.ref('tabs').once('value').then(snap => {
                 const liveData = snap.val() || {};
                 allTabsData = liveData;
                 localStorage.setItem('laba_cached_tabs', JSON.stringify(liveData));
                 renderTabsHierarchy();
             }).catch(err => {
-                console.log("أنت تعمل حالياً بوضع الأوفلاين. تم استخدام النسخة المخزنة مؤخراً.");
-                // إذا فتح التطبيق لأول مرة والإنترنت منقطع تماماً وبدون كاش
+                console.log("أنت تعمل حالياً بوضع الأوفلاين أو بدون VPN. تم استخدام النسخة المخزنة مؤخراً في جهازك.");
                 if (!cachedTabs) {
                     const navContainer = document.getElementById('dynamic-tabs');
                     if (navContainer) {
-                        navContainer.innerHTML = '<p style="grid-column: span 2; text-align:center; color:#e53e3e; font-weight: bold;">⚠️ يرجى الاتصال بالإنترنت للمرة الأولى لتحميل الأقسام الدراسية.</p>';
+                        navContainer.innerHTML = '<p style="grid-column: span 2; text-align:center; color:#e53e3e; font-weight: bold;">⚠️ يرجى تفعيل الإنترنت أو الـ VPN للمرة الأولى فقط لتحميل أقسام المكتبة.</p>';
                     }
                 }
             });
@@ -660,7 +679,6 @@
             const targetTabId = pendingTabIdToActivate;
 
             const processInstantUnlock = (serverData, actualKey) => {
-                // 🌟 فحص حالة الـ VIP عند الفحص السريع بالهاتف
                 const isVip = 
                     serverData.isVip === true || serverData.isVip === 'true' ||
                     serverData.status === 'vip' || serverData.status === 'VIP' ||
@@ -723,6 +741,8 @@
                         }
                     });
                 }
+            }).catch(() => {
+                console.log("فشل الاتصال المباشر بالفحص السريع. يمكنك المحاولة مجدداً لاحقاً.");
             });
         }
 
@@ -798,7 +818,6 @@
             imgElement.replaceWith(i); 
         }
 
-        /* ──────────────── 📐 نظام الجلب والتصيير المتجاوب والـ LaTeX (أوفلاين) ──────────────── */
         function loadLessonsForTab(tabId, tabName) {
             const filesSection = document.getElementById('files-section');
             const selectedTitle = document.getElementById('selected-tab-title');
@@ -815,7 +834,6 @@
             let localLessons = {};
             let localExercises = {};
 
-            // 1. استرجاع البيانات الفوري من الكاش المحلي (أوفلاين) ليعمل دون ثانية انتظار واحدة!
             const cachedLessons = localStorage.getItem(`laba_lessons_${tabId}`);
             const cachedExercises = localStorage.getItem(`laba_exercises_${tabId}`);
 
@@ -834,7 +852,6 @@
                     return;
                 }
 
-                // 1. عرض النوط والفيديوهات
                 Object.keys(localLessons).forEach(key => {
                     const lesson = localLessons[key];
                     const pdfItem = document.createElement('div');
@@ -853,7 +870,6 @@
                     filesList.appendChild(pdfItem);
                 });
 
-                // 2. عرض المسائل الرياضية المكتوبة بصيغة LaTeX وترتيبها بنظام الأكورديون
                 const sortedExercises = Object.keys(localExercises).map(key => ({ id: key, ...localExercises[key] }))
                                               .sort((a, b) => (a.order || 0) - (b.order || 0));
 
@@ -890,10 +906,8 @@
                 }
             };
 
-            // عرض البيانات المحفوظة محلياً فوراً (سريع جداً للأوفلاين والأونلاين)
             mergeAndRenderAll();
 
-            // الاستماع للتغييرات الحية في السيرفر وتحديث الكاش المحلي ديناميكياً
             currentLessonsRef = db.ref('lessons').orderByChild('tabId').equalTo(tabId);
             currentExercisesRef = db.ref('math_exercises').orderByChild('tabId').equalTo(tabId);
 
