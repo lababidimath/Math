@@ -1204,5 +1204,19 @@ setInterval(() => {
         
 
     </script>
+
+    // مراقبة عودة المستخدم للتطبيق
+    document.addEventListener("visibilitychange", () => {
+        if (document.visibilityState === "visible") {
+            // إذا كانت الصفحة فارغة (يحتوي الجسم على عناصر قليلة جداً)
+            // فهذا يعني أن الأندرويد قام بقتل العملية
+            if (document.body.innerText.length < 50) { 
+                console.log("تم اكتشاف توقف التطبيق، جاري إعادة التحميل...");
+                location.reload(); 
+            }
+        }
+    }); 
+    
+    
 </body>
 </html>
