@@ -1,6 +1,7 @@
 const CACHE_NAME = 'lababidi-math-cache-v1';
 
 const ASSETS_TO_CACHE = [
+  './',
   './index.html',
   './login1.html',
   './all.min.css',
@@ -10,63 +11,60 @@ const ASSETS_TO_CACHE = [
   './settings.html'
 ];
 
+// 1. التثبيت: تحميل الملفات الأساسية
 self.addEventListener('install', event => {
-  event.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS_TO_CACHE)));
+  event.waitUntil(
+    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS_TO_CACHE))
+  );
   self.skipWaiting();
 });
 
+// 2. التفعيل: تنظيف الكاش القديم
 self.addEventListener('activate', event => {
   event.waitUntil(
-    caches.keys().then(keys => Promise.all(keys.map(key => key !== CACHE_NAME ? caches.delete(key) : null)))
+    caches.keys().then(keys => Promise.all(
+      keys.map(key => key !== CACHE_NAME ? caches.delete(key) : null)
+    ))
   );
   self.clients.claim();
 });
 
-// 3. اعتراض الطلبات (النسخة المحسنة)
+// 3. اعتراض الطلبات (المنطق الموحد والذكي)
 self.addEventListener('fetch', event => {
   // استثناء طلبات API (لا نلمسها أبداً)
   if (event.request.method !== 'GET' || event.request.url.includes('firebaseio.com') || event.request.url.includes('api.green-api.com')) {
     return;
   }
 
-  // --- الحل الجذري: Cache-First لكل شيء ---
   event.respondWith(
-    caches.match(event.request).then(cachedResponse => {
-      // 1. إذا وجدنا الملف في الكاش، نعيده فوراً (سرعة فائقة + أوفلاين)
-      if (cachedResponse) {
-        return cachedResponse;
+    caches.open(CACHE_NAME).then(cache => {
+      return cache.match(event.request).then(cachedResponse => {
+        
+        // جلب التحديث من الشبكة في الخلفية (Revalidate)
+        const fetchPromise = fetch(event.request).then(networkResponse => {
+          if (networkResponse && networkResponse.status === 200) {
+            cache.put(event.request, networkResponse.clone());
+          }
+          return networkResponse;
+        }).catch(() => {
+          // فشل الاتصال، لا تفعل شيئاً (نعتمد على الكاش)
+        });
+
+        // إذا وجدنا الملف في الكاش نعيده فوراً (سرعة)، وإذا لم نجد ننتظر الشبكة
+        return cachedResponse || fetchPromise;
+      });
+    }).catch(() => {
+      // الحل الأخير: إذا فشل كل شيء (أوفلاين تماماً)، نعيد الصفحة الرئيسية لمنع الشاشة البيضاء
+      if (event.request.mode === 'navigate') {
+        return caches.match('./index.html');
       }
-
-      // 2. إذا لم نجد الملف، نحاول جلبه من الشبكة
-      return fetch(event.request).then(networkResponse => {
-        // إذا نجح الجلب، نخزنه في الكاش للمرة القادمة
-        if (networkResponse && networkResponse.status === 200) {
-          const responseToCache = networkResponse.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, responseToCache));
-        }
-        return networkResponse;
-      }).catch(() => {
-        // 3. إذا فشل كل شيء، نعيد الصفحة الرئيسية كحل أخير (تمنع الشاشة البيضاء)
-        if (event.request.mode === 'navigate') {
-          return caches.match('./index.html');
-        }
-      });
-    })
-  );
-});
-self.addEventListener('fetch', event => {
-  event.respondWith(
-    caches.match(event.request).then(response => {
-      return response || fetch(event.request).catch(() => {
-         // إذا فشل كل شيء، حاول عرض الـ index من الكاش كخطة أخيرة
-         return caches.match('./index.html');
-      });
     })
   );
 });
 
+// 4. الحفاظ على الخدمة نشطة (PING)
 self.addEventListener('message', event => {
   if (event.data.type === 'PING') {
-    // لا تفعل شيئاً، فقط لضمان بقاء الـ Service Worker نشطاً
+    // الرد على النبض لإبقاء الـ SW نشطاً
   }
 });
