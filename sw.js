@@ -65,3 +65,8 @@ self.addEventListener('fetch', event => {
   );
 });
 
+self.addEventListener('message', event => {
+  if (event.data.type === 'PING') {
+    // لا تفعل شيئاً، فقط لضمان بقاء الـ Service Worker نشطاً
+  }
+});
