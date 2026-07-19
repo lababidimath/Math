@@ -933,6 +933,11 @@
             try {
                 firebase.initializeApp(firebaseConfig);
                 const db = firebase.database();
+// إضافة هذا السطر تمنع التطبيق من التجمد عند انقطاع الإنترنت
+firebase.database().goOnline(); 
+firebase.database().ref().keepSynced(true); // تجعل البيانات تظل محدثة في الخلفية
+                
+
                 
                 /* جلب الأخبار وتخزينها */
                 db.ref('news').on('value', snap => {
