@@ -1196,11 +1196,11 @@
         }
     
     // تنشيط دوري للـ Service Worker لضمان استمرارية الاتصال
-setInterval(() => {
-    if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-        navigator.serviceWorker.controller.postMessage({ type: 'PING' });
-    }
-}, 60000); // كل دقيقة
+// setInterval(() => {
+   // if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+  //      navigator.serviceWorker.controller.postMessage({ type: 'PING' });
+//    }
+// }, 60000); // كل دقيقة
         
 
     
