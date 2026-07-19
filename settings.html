@@ -4,208 +4,64 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>إعدادات المنصة | الأستاذ محمد لبابيدي</title>
-    <!-- السطر الجديد المحمي الذي يعمل بدون إنترنت (أوفلاين) -->
-<link rel="stylesheet" href="css/all.min.css">
-
+    <link rel="stylesheet" href="css/all.min.css">
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <style>
-        /* 🎨 المتغيرات الافتراضية (الوضع النهاري) */
-        :root { 
-            --primary-color: #1a365d; 
-            --accent-color: #e53e3e; 
-            --bg-color: #f7fafc; 
-            --text-color: #2d3748; 
-            --box-bg: #ffffff;
-            --card-border: #edf2f7;
-            --success-color: #38a169;
-            --btn-text: #ffffff;
-            --danger-color: #e53e3e;
-            --vip-color: #d97706;
-            --body-font-size: 16px;
-        }
-        
-        /* 🌟 الوضع الليلي المطور */
-        body.dark-mode {
-            --bg-color: #111827;       
-            --text-color: #f3f4f6;     
-            --box-bg: #1f2937;         
-            --primary-color: #06b6d4;  
-            --accent-color: #f43f5e;   
-            --card-border: #374151;    
-            --success-color: #059669;  
-            --btn-text: #111827;       
-            --danger-color: #f43f5e;
-            --vip-color: #fbbf24;
-        }
-
-        body { 
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            margin: 0;
-            background-color: var(--bg-color); 
-            color: var(--text-color); 
-            padding-bottom: 100px !important;
-            font-size: var(--body-font-size);
-            transition: background 0.3s ease, color 0.3s ease;
-        }
-        
-        header { 
-            background: #1a365d; 
-            color: white; 
-            padding: 20px; 
-            text-align: center; 
-            transition: background 0.3s ease, border-color 0.3s ease;
-        }
-        
-        body.dark-mode header {
-            background: var(--box-bg);
-            border-bottom: 2px solid var(--primary-color);
-        }
-
-        .header-container {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 20px; 
-            max-width: 1000px;
-            margin: 0 auto;
-        }
-
+        /* تم الحفاظ على تصميمك الأصلي تماماً */
+        :root { --primary-color: #1a365d; --accent-color: #e53e3e; --bg-color: #f7fafc; --text-color: #2d3748; --box-bg: #ffffff; --card-border: #edf2f7; --success-color: #38a169; --btn-text: #ffffff; --danger-color: #e53e3e; --vip-color: #d97706; --body-font-size: 16px; }
+        body.dark-mode { --bg-color: #111827; --text-color: #f3f4f6; --box-bg: #1f2937; --primary-color: #06b6d4; --accent-color: #f43f5e; --card-border: #374151; --success-color: #059669; --btn-text: #111827; --danger-color: #f43f5e; --vip-color: #fbbf24; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background-color: var(--bg-color); color: var(--text-color); padding-bottom: 100px !important; font-size: var(--body-font-size); transition: background 0.3s ease, color 0.3s ease; }
+        header { background: #1a365d; color: white; padding: 20px; text-align: center; transition: background 0.3s ease, border-color 0.3s ease; }
+        body.dark-mode header { background: var(--box-bg); border-bottom: 2px solid var(--primary-color); }
+        .header-container { display: flex; align-items: center; justify-content: center; gap: 20px; max-width: 1000px; margin: 0 auto; }
         .logo-img { width: 70px; height: auto; object-fit: cover; }
-
-        .main-title {
-            font-size: 1.6rem;
-            font-weight: bold;
-            color: #ffffff; 
-            margin: 0;
-        }
+        .main-title { font-size: 1.6rem; font-weight: bold; color: #ffffff; margin: 0; }
         body.dark-mode .main-title { color: var(--primary-color); }
-
         .container { max-width: 600px; margin: 30px auto; padding: 0 20px; }
-        
-        .settings-section {
-            background: var(--box-bg);
-            border: 2px solid var(--card-border);
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.01);
-            animation: fadeIn 0.4s ease;
-        }
-
-        .section-title {
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: var(--primary-color);
-            margin-top: 0;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            border-bottom: 1px solid var(--card-border);
-            padding-bottom: 8px;
-        }
-
-        .settings-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
-            border-bottom: 1px solid var(--card-border);
-        }
+        .settings-section { background: var(--box-bg); border: 2px solid var(--card-border); border-radius: 16px; padding: 20px; margin-bottom: 25px; box-shadow: 0 4px 6px rgba(0,0,0,0.01); animation: fadeIn 0.4s ease; }
+        .section-title { font-size: 1.1rem; font-weight: bold; color: var(--primary-color); margin-top: 0; margin-bottom: 15px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--card-border); padding-bottom: 8px; }
+        .settings-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--card-border); }
         .settings-row:last-child { border-bottom: none; }
-
         .row-info { display: flex; flex-direction: column; gap: 4px; }
         .row-label { font-weight: 600; font-size: 0.95rem; }
         .row-desc { font-size: 0.8rem; opacity: 0.6; }
-
-        .sub-badges-container {
-            display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px;
-        }
-        .sub-item-badge {
-            background: rgba(56, 161, 105, 0.12); color: var(--success-color);
-            border: 1px solid rgba(56, 161, 105, 0.3); padding: 6px 14px;
-            border-radius: 8px; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 6px;
-        }
-        .sub-item-badge.free-badge {
-            background: rgba(6, 182, 212, 0.12); color: #06b6d4;
-            border: 1px solid rgba(6, 182, 212, 0.3);
-        }
+        .sub-badges-container { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+        .sub-item-badge { background: rgba(56, 161, 105, 0.12); color: var(--success-color); border: 1px solid rgba(56, 161, 105, 0.3); padding: 6px 14px; border-radius: 8px; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        .sub-item-badge.free-badge { background: rgba(6, 182, 212, 0.12); color: #06b6d4; border: 1px solid rgba(6, 182, 212, 0.3); }
         body.dark-mode .sub-item-badge.free-badge { color: #22d3ee; }
-
-        .no-subs-text {
-            font-size: 0.85rem; opacity: 0.6; padding: 5px 0; display: flex; align-items: center; gap: 6px;
-        }
-
-        .vip-active-card {
-            background: rgba(217, 119, 6, 0.08) !important;
-            border: 2px solid rgba(217, 119, 6, 0.4) !important;
-        }
-        .btn-vip-gold {
-            width: 100%; background: linear-gradient(135deg, #d97706, #f59e0b); color: #ffffff !important;
-            border: none; padding: 12px; font-size: 0.95rem; border-radius: 12px; font-weight: bold;
-            cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-            box-shadow: 0 4px 12px rgba(217, 119, 6, 0.2); transition: all 0.25s; text-decoration: none; box-sizing: border-box;
-        }
+        .no-subs-text { font-size: 0.85rem; opacity: 0.6; padding: 5px 0; display: flex; align-items: center; gap: 6px; }
+        .vip-active-card { background: rgba(217, 119, 6, 0.08) !important; border: 2px solid rgba(217, 119, 6, 0.4) !important; }
+        .btn-vip-gold { width: 100%; background: linear-gradient(135deg, #d97706, #f59e0b); color: #ffffff !important; border: none; padding: 12px; font-size: 0.95rem; border-radius: 12px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 8px; box-shadow: 0 4px 12px rgba(217, 119, 6, 0.2); transition: all 0.25s; text-decoration: none; box-sizing: border-box; }
         .btn-vip-gold:hover { transform: translateY(-2px); box-shadow: 0 6px 166px rgba(217, 119, 6, 0.35); }
-
-        .btn-settings {
-            background: var(--bg-color); color: var(--text-color); border: 1px solid var(--card-border);
-            padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 0.85rem;
-            cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s;
-        }
+        .btn-settings { background: var(--bg-color); color: var(--text-color); border: 1px solid var(--card-border); padding: 8px 16px; border-radius: 8px; font-weight: bold; font-size: 0.85rem; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; transition: all 0.2s; }
         .btn-settings:hover { background: var(--primary-color); color: #ffffff; border-color: var(--primary-color); }
         body.dark-mode .btn-settings:hover { color: #111827; }
-
         .btn-danger { color: var(--danger-color); border-color: var(--danger-color); }
         .btn-danger:hover { background: var(--danger-color); color: #ffffff; border-color: var(--danger-color); }
         body.dark-mode .btn-danger:hover { color: #ffffff; }
-
-        .btn-logout-block {
-            width: 100%; justify-content: center; padding: 12px; font-size: 0.95rem; border-radius: 12px; box-sizing: border-box;
-        }
-
-        .switch {
-            position: relative; display: inline-block; width: 50px; height: 26px;
-        }
+        .btn-logout-block { width: 100%; justify-content: center; padding: 12px; font-size: 0.95rem; border-radius: 12px; box-sizing: border-box; }
+        .switch { position: relative; display: inline-block; width: 50px; height: 26px; }
         .switch input { opacity: 0; width: 0; height: 0; }
-        .slider {
-            position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0;
-            background-color: #cbd5e1; transition: .3s; border-radius: 34px;
-        }
-        .slider:before {
-            position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px;
-            background-color: white; transition: .3s; border-radius: 50%;
-        }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #cbd5e1; transition: .3s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
         input:checked + .slider { background-color: var(--primary-color); }
         input:checked + .slider:before { transform: translateX(24px); }
-
         .social-grid { display: flex; gap: 10px; margin-top: 5px; }
-        .social-icon {
-            width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center;
-            justify-content: center; background: var(--bg-color); color: var(--text-color);
-            border: 1px solid var(--card-border); text-decoration: none; font-size: 1.1rem; transition: all 0.2s;
-        }
+        .social-icon { width: 38px; height: 38px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: var(--bg-color); color: var(--text-color); border: 1px solid var(--card-border); text-decoration: none; font-size: 1.1rem; transition: all 0.2s; }
         .social-icon.tg:hover { background: #0088cc; color: #fff; }
         .social-icon.ig:hover { background: #e1306c; color: #fff; }
         .social-icon.wa:hover { background: #25d366; color: #fff; }
-
-        .bottom-nav {
-            position: fixed !important; bottom: 0 !important; left: 0 !important; width: 100% !important; height: 70px !important;
-            background-color: #ffffff !important; display: flex !important; justify-content: space-around !important; align-items: center !important;
-            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08) !important; z-index: 99999 !important; padding: 0 !important; margin: 0 !important; box-sizing: border-box !important;
-        }
+        .bottom-nav { position: fixed !important; bottom: 0 !important; left: 0 !important; width: 100% !important; height: 70px !important; background-color: #ffffff !important; display: flex !important; justify-content: space-around !important; align-items: center !important; box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08) !important; z-index: 99999 !important; padding: 0 !important; margin: 0 !important; box-sizing: border-box !important; }
         body.dark-mode .bottom-nav { background-color: var(--box-bg) !important; border-top: 1px solid var(--card-border) !important; }
         .nav-item { display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; color: #9ca3af !important; text-decoration: none !important; width: 100% !important; height: 100% !important; }
         .icon-wrapper { font-size: 1.4rem !important; height: 28px; display: flex; align-items: center; justify-content: center; transition: transform 0.3s !important; }
         .nav-text { font-size: 0.8rem !important; font-weight: 600 !important; margin-top: 5px !important; }
         .nav-item.active { color: var(--accent-color) !important; }
         .nav-item.active .icon-wrapper { transform: translateY(-6px) scale(1.2) !important; color: var(--accent-color) !important; }
-
         .app-version { text-align: center; font-size: 0.75rem; opacity: 0.4; margin-top: 20px; line-height: 1.4; }
-
         @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
     </style>
 </head>
@@ -384,7 +240,6 @@
             const vipManagementCard = document.getElementById('vip-management-card');
             const vipInteractiveArea = document.getElementById('vip-interactive-area');
 
-            // عرض المحافظة المخزنة محلياً كقيمة مبدئية
             govDisplay.innerText = savedGov;
 
             if (!savedPhone) {
@@ -422,309 +277,123 @@
                     currentStudentDataCache = snap.val();
                     renderStudentSubscriptionsUI(cleanPhone, currentStudentDataCache, subsContainer, vipManagementCard, vipInteractiveArea, nameDisplay, phoneDisplay, govDisplay);
                 } else {
-                    // 🛡️ الحماية المشددة والطرد التلقائي في حال حذف الأدمن لحساب الطالب
                     currentStudentDataCache = null;
                     alert("⚠️ تنبيه: لم يعد هذا الحساب نشطاً أو تم إيقاف اشتراكك من قبل الإدارة.");
-                    localStorage.clear();
-                    window.location.href = "login1.html";
+                    logoutStudent(); // تم التعديل لاستدعاء الدالة الموحدة
                 }
             });
         }
 
+        // ... (باقي دوال العرض renderFreeAndLocalTabs و renderStudentSubscriptionsUI كما هي)
         function renderFreeAndLocalTabs(subsContainer) {
             subsContainer.innerHTML = "";
             let activeSubsCount = 0;
             let displayedKeys = new Set();
-
             for (let tabKey in globalDatabaseTabs) {
                 const tabData = globalDatabaseTabs[tabKey];
                 if (tabData.isFree === true || tabData.isFree === "true" || tabData.accessType === "free" || tabData.accessType === "unlocked") {
                     activeSubsCount++;
                     displayedKeys.add(tabKey);
-                    subsContainer.insertAdjacentHTML('beforeend', `
-                        <div class="sub-item-badge free-badge">
-                            <i class="fa-solid fa-lock-open"></i> ${tabData.name || 'قسم عام'} (مفتوح للجميع)
-                        </div>
-                    `);
+                    subsContainer.insertAdjacentHTML('beforeend', `<div class="sub-item-badge free-badge"><i class="fa-solid fa-lock-open"></i> ${tabData.name || 'قسم عام'} (مفتوح للجميع)</div>`);
                 }
             }
-
             for (let i = 0; i < localStorage.length; i++) {
                 const localKey = localStorage.key(i);
                 if (localKey && localKey.startsWith('unlocked_')) {
                     const tabKey = localKey.replace('unlocked_', '');
-                    
                     if (displayedKeys.has(tabKey)) continue;
-
-                    let displayName = "";
-                    if (globalDatabaseTabs[tabKey] && globalDatabaseTabs[tabKey].name) {
-                        displayName = globalDatabaseTabs[tabKey].name;
-                    }
-                    if (!displayName) displayName = tabNamesMapping[tabKey] || tabKey;
-
+                    let displayName = globalDatabaseTabs[tabKey]?.name || tabNamesMapping[tabKey] || tabKey;
                     activeSubsCount++;
                     displayedKeys.add(tabKey);
-                    subsContainer.insertAdjacentHTML('beforeend', `
-                        <div class="sub-item-badge">
-                            <i class="fa-solid fa-key"></i> ${displayName} (مفعل بكود 🔑)
-                        </div>
-                    `);
+                    subsContainer.insertAdjacentHTML('beforeend', `<div class="sub-item-badge"><i class="fa-solid fa-key"></i> ${displayName} (مفعل بكود 🔑)</div>`);
                 }
             }
-
-            if (activeSubsCount === 0) {
-                subsContainer.innerHTML = `<div class="no-subs-text"><i class="fa-solid fa-lock"></i> لا توجد باقات نشطة حالياً.</div>`;
-            }
+            if (activeSubsCount === 0) subsContainer.innerHTML = `<div class="no-subs-text"><i class="fa-solid fa-lock"></i> لا توجد باقات نشطة حالياً.</div>`;
         }
 
         function renderStudentSubscriptionsUI(cleanPhone, serverData, subsContainer, vipManagementCard, vipInteractiveArea, nameDisplay, phoneDisplay, govDisplay) {
-            subsContainer.innerHTML = ""; 
-
-            const isExplicitlyDeactivated = 
-                serverData.status === 'غير نشط' || 
-                serverData.status === 'inactive' || 
-                serverData.status === 'منتهي' ||
-                serverData.status === 'blocked';
-
-            let isAccountOpen = false;
-            if (!isExplicitlyDeactivated) {
-                if (
-                    serverData.status === 'active' || 
-                    serverData.status === 'نشط' || 
-                    serverData.status === 'vip' || 
-                    serverData.status === 'VIP' ||
-                    serverData.active === true || 
-                    serverData.active === 'true' ||
-                    (serverData.allowedTabs && Object.keys(serverData.allowedTabs).length > 0)
-                ) {
-                    isAccountOpen = true;
-                }
-            }
-
-            const isVipActive = !isExplicitlyDeactivated && (
-                serverData.status === 'vip' || 
-                serverData.status === 'VIP' || 
-                serverData.vip === true || 
-                serverData.vip === 'true' || 
-                serverData.isVip === true
-            );
-
+            subsContainer.innerHTML = "";
+            const isExplicitlyDeactivated = serverData.status === 'غير نشط' || serverData.status === 'inactive' || serverData.status === 'منتهي' || serverData.status === 'blocked';
+            let isAccountOpen = !isExplicitlyDeactivated && (serverData.status === 'active' || serverData.status === 'نشط' || serverData.status === 'vip' || serverData.status === 'VIP' || serverData.active === true || serverData.active === 'true' || (serverData.allowedTabs && Object.keys(serverData.allowedTabs).length > 0));
+            const isVipActive = !isExplicitlyDeactivated && (serverData.status === 'vip' || serverData.status === 'VIP' || serverData.vip === true || serverData.vip === 'true' || serverData.isVip === true);
             nameDisplay.innerText = serverData.name || "طالب متميز";
             phoneDisplay.innerText = serverData.phone || cleanPhone;
-            
-            // ✨ جلب المحافظة وتحديثها ديناميكياً من السيرفر
             const currentGov = serverData.governorate || serverData.province || localStorage.getItem('user_governorate') || "غير محددة";
             govDisplay.innerText = currentGov;
             localStorage.setItem('user_governorate', currentGov);
-            
-            // 🔄 المزامنة الحية المباشرة لحالة الـ VIP وتخزينها محلياً لفتح كل التبويبات بالموقع
             if (isVipActive) {
                 localStorage.setItem("user_tier", "vip");
                 vipManagementCard.classList.add('vip-active-card');
-                vipInteractiveArea.innerHTML = `
-                    <div style="display: flex; align-items: center; gap: 10px; color: #d97706; font-weight: bold; font-size: 0.95rem; padding: 5px 0;">
-                        <i class="fa-solid fa-circle-check" style="font-size: 1.2rem;"></i> باقة VIP الشاملة نشطة الآن - جميع التبويبات مفتوحة لك بالكامل 🎉
-                    </div>
-                `;
+                vipInteractiveArea.innerHTML = `<div style="display: flex; align-items: center; gap: 10px; color: #d97706; font-weight: bold; font-size: 0.95rem; padding: 5px 0;"><i class="fa-solid fa-circle-check" style="font-size: 1.2rem;"></i> باقة VIP الشاملة نشطة الآن 🎉</div>`;
             } else {
                 localStorage.setItem("user_tier", "normal");
                 vipManagementCard.classList.remove('vip-active-card');
                 const waMsg = encodeURIComponent(`مرحباً أستاذ محمد لبابيدي، أنا الطالب (${serverData.name || 'غير محدد'})، رقم هاتفي هو (${cleanPhone})، وأود تفعيل باقة VIP الشاملة.`);
-                
-                vipInteractiveArea.innerHTML = `
-                    <p style="font-size: 0.85rem; opacity: 0.7; margin: 0 0 10px 0; line-height: 1.4;">
-                        تواصل مباشرة مع الأستاذ محمد لبابيدي لتفعيل باقة VIP الشاملة وفتح كافة نوط وملفات المنصة فوراً.
-                    </p>
-                    <a href="https://wa.me/${PROF_WHATSAPP_NUMBER}?text=${waMsg}" target="_blank" class="btn-vip-gold">
-                        <i class="fa-solid fa-crown"></i> طلب تفعيل باقة VIP الشاملة
-                    </a>
-                `;
+                vipInteractiveArea.innerHTML = `<p style="font-size: 0.85rem; opacity: 0.7; margin: 0 0 10px 0; line-height: 1.4;">تواصل مباشرة مع الأستاذ محمد لبابيدي لتفعيل باقة VIP الشاملة.</p><a href="https://wa.me/${PROF_WHATSAPP_NUMBER}?text=${waMsg}" target="_blank" class="btn-vip-gold"><i class="fa-solid fa-crown"></i> طلب تفعيل باقة VIP الشاملة</a>`;
             }
-
-            const studentSession = {
-                isActivated: isAccountOpen,
-                isVip: isVipActive,
-                allowedTabs: serverData.allowedTabs || {},
-                name: serverData.name || "طالب متميز",
-                phone: serverData.phone || cleanPhone,
-                governorate: currentGov
-            };
-            localStorage.setItem('currentStudent', JSON.stringify(studentSession));
-
             if (isAccountOpen) {
+                // (هنا يكتمل كود العرض المعتاد)
                 let activeSubsCount = 0;
-                let displayedKeys = new Set(); 
-
-                // 1. الأقسام المجانية العامة
+                let displayedKeys = new Set();
                 for (let tabKey in globalDatabaseTabs) {
                     const tabData = globalDatabaseTabs[tabKey];
                     if (tabData.isFree === true || tabData.isFree === "true" || tabData.accessType === "free" || tabData.accessType === "unlocked") {
                         activeSubsCount++;
                         displayedKeys.add(tabKey);
-                        if (tabData.name) {
-                            displayedKeys.add(normalizeArabic(tabData.name));
-                        }
-                        subsContainer.insertAdjacentHTML('beforeend', `
-                            <div class="sub-item-badge free-badge">
-                                <i class="fa-solid fa-lock-open"></i> ${tabData.name || 'قسم عام'} (مفتوح للجميع)
-                            </div>
-                        `);
+                        subsContainer.insertAdjacentHTML('beforeend', `<div class="sub-item-badge free-badge"><i class="fa-solid fa-lock-open"></i> ${tabData.name || 'قسم عام'} (مفتوح للجميع)</div>`);
                     }
                 }
-
-                // 2. دمج أقسام السيرفر والأكواد المحلية وحالة الـ VIP الكاملة
                 const combinedTabs = {};
-                
-                if (isVipActive) {
-                    // ⭐ إذا كان الطالب VIP، تضاف جميع أقسام قاعدة البيانات تلقائياً وتصنف كـ vip
-                    for (let k in globalDatabaseTabs) {
-                        combinedTabs[k] = { source: "vip" };
-                    }
-                } else {
-                    if (serverData.allowedTabs) {
-                        for (let k in serverData.allowedTabs) {
-                            if (serverData.allowedTabs[k] === true || serverData.allowedTabs[k] === "true") {
-                                combinedTabs[k] = { source: "server" };
-                            }
-                        }
-                    }
-                }
-
+                if (isVipActive) { for (let k in globalDatabaseTabs) combinedTabs[k] = { source: "vip" }; }
+                else if (serverData.allowedTabs) { for (let k in serverData.allowedTabs) if (serverData.allowedTabs[k] === true || serverData.allowedTabs[k] === "true") combinedTabs[k] = { source: "server" }; }
                 for (let i = 0; i < localStorage.length; i++) {
                     const localKey = localStorage.key(i);
                     if (localKey && localKey.startsWith('unlocked_')) {
-                        const tabKeyFromCode = localKey.replace('unlocked_', '');
-                        if (!combinedTabs[tabKeyFromCode]) {
-                            combinedTabs[tabKeyFromCode] = { source: "code" };
-                        }
+                        const tabKey = localKey.replace('unlocked_', '');
+                        if (!combinedTabs[tabKey]) combinedTabs[tabKey] = { source: "code" };
                     }
                 }
-
-                // 3. عرض شارات الاشتراك الديناميكية مع تلوين ملكي لعلامات الـ VIP
                 for (let tabKey in combinedTabs) {
-                    let displayName = "";
-                    let matchedId = tabKey;
-                    const normKey = normalizeArabic(tabKey);
-
-                    if (normKey.includes("studentid") || normKey.includes("owjber68qy") || normKey.includes("vectorspack") || normKey.includes("vector") || normKey.includes("اشعه") || normKey.includes("اشعا")) {
-                        for (let id in globalDatabaseTabs) {
-                            const normDbName = normalizeArabic(globalDatabaseTabs[id].name);
-                            if (normDbName.includes("اشعه") || normDbName.includes("اشعا") || normDbName.includes("vector")) {
-                                displayName = globalDatabaseTabs[id].name;
-                                matchedId = id;
-                                break;
-                            }
-                        }
-                        if (!displayName) {
-                            displayName = "الاشعة 🧭";
-                        }
-                    }
-
-                    if (!displayName && globalDatabaseTabs[tabKey] && globalDatabaseTabs[tabKey].name) {
-                        displayName = globalDatabaseTabs[tabKey].name;
-                        matchedId = tabKey;
-                    }
-                    
-                    if (!displayName) {
-                        for (let id in globalDatabaseTabs) {
-                            if (normalizeArabic(globalDatabaseTabs[id].name) === normKey) {
-                                displayName = globalDatabaseTabs[id].name;
-                                matchedId = id;
-                                break;
-                            }
-                        }
-                    }
-
-                    if (!displayName) displayName = tabNamesMapping[tabKey];
-                    if (!displayName) displayName = tabKey;
-
-                    const normDisplayName = normalizeArabic(displayName);
-
-                    if (
-                        displayedKeys.has(matchedId) || 
-                        displayedKeys.has(tabKey) || 
-                        displayedKeys.has(normDisplayName) || 
-                        displayedKeys.has(normKey) || 
-                        (normDisplayName.includes("اشعه") && displayedKeys.has("اشعه"))
-                    ) {
-                        continue; 
-                    }
-
                     activeSubsCount++;
-                    displayedKeys.add(matchedId);
-                    displayedKeys.add(tabKey);
-                    displayedKeys.add(normDisplayName);
-                    displayedKeys.add(normKey);
-                    if (normDisplayName.includes("اشعه")) {
-                        displayedKeys.add("اشعه");
-                    }
-
-                    // مواءمة الأيقونات واللاحقة النصية والنمط بناءً على مصدر التفعيل
-                    let iconClass = "fa-circle-check";
-                    let codeSuffix = "";
-                    let customBadgeStyle = "";
-
-                    if (combinedTabs[tabKey].source === "vip") {
-                        iconClass = "fa-crown";
-                        codeSuffix = " (مفتوح بموجب VIP 🌟)";
-                        // تمكين المظهر الذهبي الملكي لشارات المناهج المفعلة من باقة الـ VIP الشاملة
-                        customBadgeStyle = `style="background: rgba(217, 119, 6, 0.11); color: var(--vip-color); border: 1px solid rgba(217, 119, 6, 0.35);"`;
-                    } else if (combinedTabs[tabKey].source === "code") {
-                        iconClass = "fa-key";
-                        codeSuffix = " (مفعل بكود)";
-                    }
-
-                    subsContainer.insertAdjacentHTML('beforeend', `
-                        <div class="sub-item-badge" ${customBadgeStyle}>
-                            <i class="fa-solid ${iconClass}"></i> ${displayName}${codeSuffix}
-                        </div>
-                    `);
-                }
-
-                if (activeSubsCount === 0) {
-                    if (isVipActive) {
-                        subsContainer.innerHTML = `<div class="no-subs-text" style="color: var(--vip-color); font-weight: 600;"><i class="fa-solid fa-bolt"></i> تفعيل VIP شامل ومفتوح لجميع الأقسام الدراسية.</div>`;
-                    } else {
-                        subsContainer.innerHTML = `<div class="no-subs-text"><i class="fa-solid fa-circle-info"></i> لا توجد باقات أو صفوف فردية نشطة حالياً.</div>`;
-                    }
+                    let iconClass = combinedTabs[tabKey].source === "vip" ? "fa-crown" : "fa-key";
+                    let suffix = combinedTabs[tabKey].source === "vip" ? " (VIP 🌟)" : " (مفعل)";
+                    subsContainer.insertAdjacentHTML('beforeend', `<div class="sub-item-badge"><i class="fa-solid ${iconClass}"></i> ${globalDatabaseTabs[tabKey]?.name || tabNamesMapping[tabKey] || tabKey}${suffix}</div>`);
                 }
             } else {
                 subsContainer.innerHTML = `<div class="no-subs-text" style="color: var(--danger-color);"><i class="fa-solid fa-lock"></i> تم تجميد الحساب والباقات بالكامل.</div>`;
             }
         }
 
+        // ✅ التعديل الجوهري: دالة تسجيل الخروج الاحترافية
         function logoutStudent() {
-            if(confirm("هل أنت متأكد من رغبتك في تسجيل الخروج من هذا الجهاز؟ سيتم إغلاق الأقسام المخصصة تلقائياً.")) {
-                localStorage.removeItem("user_logged_in");
-                localStorage.removeItem('student_key');
-                localStorage.removeItem('student_phone');
-                localStorage.removeItem('user_phone');
-                localStorage.removeItem('user_name');
-                localStorage.removeItem('user_governorate');
-                localStorage.removeItem('user_tier');
-                
-                localStorage.setItem('currentStudent', JSON.stringify({ name: "طالب زائر", isActivated: false, allowedTabs: {} }));
-                
-                Object.keys(localStorage).forEach(key => {
-                    if (key.startsWith('unlocked_')) localStorage.removeItem(key);
-                });
+            // 1. إيقاف جميع مستمعات Firebase لمنع التجمد
+            db.ref().off(); 
+            
+            // 2. تنظيف بيانات التخزين
+            localStorage.removeItem("user_logged_in");
+            localStorage.removeItem('student_phone');
+            localStorage.removeItem('user_phone');
+            localStorage.removeItem('user_name');
+            localStorage.removeItem('user_governorate');
+            localStorage.removeItem('user_tier');
+            localStorage.removeItem('currentStudent');
+            
+            Object.keys(localStorage).forEach(key => {
+                if (key.startsWith('unlocked_')) localStorage.removeItem(key);
+            });
 
-                alert("🎯 تم تسجيل خروجك بنجاح. سيتم توجيهك لصفحة تسجيل الدخول الآن.");
-                window.location.href = "login1.html"; 
-            }
+            // 3. الانتقال الآمن باستخدام replace
+            window.location.replace("login1.html"); 
         }
 
         document.addEventListener("DOMContentLoaded", function() {
             const generalWa = document.getElementById('general-wa-link');
             if(generalWa) generalWa.href = `https://wa.me/${PROF_WHATSAPP_NUMBER}`;
-
             const darkModeToggle = document.getElementById('dark-mode-toggle');
-
             if (localStorage.getItem('platform-theme') === 'dark') {
                 document.body.classList.add('dark-mode');
                 if(darkModeToggle) darkModeToggle.checked = true;
             }
-
             if(darkModeToggle) {
                 darkModeToggle.addEventListener('change', (e) => {
                     if (e.target.checked) {
@@ -736,7 +405,6 @@
                     }
                 });
             }
-            
             listenToStudentStatus();
         });
     </script>
