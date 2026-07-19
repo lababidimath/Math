@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>المكتبة الرقمية | الأستاذ محمد لبابيدي</title>
    <!-- السطر الجديد المحمي الذي يعمل بدون إنترنت (أوفلاين) -->
-<link rel="stylesheet" href="css/all.min.css">
+<link rel="stylesheet" href="all.min.css">
 
     
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
@@ -28,9 +28,7 @@
             }
         };
     </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/7.12.1/polyfill.min.js"></script>
-    
-
+    <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     
     <style>
@@ -69,6 +67,57 @@
             color: var(--text-color); 
             padding-bottom: 90px !important;
             transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        /* 🔔 تصميم التنبيه العائم المطور في منتصف الصفحة بأنيميشن حديث */
+        #app-notification-toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            /* نقطة البداية المخفية: شفافة ومصغرة */
+            transform: translate(-50%, -50%) scale(0.8);
+            opacity: 0;
+            visibility: hidden;
+            
+            background: rgba(45, 55, 72, 0.95);
+            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+            color: white;
+            padding: 18px 26px;
+            border-radius: 18px;
+            z-index: 1000000;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.35);
+            font-weight: bold;
+            border: 2px solid #ffffff;
+            width: 82%;
+            max-width: 320px;
+            box-sizing: border-box;
+            
+            /* تأثير الانتقال السلس مع ارتداد خفيف عند الظهور */
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease, visibility 0.25s ease;
+        }
+        
+        /* حالة الظهور الأنيق */
+        #app-notification-toast.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        /* حالة الاختفاء السريع */
+        #app-notification-toast.hide {
+            opacity: 0;
+            visibility: hidden;
+            transform: translate(-50%, -50%) scale(0.85);
+            transition: transform 0.2s ease-in, opacity 0.2s ease-in, visibility 0.2s ease-in;
+        }
+
+        body.dark-mode #app-notification-toast {
+            background: rgba(31, 41, 55, 0.95);
+            border-color: var(--primary-color);
+            color: #f3f4f6;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
         }
         
         header { 
@@ -193,7 +242,7 @@
         .pdf-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 10px; border-bottom: 1px solid var(--card-border); color: var(--text-color); }
         .btn-preview { background: var(--success-color); color: #ffffff; padding: 8px 16px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; border: none; }
         
-        /* 📐 صناديق عرض التمارين الرياضية المحسنة (نظام الأكورديون الذكي الموفر للمساحة) */
+        /* 📐 صناديق عرض التمارين الرياضية المحسنة */
         .latex-exercise-card {
             background: var(--box-bg); border: 1px solid var(--card-border); 
             border-radius: 14px; margin-bottom: 15px; width: 100%; box-sizing: border-box;
@@ -269,6 +318,11 @@
             </div>
         </div>
     </header>
+
+    <!-- 🔔 حاوية الإشعارات المحدثة متموضعة في السنتر تماماً بدقة عالية -->
+    <div id="app-notification-toast">
+        <p id="noti-body" style="margin:0; font-size: 0.95rem; line-height: 1.4;"></p>
+    </div>
 
     <div class="activation-modal-overlay" id="activation-modal">
         <div class="activation-modal-card">
@@ -353,11 +407,32 @@
         let currentLessonsRef = null;
         let currentExercisesRef = null;
 
+        // دالة عرض التنبيهات المعدلة لتطبيق تأثيرات الأنيميشن الحديثة (تغيير كلاسات الـ CSS)
+        let toastTimeout = null;
+        function showNotification(message) {
+            const toast = document.getElementById('app-notification-toast');
+            const toastBody = document.getElementById('noti-body');
+            if (!toast || !toastBody) return;
+
+            toastBody.innerHTML = message;
+            
+            // تفعيل كلاس الظهور وحذف كلاس الإخفاء القديم إن وجد
+            toast.classList.remove('hide');
+            toast.classList.add('show');
+
+            if (toastTimeout) clearTimeout(toastTimeout);
+
+            // بدء عملية الإخفاء التلقائي بأنيميشن تراجع تدريجي بعد 3 ثوانٍ
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+                toast.classList.add('hide');
+            }, 3000);
+        }
+
         function isTabAllowed(tabId) {
             const tab = allTabsData[tabId];
             if (!tab) return false;
             
-            // 🌟 فتح فوري وكامل لجميع التبويبات إذا كانت حالة الحساب VIP
             if (currentStudentData && (currentStudentData.isVip === true || currentStudentData.isVip === 'true')) {
                 return true;
             }
@@ -475,7 +550,6 @@
             }
             if (!currentStudentData) currentStudentData = {};
 
-            // 🌟 استخلاص حالة الـ VIP من السيرفر بمرونة عالية
             const isVip = 
                 serverData.isVip === true || serverData.isVip === 'true' ||
                 serverData.status === 'vip' || serverData.status === 'VIP' ||
@@ -492,7 +566,7 @@
                 serverData.active === true || serverData.active === 'true' || 
                 serverData.status === 'active' || serverData.status === 'نشط' ||
                 serverData.activated === true || serverData.activated === 'true' ||
-                isVip; // حساب الـ VIP يعتبر نشطاً حكماً
+                isVip;
 
             const isActive = hasActiveMarker && !isExplicitlyDeactivated;
 
@@ -525,9 +599,7 @@
             renderTabsHierarchy();
         }
 
-        /* 🔄 نظام جلب التبويبات والمزامنة المحلية المحسنة (أوفلاين/أونلاين) */
         function fetchTabsFromFirebase() {
-            // 1. محاولة تحميل التبويبات فوراً من الذاكرة المحلية (أوفلاين أو لتسريع الفتح)
             const cachedTabs = localStorage.getItem('laba_cached_tabs');
             if (cachedTabs) {
                 try {
@@ -538,7 +610,6 @@
                 }
             }
 
-            // 2. تحديث التبويبات صامتاً من السيرفر عند وجود اتصال بالإنترنت وحفظها للكاش
             db.ref('tabs').once('value').then(snap => {
                 const liveData = snap.val() || {};
                 allTabsData = liveData;
@@ -546,7 +617,6 @@
                 renderTabsHierarchy();
             }).catch(err => {
                 console.log("أنت تعمل حالياً بوضع الأوفلاين. تم استخدام النسخة المخزنة مؤخراً.");
-                // إذا فتح التطبيق لأول مرة والإنترنت منقطع تماماً وبدون كاش
                 if (!cachedTabs) {
                     const navContainer = document.getElementById('dynamic-tabs');
                     if (navContainer) {
@@ -662,7 +732,6 @@
             const targetTabId = pendingTabIdToActivate;
 
             const processInstantUnlock = (serverData, actualKey) => {
-                // 🌟 فحص حالة الـ VIP عند الفحص السريع بالهاتف
                 const isVip = 
                     serverData.isVip === true || serverData.isVip === 'true' ||
                     serverData.status === 'vip' || serverData.status === 'VIP' ||
@@ -706,7 +775,7 @@
 
                     setupSingleLiveSync(actualKey);
                     setTimeout(() => {
-                        alert(`🎯 تم التعرف على تفعيلك التلقائي بنجاح! مرحباً بك يا ${serverData.name || 'طالبنا المتميز'}.`);
+                        showNotification(`🎯 تم التعرف على تفعيلك التلقائي بنجاح! مرحباً بك يا ${serverData.name || 'طالبنا المتميز'}.`);
                     }, 100);
                 }
             };
@@ -746,7 +815,7 @@
             const tabName = allTabsData[tabId] ? allTabsData[tabId].name : "";
 
             if (rawPhone === "") {
-                alert("الرجاء إدخال رقم الهاتف أولاً!");
+                showNotification("⚠️ الرجاء إدخال رقم الهاتف أولاً!");
                 return;
             }
 
@@ -771,16 +840,16 @@
                     loadLessonsForTab(tabId, tabName);
                     
                     setTimeout(() => {
-                        alert(`🎉 تم تفعيل قسم [ ${tabName} ] بنجاح بواسطة الكود.`);
+                        showNotification(`🎉 تم تفعيل قسم [ ${tabName} ] بنجاح بواسطة الكود.`);
                     }, 80);
                 } else {
-                    alert("❌ كود التفعيل اليدوي المدخل غير صحيح!");
+                    showNotification("❌ كود التفعيل اليدوي المدخل غير صحيح!");
                 }
             } else {
                 checkPhoneActivationOnTheFly(cleanPhone);
                 setTimeout(() => {
                     if (document.getElementById('activation-modal').classList.contains('open')) {
-                         alert("❌ لم يتم العثور على تفعيل تلقائي لهذا الرقم على السيرفر لهذا القسم بالتحديد!");
+                         showNotification("❌ لم يتم العثور على تفعيل تلقائي لهذا الرقم على السيرفر لهذا القسم بالتحديد!");
                     }
                 }, 1000);
             }
@@ -817,7 +886,6 @@
             let localLessons = {};
             let localExercises = {};
 
-            // 1. استرجاع البيانات الفوري من الكاش المحلي (أوفلاين) ليعمل دون ثانية انتظار واحدة!
             const cachedLessons = localStorage.getItem(`laba_lessons_${tabId}`);
             const cachedExercises = localStorage.getItem(`laba_exercises_${tabId}`);
 
@@ -836,7 +904,6 @@
                     return;
                 }
 
-                // 1. عرض النوط والفيديوهات
                 Object.keys(localLessons).forEach(key => {
                     const lesson = localLessons[key];
                     const pdfItem = document.createElement('div');
@@ -855,7 +922,6 @@
                     filesList.appendChild(pdfItem);
                 });
 
-                // 2. عرض المسائل الرياضية المكتوبة بصيغة LaTeX وترتيبها بنظام الأكورديون
                 const sortedExercises = Object.keys(localExercises).map(key => ({ id: key, ...localExercises[key] }))
                                               .sort((a, b) => (a.order || 0) - (b.order || 0));
 
@@ -892,10 +958,8 @@
                 }
             };
 
-            // عرض البيانات المحفوظة محلياً فوراً (سريع جداً للأوفلاين والأونلاين)
             mergeAndRenderAll();
 
-            // الاستماع للتغييرات الحية في السيرفر وتحديث الكاش المحلي ديناميكياً
             currentLessonsRef = db.ref('lessons').orderByChild('tabId').equalTo(tabId);
             currentExercisesRef = db.ref('math_exercises').orderByChild('tabId').equalTo(tabId);
 
