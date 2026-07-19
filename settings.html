@@ -367,9 +367,10 @@
         // ✅ التعديل الجوهري: دالة تسجيل الخروج الاحترافية
         function logoutStudent() {
             // 1. إيقاف جميع مستمعات Firebase لمنع التجمد
-            db.ref().off();
-            if(confirm("هل أنت متأكد من رغبتك في تسجيل الخروج من هذا الجهاز؟ سيتم إغلاق الأقسام المخصصة تلقائياً.")) {
-                localStorage.removeItem("user_logged_in");
+            
+         if(confirm("هل أنت متأكد من رغبتك في تسجيل الخروج من هذا الجهاز؟ سيتم إغلاق الأقسام المخصصة تلقائياً.")) {
+              db.ref().off();
+             localStorage.removeItem("user_logged_in");
                 localStorage.removeItem('student_key');
                 localStorage.removeItem('student_phone');
                 localStorage.removeItem('user_phone');
