@@ -367,23 +367,25 @@
         // ✅ التعديل الجوهري: دالة تسجيل الخروج الاحترافية
         function logoutStudent() {
             // 1. إيقاف جميع مستمعات Firebase لمنع التجمد
-            db.ref().off(); 
-            
-            // 2. تنظيف بيانات التخزين
-            localStorage.removeItem("user_logged_in");
-            localStorage.removeItem('student_phone');
-            localStorage.removeItem('user_phone');
-            localStorage.removeItem('user_name');
-            localStorage.removeItem('user_governorate');
-            localStorage.removeItem('user_tier');
-            localStorage.removeItem('currentStudent');
-            
-            Object.keys(localStorage).forEach(key => {
-                if (key.startsWith('unlocked_')) localStorage.removeItem(key);
-            });
+            db.ref().off();
+            if(confirm("هل أنت متأكد من رغبتك في تسجيل الخروج من هذا الجهاز؟ سيتم إغلاق الأقسام المخصصة تلقائياً.")) {
+                localStorage.removeItem("user_logged_in");
+                localStorage.removeItem('student_key');
+                localStorage.removeItem('student_phone');
+                localStorage.removeItem('user_phone');
+                localStorage.removeItem('user_name');
+                localStorage.removeItem('user_governorate');
+                localStorage.removeItem('user_tier');
+                
+                localStorage.setItem('currentStudent', JSON.stringify({ name: "طالب زائر", isActivated: false, allowedTabs: {} }));
+                
+                Object.keys(localStorage).forEach(key => {
+                    if (key.startsWith('unlocked_')) localStorage.removeItem(key);
+                });
 
-            // 3. الانتقال الآمن باستخدام replace
-            window.location.replace("login1.html"); 
+                alert("🎯 تم تسجيل خروجك بنجاح. سيتم توجيهك لصفحة تسجيل الدخول الآن.");
+                window.location.href = "login1.html"; 
+            }
         }
 
         document.addEventListener("DOMContentLoaded", function() {
