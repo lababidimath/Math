@@ -366,28 +366,35 @@
 
         // ✅ التعديل الجوهري: دالة تسجيل الخروج الاحترافية
         function logoutStudent() {
-            // 1. إيقاف جميع مستمعات Firebase لمنع التجمد
-            
-         if(confirm("هل أنت متأكد من رغبتك في تسجيل الخروج من هذا الجهاز؟ سيتم إغلاق الأقسام المخصصة تلقائياً.")) {
-              db.ref().off();
-             localStorage.removeItem("user_logged_in");
-                localStorage.removeItem('student_key');
-                localStorage.removeItem('student_phone');
-                localStorage.removeItem('user_phone');
-                localStorage.removeItem('user_name');
-                localStorage.removeItem('user_governorate');
-                localStorage.removeItem('user_tier');
-                
-                localStorage.setItem('currentStudent', JSON.stringify({ name: "طالب زائر", isActivated: false, allowedTabs: {} }));
-                
-                Object.keys(localStorage).forEach(key => {
-                    if (key.startsWith('unlocked_')) localStorage.removeItem(key);
-                });
+    // 1. استخدام confirm فقط للتقليل من النوافذ المنبثقة المتعددة التي قد تسبب تعليقاً في WebView
+    if (confirm("هل أنت متأكد من رغبتك في تسجيل الخروج من هذا الجهاز؟")) {
+        
+        // 2. إيقاف الاتصال المباشر مع Firebase فوراً
+        db.ref().off();
 
-                alert("🎯 تم تسجيل خروجك بنجاح. سيتم توجيهك لصفحة تسجيل الدخول الآن.");
-                window.location.href = "login1.html"; 
-            }
-        }
+        // 3. مسح البيانات (بترتيب آمن)
+        const keysToRemove = [
+            "user_logged_in", "student_key", "student_phone", 
+            "user_phone", "user_name", "user_governorate", "user_tier"
+        ];
+        
+        keysToRemove.forEach(key => localStorage.removeItem(key));
+
+        // مسح أي مفاتيح تبدأ بـ unlocked_
+        Object.keys(localStorage).forEach(key => {
+            if (key.startsWith('unlocked_')) localStorage.removeItem(key);
+        });
+
+        // 4. تعيين حالة "زائر" قبل الخروج لضمان عدم بقاء أي بيانات حساسة في الذاكرة
+        localStorage.setItem('currentStudent', JSON.stringify({ name: "طالب زائر", isActivated: false, allowedTabs: {} }));
+
+        // 5. إضافة تأخير بسيط (100ms) قبل الانتقال لضمان معالجة المتصفح لعمليات المسح
+        setTimeout(() => {
+            window.location.href = "login1.html";
+        }, 100);
+    }
+}
+
 
         document.addEventListener("DOMContentLoaded", function() {
             const generalWa = document.getElementById('general-wa-link');
