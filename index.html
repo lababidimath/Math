@@ -3,134 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>منصة الأستاذ محمد لبابيدي | الرئيسية</title>
-    
-    <script>
-        // 🛡️ حماية التطبيق المحتضن محلياً: تحييد الـ Service Worker تماماً لمنع المكتبات الخارجية من إطلاق الأخطاء
-        if (window.location.protocol === 'file:') {
-            try {
-                Object.defineProperty(navigator, 'serviceWorker', {
-                    get: function () { return undefined; },
-                    configurable: true
-                });
-                console.log("🔒 تم تحييد Service Worker بنجاح لمنع أخطاء بيئة الـ WebView المحلية.");
-            } catch (e) {
-                console.log("تنبيه: لم يتم تحييد الخدمة برمجيًا.");
-            }
-        }
-
-        // 🌗 تطبيق الوضع الليلي فوراً قبل تحميل الجسم لمنع وميض الشاشة البيضاء المفاجئ
-        if (localStorage.getItem('platform-theme') === 'dark') {
-            document.documentElement.classList.add('dark-mode');
-        }
-        
-        // 🔐 إذا كان الطالب لم يسجل دخوله بعد، يتم توجيهه تلقائياً لصفحة الدخول
-        if (localStorage.getItem("user_logged_in") !== "true") {
-            window.location.href = "login1.html";
-        }
-    </script>
-    
+    <title>المكتبة الرقمية | الأستاذ محمد لبابيدي</title>
    <!-- السطر الجديد المحمي الذي يعمل بدون إنترنت (أوفلاين) -->
 <link rel="stylesheet" href="css/all.min.css">
 
+    
+   <script src="./firebase-app-compat.js"></script>
+<script src="./firebase-database-compat.js"></script>
 
-    <style>        
+
+    <script>
+        window.MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']],
+                displayMath: [['$$', '$$'], ['\\[', '\\]']],
+                processEscapes: true
+            },
+            options: {
+                ignoreHtmlClass: 'tex2jax_ignore',
+                processHtmlClass: 'tex2jax_process'
+            },
+            chtml: {
+                displayAlign: 'right',
+                displayIndent: '10px'
+            }
+        };
+    </script>
+  
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    
+    <style>
+        /* 🎨 المتغيرات الافتراضية (الوضع النهاري) */
         :root { 
             --primary-color: #1a365d; 
             --accent-color: #e53e3e; 
             --bg-color: #f7fafc; 
             --text-color: #2d3748; 
             --box-bg: #ffffff;
-            --card-border: #e2e8f0;
-            --pomo-bg: #edf2f7;
-            --slider-bg: #e2e8f0; 
-            --slider-btn-bg: rgba(0, 0, 0, 0.4);
-            --slider-btn-color: #ffffff;
-            --motivation-bg: #e2e8f0; 
-            --motivation-text: #2c5282;
+            --card-border: #edf2f7;
+            --success-color: #38a169;
+            --btn-text: #ffffff;
+            --danger-color: #e53e3e;
+            --overlay-bg: rgba(0, 0, 0, 0.4);
         }
         
-        /* 🌟 الألوان الخاصة بالوضع الليلي */
-        html.dark-mode body, html.dark-mode {
+        /* 🌟 الوضع الليلي المطور */
+        body.dark-mode {
             --bg-color: #111827;       
             --text-color: #f3f4f6;     
             --box-bg: #1f2937;         
             --primary-color: #06b6d4;  
             --accent-color: #f43f5e;   
-            --card-border: #374151;
-            --pomo-bg: #111827;
-            --slider-bg: #374151; 
-            --slider-btn-bg: rgba(255, 255, 255, 0.15);
-            --slider-btn-color: #06b6d4;
-            --motivation-bg: #2d3748; 
-            --motivation-text: #22d3ee;
+            --card-border: #374151;    
+            --success-color: #059669;  
+            --btn-text: #111827;       
+            --danger-color: #f43f5e;
+            --overlay-bg: rgba(0, 0, 0, 0.7);
         }
 
         body { 
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-            margin: 0; 
+            margin: 0;
             background-color: var(--bg-color); 
             color: var(--text-color); 
-            text-align: center; 
-            padding-bottom: 90px !important; 
+            padding-bottom: 90px !important;
             transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        /* 🔔 تصميم التنبيه العائم المطور في منتصف الصفحة بأنيميشن حديث */
+        #app-notification-toast {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            /* نقطة البداية المخفية: شفافة ومصغرة */
+            transform: translate(-50%, -50%) scale(0.8);
+            opacity: 0;
+            visibility: hidden;
+            
+            background: rgba(45, 55, 72, 0.95);
+            -webkit-backdrop-filter: blur(8px);
+            backdrop-filter: blur(8px);
+            color: white;
+            padding: 18px 26px;
+            border-radius: 18px;
+            z-index: 1000000;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.35);
+            font-weight: bold;
+            border: 2px solid #ffffff;
+            width: 82%;
+            max-width: 320px;
+            box-sizing: border-box;
+            
+            /* تأثير الانتقال السلس مع ارتداد خفيف عند الظهور */
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease, visibility 0.25s ease;
+        }
+        
+        /* حالة الظهور الأنيق */
+        #app-notification-toast.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        /* حالة الاختفاء السريع */
+        #app-notification-toast.hide {
+            opacity: 0;
+            visibility: hidden;
+            transform: translate(-50%, -50%) scale(0.85);
+            transition: transform 0.2s ease-in, opacity 0.2s ease-in, visibility 0.2s ease-in;
+        }
+
+        body.dark-mode #app-notification-toast {
+            background: rgba(31, 41, 55, 0.95);
+            border-color: var(--primary-color);
+            color: #f3f4f6;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
         }
         
         header { 
             background: #1a365d; 
             color: white; 
-            padding: 30px; 
-            transition: background 0.3s;
+            padding: 20px; 
+            text-align: center; 
+            transition: background 0.3s ease, border-color 0.3s ease;
         }
         
-        html.dark-mode header {
-            background: #1f2937;
+        body.dark-mode header {
+            background: var(--box-bg);
             border-bottom: 2px solid var(--primary-color);
         }
 
-        /* شريط الأخبار المتحرك */
-        .ticker-wrap {
-            width: 100%;
-            overflow: hidden; 
-            background-color: #feebc8; 
-            border-bottom: 2px solid #fbd38d;
-            box-sizing: border-box;
-            padding: 10px 0;
-            direction: ltr; 
-            transition: all 0.3s;
-        }
-        
-        html.dark-mode .ticker-wrap {
-            background-color: #2d200a;
-            border-bottom: 2px solid #b45309;
-        }
-
-        .ticker {
-            display: inline-block;
-            white-space: nowrap; 
-            animation: ticker-move-left-to-right 15s linear infinite; 
-        }
-
-        .ticker:hover { animation-play-state: paused; }
-
-        .ticker__item {
-            display: inline-block;
-            padding: 0 3rem; 
-            font-size: 1rem;
-            color: #c05621; 
-            font-weight: bold;
-            direction: rtl; 
-        }
-        
-        html.dark-mode .ticker__item {
-            color: #fbbf24;
-        }
-
-        @keyframes ticker-move-left-to-right {
-            0% { transform: translate3d(-100%, 0, 0); }
-            100% { transform: translate3d(100vw, 0, 0); }
-        }
-        
         .header-container {
             display: flex;
             align-items: center;
@@ -140,530 +143,217 @@
             margin: 0 auto;
         }
 
-        .logo-img {
-            width: 80px; 
-            height: auto; 
-            object-fit: cover;
-        }
-
-        .header-text {
-            text-align: right; 
-            display: flex;
-            flex-direction: column;
-            gap: 5px; 
-        }
+        .logo-img { width: 80px; height: auto; object-fit: cover; }
 
         .main-title {
-            font-size: 2.4rem;
+            font-size: 1.8rem;
             font-weight: bold;
             color: #ffffff; 
             margin: 0;
+            transition: color 0.3s ease;
+        }
+        body.dark-mode .main-title { color: var(--primary-color); }
+
+        .container { max-width: 800px; margin: 30px auto; padding: 0 20px; }
+        .container h2 { text-align: center; color: var(--primary-color); font-size: 1.4rem; margin-bottom: 25px; }
+
+        .section-description-text {
+            text-align: center; font-size: 0.95rem; color: var(--text-color); opacity: 0.8;
+            margin-top: -15px; margin-bottom: 25px; line-height: 1.6; max-width: 600px;
+            margin-left: auto; margin-right: auto; display: none; animation: fadeIn 0.4s ease;
+        }
+
+        .navigation-action-area { display: flex; justify-content: flex-start; margin-bottom: 20px; min-height: 40px; }
+
+        .btn-back-platform {
+            background: var(--box-bg); color: var(--primary-color); border: 2px solid var(--card-border);
+            padding: 8px 18px; border-radius: 50px; font-weight: bold; cursor: pointer;
+            display: inline-flex; align-items: center; gap: 8px; font-size: 0.9rem;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .btn-back-platform:hover { background: var(--primary-color); color: #ffffff; border-color: var(--primary-color); transform: translateX(-4px); }
+        body.dark-mode .btn-back-platform:hover { color: #111827; }
+
+        .fade-slide-animation { animation: elegantSlideIn 0.38s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes elegantSlideIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* 🗂️ تصميم المربعات */
+        .tabs-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; margin-bottom: 30px; }
+
+        .tab-square {
+            aspect-ratio: 1 / 1; background: var(--box-bg); border: 2px solid var(--card-border);
+            border-radius: 16px; display: flex; flex-direction: column; align-items: center;
+            justify-content: center; gap: 12px; cursor: pointer; transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02); padding: 15px; text-align: center; position: relative; box-sizing: border-box;
+        }
+        .tab-square span { font-weight: bold; font-size: 1rem; color: var(--text-color); }
+        .tab-square i.main-icon { font-size: 2.5rem; color: var(--primary-color); }
+        .tab-custom-img { width: 75px; height: 75px; object-fit: cover; border-radius: 12px; transition: transform 0.3s; }
+        .tab-square:hover .tab-custom-img { transform: scale(1.05); }
+
+        .tab-square.active { border-color: var(--accent-color); background-color: rgba(26, 54, 93, 0.05); }
+        body.dark-mode .tab-square.active { border-color: var(--primary-color); background-color: rgba(6, 182, 212, 0.1); }
+
+        .tab-square.locked { background: var(--box-bg); border-color: var(--card-border); }
+        .lock-badge { position: absolute; top: 12px; left: 12px; color: var(--danger-color); font-size: 1.1rem; z-index: 5; }
+
+        /* 💎 تصميم النافذة العائمة للمودال */
+        .activation-modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--overlay-bg);
+            backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center;
+            z-index: 100000; opacity: 0; visibility: hidden; transition: all 0.3s ease;
+        }
+        .activation-modal-overlay.open { opacity: 1; visibility: visible; }
+
+        .activation-modal-card {
+            background: var(--box-bg); border: 1px solid var(--card-border); width: 90%; max-width: 400px;
+            border-radius: 20px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); text-align: center;
+            box-sizing: border-box; transform: translateY(30px); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .activation-modal-overlay.open .activation-modal-card { transform: translateY(0); }
+
+        .modal-icon-header {
+            width: 60px; height: 60px; background: rgba(229, 62, 62, 0.1); color: var(--danger-color);
+            border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.6rem; margin: 0 auto 15px auto;
+        }
+        body.dark-mode .modal-icon-header { background: rgba(244, 63, 94, 0.15); }
+
+        .activation-modal-card h4 { margin: 0 0 10px 0; color: var(--text-color); font-size: 1.2rem; }
+        .activation-modal-card p { margin: 0 0 20px 0; font-size: 0.9rem; color: var(--text-color); opacity: 0.7; line-height: 1.5; }
+
+        .input-group-container { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; text-align: right; }
+        .input-group-container label { font-size: 0.85rem; font-weight: bold; color: var(--text-color); opacity: 0.8; margin-right: 4px; }
+        
+        .modal-input-field {
+            width: 100%; padding: 12px; font-size: 1.05rem; border: 2px solid var(--card-border);
+            background: var(--bg-color); color: var(--text-color); border-radius: 10px;
+            box-sizing: border-box; transition: border-color 0.2s; text-align: center; font-weight: bold;
+        }
+        .modal-input-field:focus { border-color: var(--primary-color); outline: none; }
+        #modal-input-code { text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .modal-actions { display: flex; gap: 10px; }
+        .btn-modal-submit { flex: 2; background: var(--primary-color); color: white; border: none; padding: 12px; font-size: 0.95rem; border-radius: 10px; cursor: pointer; font-weight: bold; }
+        body.dark-mode .btn-modal-submit { color: #111827; }
+        .btn-modal-cancel { flex: 1; background: var(--bg-color); color: var(--text-color); border: 1px solid var(--card-border); padding: 12px; font-size: 0.95rem; border-radius: 10px; cursor: pointer; }
+
+        /* المحتويات والنوط */
+        .files-section { background: var(--box-bg); border-radius: 12px; padding: 20px; border: 1px solid var(--card-border); display: none; animation: fadeIn 0.4s ease; }
+        .files-section h3 { margin-top: 0; color: var(--primary-color); font-size: 1.2rem; border-bottom: 2px solid var(--card-border); padding-bottom: 10px; margin-bottom: 15px; }
+        .pdf-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 10px; border-bottom: 1px solid var(--card-border); color: var(--text-color); }
+        .btn-preview { background: var(--success-color); color: #ffffff; padding: 8px 16px; text-decoration: none; border-radius: 8px; font-weight: bold; font-size: 0.85rem; display: flex; align-items: center; gap: 6px; border: none; }
+        
+        /* 📐 صناديق عرض التمارين الرياضية المحسنة */
+        .latex-exercise-card {
+            background: var(--box-bg); border: 1px solid var(--card-border); 
+            border-radius: 14px; margin-bottom: 15px; width: 100%; box-sizing: border-box;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.01); overflow: hidden;
         }
         
-        html.dark-mode .main-title {
-            color: var(--primary-color);
+        .exercise-header-clickable {
+            background: rgba(26, 54, 93, 0.03); padding: 15px 18px; display: flex; 
+            align-items: center; justify-content: space-between; cursor: pointer; user-select: none;
+            transition: background-color 0.2s;
+        }
+        .exercise-header-clickable:hover { background: rgba(26, 54, 93, 0.07); }
+        body.dark-mode .exercise-header-clickable { background: rgba(6, 182, 212, 0.02); }
+        body.dark-mode .exercise-header-clickable:hover { background: rgba(6, 182, 212, 0.06); }
+
+        .exercise-toggle-content {
+            display: none; padding: 18px; border-top: 1px solid var(--card-border); background: var(--box-bg);
         }
 
-        .hero-desc {
-            font-size: 1rem;
-            color: #ffffff;
-            margin-top: 5px;
-            opacity: 0.9;
+        .exercise-problem-box {
+            background: var(--bg-color); padding: 15px; border-radius: 10px; 
+            border-right: 4px solid var(--primary-color); line-height: 1.7; font-size: 1rem;
+            overflow-x: auto; white-space: normal; word-break: break-word; max-width: 100%; margin-bottom: 12px;
         }
-        
-        .container { 
-            max-width: 800px; 
-            margin: 30px auto; 
-            padding: 20px; 
-            background: var(--box-bg); 
-            border-radius: 12px; 
-            box-shadow: 0 4px 6px rgba(0,0,0,0.05); 
-            transition: all 0.3s;
-        }
-        
-        html.dark-mode .container {
-            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-            border: 1px solid #374151;
+        .exercise-solution-box {
+            display: none; background: rgba(56, 161, 105, 0.06); padding: 15px; 
+            border-radius: 10px; border-right: 4px solid var(--success-color); 
+            line-height: 1.7; margin-top: 12px; animation: elegantSlideIn 0.3s ease;
+            overflow-x: auto; max-width: 100%;
         }
 
-        /* 📢 تصميم سلايدر الإعلانات المطور والمحمي من أخطاء الـ RTL */
-        .slider-wrapper {
-            position: relative;
-            width: 100%;
-            height: 320px;
-            background-color: var(--slider-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-            margin-bottom: 25px;
-            display: none; 
-            transition: background 0.3s, border 0.3s;
-            cursor: grab;
-            touch-action: pan-y;
-            direction: ltr; /* حماية حركة الـ TranslateX داخل البيئة العربية */
+        .exercise-problem-box::-webkit-scrollbar, 
+        .exercise-solution-box::-webkit-scrollbar {
+            height: 5px;
         }
-        .slider-wrapper:active {
-            cursor: grabbing;
-        }
-        .slider-container {
-            display: flex;
-            width: 100%;
-            height: 100%;
-            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-        .slide-item {
-            min-width: 100%;
-            height: 100%;
-            position: relative;
-            user-select: none;
-        }
-        .slide-item img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            cursor: pointer;
-            pointer-events: auto;
+        .exercise-problem-box::-webkit-scrollbar-thumb, 
+        .exercise-solution-box::-webkit-scrollbar-thumb {
+            background: var(--card-border); border-radius: 10px;
         }
 
-        /* 🔍 النافذة المنبثقة الاحترافية لتكبير الإعلان */
-        .ad-modal {
-            display: none; 
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(15, 23, 42, 0.95); 
-            z-index: 100000;
-            justify-content: center;
-            align-items: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        .ad-modal.show {
-            display: flex;
-            opacity: 1;
-        }
-        .modal-wrapper {
-            position: relative;
-            max-width: 90%;
-            max-height: 85%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .ad-modal img {
-            max-width: 100%;
-            max-height: 85vh;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            transform: scale(0.8);
-            transition: transform 0.3s ease;
-        }
-        .ad-modal.show img {
-            transform: scale(1);
-        }
-        .close-modal-btn {
-            position: absolute;
-            top: -50px; left: 50%;
-            transform: translateX(-50%);
-            color: white;
-            font-size: 30px;
-            cursor: pointer;
-            background: rgba(255, 255, 255, 0.15);
-            width: 45px; height: 45px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.2s;
-            border: 1px solid rgba(255, 255, 255, 0.3);
-        }
-        .close-modal-btn:hover { background: rgba(255, 255, 255, 0.3); }
-        
-        /* 🔔 التنسيق الفاخر لإشعار الـ Toast المنبثق من الأعلى */
-        .notification-toast {
-            position: fixed;
-            top: -120px; 
-            left: 50%;
-            transform: translateX(-50%);
-            width: 90%;
-            max-width: 460px;
-            background: var(--box-bg);
-            border-right: 5px solid var(--accent-color);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-            border-radius: 10px;
-            padding: 16px;
-            z-index: 200000;
-            transition: top 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            display: flex;
-            align-items: flex-start;
-            gap: 14px;
-            text-align: right;
-            box-sizing: border-box;
-        }
-        .notification-toast.show {
-            top: 25px; 
-        }
-        .noti-icon-box {
-            color: var(--accent-color);
-            font-size: 1.6rem;
-            margin-top: 2px;
-        }
-        .noti-info-wrap {
-            flex: 1;
-        }
-        .noti-head-title {
-            font-weight: 800;
-            margin: 0 0 4px 0;
-            font-size: 1.1rem;
-            color: var(--text-color);
-        }
-        .noti-main-body {
-            margin: 0;
-            font-size: 0.92rem;
-            color: var(--text-color);
-            opacity: 0.85;
-            line-height: 1.4;
-        }
-        .noti-close-x-btn {
-            background: none;
-            border: none;
-            color: #a0aec0;
-            font-size: 1.2rem;
-            cursor: pointer;
-            padding: 0 4px;
-            transition: color 0.2s;
-        }
-        .noti-close-x-btn:hover { color: var(--accent-color); }
-
-        /* تصميم قسم العداد التنازلي البكالوريا */
-        .countdown-section { 
-            background: linear-gradient(135deg, #1a365d, #2a4365); 
-            color: white; 
-            padding: 25px; 
-            border-radius: 12px; 
-            margin-bottom: 20px; 
-            box-shadow: 0 4px 15px rgba(26, 54, 93, 0.2);
-            transition: all 0.3s;
-        }
-        
-        html.dark-mode .countdown-section {
-            background: #1f2937;
-            border: 1px solid #374151;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-        }
-        
-        .countdown-title {
-            font-size: 1.1rem;
-            margin-bottom: 15px;
-            font-weight: bold;
-        }
-
-        .timer-display { 
-            display: flex; 
-            justify-content: center; 
-            gap: 15px; 
-            direction: ltr; 
-        }
-        
-        .time-box {
-            background: var(--accent-color);
-            color: white;
-            padding: 10px 15px;
-            border-radius: 8px;
-            min-width: 75px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            transition: all 0.3s;
-        }
-
-        .time-number {
-            display: block;
-            font-size: 2rem;
-            font-weight: bold;
-            line-height: 1.2;
-        }
-
-        .time-label {
-            display: block;
-            font-size: 0.85rem;
-            margin-top: 5px;
-            opacity: 0.9;
-        }
-
-        /* ✨ تصميم صندوق العبارات التحفيزية */
-        .motivation-box {
-            background-color: var(--motivation-bg);
-            border: 1px solid var(--card-border);
-            padding: 15px 20px;
-            border-radius: 10px;
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            box-shadow: inset 0 2px 4px rgba(0,0,0,0.02);
-            transition: all 0.3s ease;
-        }
-        .motivation-icon {
-            color: var(--accent-color);
-            font-size: 1.3rem;
-        }
-        .motivation-text {
-            color: var(--motivation-text);
-            font-size: 1.05rem;
-            font-weight: 700;
-            margin: 0;
-            line-height: 1.5;
-        }
-
-        /* ⏱️ التنسيقات الدائرية لمؤقت بومودورو */
-        .pomodoro-box {
-            background-color: var(--pomo-bg);
-            border: 1px solid var(--card-border);
-            border-radius: 12px;
-            padding: 20px;
-            margin: 25px auto 10px auto;
-            max-width: 500px;
-            transition: all 0.3s ease;
-        }
-
-        .pomo-title {
-            font-size: 1.1rem;
-            font-weight: bold;
-            color: var(--text-color);
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-        }
-
-        .pomo-tabs {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-bottom: 10px;
-        }
-
-        .pomo-tab-btn {
-            background: transparent;
-            border: 1px solid var(--card-border);
-            color: var(--text-color);
-            padding: 6px 14px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.9rem;
-            transition: all 0.2s ease;
-        }
-
-        .pomo-tab-btn.active {
-            background-color: var(--primary-color);
-            color: #ffffff;
-            border-color: var(--primary-color);
-        }
-
-        html.dark-mode .pomo-tab-btn.active {
-            color: #111827;
-        }
-
-        .pomo-circle-container {
-            position: relative;
-            width: 180px;
-            height: 180px;
-            margin: 15px auto;
-        }
-
-        .pomo-svg {
-            transform: rotate(-90deg); 
-            width: 100%;
-            height: 100%;
-        }
-
-        .pomo-circle-bg {
-            fill: none;
-            stroke: var(--card-border);
-            stroke-width: 8;
-        }
-
-        .pomo-circle-progress {
-            fill: none;
-            stroke: var(--accent-color); 
-            stroke-width: 8;
-            stroke-linecap: round; 
-            stroke-dasharray: 502.65; 
-            stroke-dashoffset: 0;
-            transition: stroke-dashoffset 0.3s linear; 
-        }
-
-        .pomo-time-display {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 2.2rem;
-            font-weight: bold;
-            font-family: monospace, sans-serif;
-            color: var(--text-color);
-            letter-spacing: 1px;
-            direction: ltr;
-        }
-
-        .pomo-actions {
-            display: flex;
-            justify-content: center;
-            gap: 12px;
-            margin-top: 5px;
-        }
-
-        .pomo-act-btn {
-            border: none;
-            padding: 8px 18px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 0.95rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            transition: background 0.2s;
-        }
-
-        .pomo-btn-start {
-            background-color: #28a745;
-            color: white;
-        }
-        .pomo-btn-start:hover { background-color: #218838; }
-
-        .pomo-btn-pause {
-            background-color: #ffc107;
-            color: #212529;
-            display: none;
-        }
-
-        .pomo-btn-reset {
-            background-color: #6c757d;
-            color: white;
-        }
-        .pomo-btn-reset:hover { background-color: #5a6268; }
-
-        .signature-box {
-            text-align: left;
-            font-weight: bold;
-            margin-top: 20px;
-            color: var(--primary-color);
-            font-size: 1.05rem;
-        }
-
-        /* شريط التنقل السفلي الثابت */
+        /* شريط التنقل السفلي */
         .bottom-nav {
-            position: fixed !important;
-            bottom: 0 !important;
-            left: 0 !important;
-            width: 100% !important;
-            height: 70px !important;
-            background-color: #ffffff !important;
-            display: flex !important;
-            justify-content: space-around !important; 
-            align-items: center !important;
-            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.08) !important;
-            z-index: 99999 !important; 
-            padding: 0 !important;
-            margin: 0 !important;
-            box-sizing: border-box !important;
-            transition: background 0.3s;
+            position: fixed !important; bottom: 0 !important; left: 0 !important; width: 100% !important; height: 70px !important;
+            background-color: #ffffff !important; display: flex !important; justify-content: space-around !important; align-items: center !important;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.08) !important; z-index: 99999 !important; padding: 0 !important; margin: 0 !important; box-sizing: border-box !important;
         }
-        
-        html.dark-mode .bottom-nav {
-            background-color: #1f2937 !important;
-            border-top: 1px solid #374151;
-            box-shadow: 0 -4px 10px rgba(0, 0, 0, 0.3) !important;
-        }
-
-        .nav-item {
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: center !important;
-            justify-content: center !important;
-            color: #9ca3af !important; 
-            text-decoration: none !important;
-            width: 100% !important;
-            height: 100% !important;
-            transition: all 0.25s ease-in-out !important;
-        }
-
-        .icon-wrapper {
-            font-size: 1.4rem !important; 
-            height: 28px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
-        }
-
-        .nav-text {
-            font-size: 0.8rem !important;
-            font-weight: 600 !important;
-            margin-top: 5px !important;
-            opacity: 0.8 !important;
-        }
-
-        .nav-item.active {
-            color: var(--accent-color) !important; 
-        }
-
-        .nav-item.active .icon-wrapper {
-            transform: translateY(-6px) scale(1.2) !important; 
-            color: var(--accent-color) !important;
-        }
+        body.dark-mode .bottom-nav { background-color: var(--box-bg) !important; border-top: 1px solid var(--card-border) !important; }
+        .nav-item { display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; color: #9ca3af !important; text-decoration: none !important; width: 100% !important; height: 100% !important; }
+        .icon-wrapper { font-size: 1.4rem !important; height: 28px; display: flex; align-items: center; justify-content: center; transition: transform 0.3s !important; }
+        .nav-text { font-size: 0.8rem !important; font-weight: 600 !important; margin-top: 5px !important; }
+        .nav-item.active { color: var(--accent-color) !important; }
+        .nav-item.active .icon-wrapper { transform: translateY(-6px) scale(1.2) !important; color: var(--accent-color) !important; }
 
         @media (max-width: 600px) {
             .header-container { flex-direction: column; text-align: center; }
-            .header-text { text-align: center; }
-            .main-title { font-size: 1.8rem; }
             .logo-img { width: 70px; }
-            .timer-display { gap: 8px; }
-            .time-box { min-width: 60px; padding: 8px 10px; }
-            .time-number { font-size: 1.5rem; }
-            .time-label { font-size: 0.75rem; }
-            .slider-wrapper { height: 180px; }
-            .motivation-text { font-size: 0.95rem; }
+            .main-title { font-size: 1.5rem; }
+            .tabs-grid { gap: 10px; }
+            .tab-square { border-radius: 12px; padding: 10px; gap: 8px; }
+            .tab-square i.main-icon { font-size: 2rem; }
+            .tab-custom-img { width: 55px; height: 55px; border-radius: 8px; }
+            .tab-square span { font-size: 0.85rem; }
         }
     </style>
 </head>
-<body>
-
-    <!-- 🔔 هيكلية صندوق الإشعارات الجديد -->
-    <div id="app-notification-toast" class="notification-toast">
-        <div class="noti-icon-box"><i class="fa-solid fa-bell fa-bounce"></i></div>
-        <div class="noti-info-wrap">
-            <h4 id="noti-title" class="noti-head-title">تنبيه جديد</h4>
-            <p id="noti-body" class="noti-main-body">جاري تحميل تفاصيل الإشعار البث المباشر...</p>
-        </div>
-        <button class="noti-close-x-btn" onclick="closeNotification()">&times;</button>
-    </div>
-
-    <div class="ticker-wrap" id="ticker-wrap" style="display: none;">
-        <div class="ticker" id="ticker-container"></div>
-    </div>
+<body class="tex2jax_ignore">
 
     <header>
         <div class="header-container">
-            <img src="logo.png" alt="لوغو منصة الأستاذ محمد لبابيدي" class="logo-img">
+            <img src="logo.png" alt="لوغو المنصة" class="logo-img">
             <div class="header-text">
-                <h2 class="main-title">المنصة التعليمية </h2>
-                <h2 class="main-title">للأستاذ محمد لبابيدي</h2>
-                <p class="hero-desc">التميز والتفوق في مادة الرياضيات لطلاب البكالوريا</p>
+                 <h1 class="main-title">مكتبة الملفات والنوط الرقمية 📚</h1>
             </div>
         </div>
     </header>
 
+    <!-- 🔔 حاوية الإشعارات المحدثة متموضعة في السنتر تماماً بدقة عالية -->
+    <div id="app-notification-toast">
+        <p id="noti-body" style="margin:0; font-size: 0.95rem; line-height: 1.4;"></p>
+    </div>
+
+    <div class="activation-modal-overlay" id="activation-modal">
+        <div class="activation-modal-card">
+            <div class="modal-icon-header">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <h4 id="modal-tab-title">تفعيل محتوى مغلق</h4>
+            <p>أدخل رقم هاتفك المسجل، وسيتم التحقق من تفعيلك التلقائي فوراً بذكاء:</p>
+            
+            <div class="input-group-container">
+                <label for="modal-input-phone"><i class="fa-solid fa-phone"></i> رقم هاتف الطالب:</label>
+                <input type="tel" id="modal-input-phone" class="modal-input-field" placeholder="09XXXXXXXX">
+                
+                <label for="modal-input-code"><i class="fa-solid fa-key"></i> كود التفعيل اليدوي (إذا لم تكن مفعلاً تلقائياً):</label>
+                <input type="text" id="modal-input-code" class="modal-input-field" placeholder="LABA-XXXXXX" maxlength="15">
+            </div>
+
+            <div class="modal-actions">
+                <button class="btn-modal-submit" id="modal-btn-confirm">تأكيد وتفعيل القسم</button>
+                <button class="btn-modal-cancel" onclick="closeActivationModal()">إلغاء</button>
+            </div>
+        </div>
+    </div>
+
     <nav class="bottom-nav">
-        <a href="index.html" class="nav-item active">
+        <a href="index.html" class="nav-item">
             <div class="icon-wrapper"><i class="fa-solid fa-house"></i></div>
             <span class="nav-text">الرئيسية</span>
         </a>
-        <a href="library.html" class="nav-item">
+        <a href="library.html" class="nav-item active">
             <div class="icon-wrapper"><i class="fa-solid fa-book-open"></i></div>
             <span class="nav-text">المكتبة</span>
         </a>
@@ -678,68 +368,19 @@
     </nav>
 
     <div class="container">
-        <div class="slider-wrapper" id="slider-wrapper">
-            <div class="slider-container" id="slider-container"></div>
-        </div>
-
-        <div class="countdown-section">
-            <div class="countdown-title">⏳ الوقت المتبقي على امتحانات البكالوريا 2027 :</div>
-            <div class="timer-display">
-                <div class="time-box"><span class="time-number" id="days">00</span><span class="time-label">الأيام</span></div>
-                <div class="time-box"><span class="time-number" id="hours">00</span><span class="time-label">الساعات</span></div>
-                <div class="time-box"><span class="time-number" id="minutes">00</span><span class="time-label">الدقائق</span></div>
-                <div class="time-box"><span class="time-number" id="seconds">00</span><span class="time-label">الثواني</span></div>
-            </div>
-        </div>
-
-        <div class="motivation-box">
-            <i class="fa-solid fa-lightbulb motivation-icon"></i>
-            <p class="motivation-text" id="motivation-text">يا بطل البكالوريا، تنظيم وقتك اليوم هو مفتاح تفوقك غداً!</p>
-        </div>
-
-        <h2>مرحباً بكم طلابنا</h2>
-        <p>تم إنشاء هذه المنصة لتسهيل وصولكم إلى النوط والاختبارات المؤتمتة الخاصة بمادة الرياضيات. تنقل عبر القائمة في الأسفل لاستكشاف المحتوى.</p>
+        <div class="navigation-action-area" id="back-action-area"></div>
+        <h2 id="library-section-title">اختر القسم المستهدف لتصفح الملفات:</h2>
+        <p id="library-section-description" class="section-description-text"></p>
         
+        <div class="tabs-grid fade-slide-animation" id="dynamic-tabs">
+            <p style="grid-column: span 2; text-align: center; color: #94a3b8;">جاري تحميل الأقسام الدراسية...</p>
+        </div>
         
-        <div class="pomodoro-box">
-            <div class="pomo-title">
-                <i class="fa-solid fa-stopwatch-20"></i>
-                <span>مؤقت التركيز وتنظيم دراسة الرياضيات</span>
-            </div>
-            <div class="pomo-tabs">
-                <button class="pomo-tab-btn active" id="btn-mode-study" onclick="switchPomoMode('study')">📚 جلسة دراسة</button>
-                <button class="pomo-tab-btn" id="btn-mode-break" onclick="switchPomoMode('break')">☕ استراحة قصيرة</button>
-            </div>
-            <div class="pomo-circle-container">
-                <svg class="pomo-svg" viewBox="0 0 180 180">
-                    <circle class="pomo-circle-bg" cx="90" cy="90" r="80"></circle>
-                    <circle class="pomo-circle-progress" id="pomo-progress" cx="90" cy="90" r="80"></circle>
-                </svg>
-                <div class="pomo-time-display" id="pomo-time">25:00</div>
-            </div>
-            <div class="pomo-actions">
-                <button class="pomo-act-btn pomo-btn-start" id="pomo-start" onclick="startPomoTimer()">
-                    <i class="fa-solid fa-play"></i> ابدأ التركيز
-                </button>
-                <button class="pomo-act-btn pomo-btn-pause" id="pomo-pause" onclick="pausePomoTimer()">
-                    <i class="fa-solid fa-pause"></i> إيقاف مؤقت
-                </button>
-                <button class="pomo-act-btn pomo-btn-reset" onclick="resetPomoTimer()">
-                    <i class="fa-solid fa-rotate-right"></i> إعادة تعيين
-                </button>
-            </div>
+        <div class="files-section" id="files-section">
+            <h3 id="selected-tab-title">المحتويات</h3>
+            <div id="files-list" class="tex2jax_process"></div>
         </div>
     </div>
-
-    <div id="imageModal" class="ad-modal" onclick="closeAdModal()">
-        <div class="modal-wrapper" onclick="event.stopPropagation()">
-            <span class="close-modal-btn" onclick="closeAdModal()">&times;</span>
-            <img id="modalImg" src="" alt="معاينة الإعلان كاملاً">
-        </div>
-    </div>
-<!-- في رأس الصفحة أو قبل إغلاق الوسم body -->
-<script src="./firebase-app-compat.js"></script>
-<script src="./firebase-database-compat.js"></script>
 
     <script>
         const firebaseConfig = {
@@ -752,472 +393,660 @@
             appId: "1:852..."
         };
 
-        const isOnline = navigator.onLine;
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+        
+        const SECRET_SALT = "Prof_Lababidi_Math_2027";
+        
+        let allTabsData = {}; 
+        let navigationStack = []; 
+        let currentStudentData = { name: "طالب زائر", isActivated: false, isVip: false, allowedTabs: {} }; 
+        let currentActiveTabId = null;
+        let pendingTabIdToActivate = null;
+        let activeLiveRef = null; 
 
-        /* ──────────────── 📢 دوال معالجة وبناء البيانات والواجهة ──────────────── */
+        let currentLessonsRef = null;
+        let currentExercisesRef = null;
 
-        // 1. بناء الأخبار العاجلة على الشاشة
-        function renderNews(newsData) {
-            const tickerContainer = document.getElementById('ticker-container');
-            const tickerWrap = document.getElementById('ticker-wrap');
-            if(!newsData) { tickerWrap.style.display = "none"; return; }
-            tickerWrap.style.display = "block";
-            tickerContainer.innerHTML = "";
-            Object.keys(newsData).forEach(key => {
-                tickerContainer.innerHTML += `<div class="ticker__item">🔥 ${newsData[key].text}</div>`;
-            });
-        }
-
-        // 2. بناء وعرض سلايدر الإعلانات
-        function renderAds(adsData) {
-            const sliderContainer = document.getElementById('slider-container');
-            const sliderWrapper = document.getElementById('slider-wrapper');
-            sliderContainer.innerHTML = "";
-            clearInterval(autoSlideInterval); 
-            
-            if(!adsData) { sliderWrapper.style.display = "none"; return; }
-            
-            const keys = Object.keys(adsData);
-            slideCount = keys.length;
-            sliderWrapper.style.display = "block"; 
-            
-            let slidesHtml = [];
-            keys.forEach(key => {
-                const ad = adsData[key];
-                let clickAttr = ad.link && ad.link.trim() !== "" ? `onclick="window.open('${ad.link}', '_blank')"` : `onclick="openAdModal('${ad.image}')"`;
-                slidesHtml.push(`
-                    <div class="slide-item">
-                        <img src="${ad.image}" ${clickAttr} onerror="this.parentElement.style.display='none'">
-                    </div>`);
-            });
-            
-            if (slideCount > 1) {
-                sliderContainer.innerHTML = slidesHtml[slideCount - 1] + slidesHtml.join('') + slidesHtml[0];
-                currentSlide = 1; 
-            } else {
-                sliderContainer.innerHTML = slidesHtml.join('');
-                currentSlide = 0;
-            }
-            
-            sliderContainer.style.transition = 'none';
-            sliderContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
-            
-            if (slideCount > 1) {
-                startAutoSlide(); 
-            }
-        }
-
-        /* ──────────────── 🔔 نظام الإشعارات الفورية الحية ──────────────── */
-        function triggerInAppNotification(title, message, id) {
+        // دالة عرض التنبيهات المعدلة لتطبيق تأثيرات الأنيميشن الحديثة (تغيير كلاسات الـ CSS)
+        let toastTimeout = null;
+        function showNotification(message) {
             const toast = document.getElementById('app-notification-toast');
-            document.getElementById('noti-title').innerText = title;
-            document.getElementById('noti-body').innerText = message;
+            const toastBody = document.getElementById('noti-body');
+            if (!toast || !toastBody) return;
+
+            toastBody.innerHTML = message;
             
+            // تفعيل كلاس الظهور وحذف كلاس الإخفاء القديم إن وجد
+            toast.classList.remove('hide');
             toast.classList.add('show');
-            if(id !== "pomo") {
-                localStorage.setItem('last_seen_notification_id', id);
-            }
-            
-            setTimeout(() => {
-                closeNotification();
-            }, 8000);
+
+            if (toastTimeout) clearTimeout(toastTimeout);
+
+            // بدء عملية الإخفاء التلقائي بأنيميشن تراجع تدريجي بعد 3 ثوانٍ
+            toastTimeout = setTimeout(() => {
+                toast.classList.remove('show');
+                toast.classList.add('hide');
+            }, 3000);
         }
 
-        function closeNotification() {
-            document.getElementById('app-notification-toast').classList.remove('show');
-        }
-
-        /* ──────────────── 🔄 السلايدر المطور ذو التمرير اللانهائي والسحب الحر ──────────────── */
-        let currentSlide = 1;
-        let slideCount = 0;
-        let autoSlideInterval;
-        let isDragging = false;
-        let startX = 0;
-        let deltaX = 0;
-
-        const sliderContainer = document.getElementById('slider-container');
-        const sliderWrapper = document.getElementById('slider-wrapper');
-
-        sliderContainer.addEventListener('transitionend', () => {
-            if (slideCount <= 1) return;
-            if (currentSlide >= slideCount + 1) {
-                sliderContainer.style.transition = 'none';
-                currentSlide = 1;
-                sliderContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
-            } else if (currentSlide <= 0) {
-                sliderContainer.style.transition = 'none';
-                currentSlide = slideCount;
-                sliderContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
-            }
-        });
-
-        function startAutoSlide() {
-            clearInterval(autoSlideInterval);
-            if (slideCount > 1) {
-                autoSlideInterval = setInterval(() => {
-                    currentSlide++;
-                    sliderContainer.style.transition = 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
-                    sliderContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
-                }, 4000); 
-            }
-        }
-
-        /* 📱 التحكم بالسحب اللمسي الحر المتجاوب والماوس */
-        sliderWrapper.addEventListener('pointerdown', e => {
-            if (slideCount <= 1) return;
-            isDragging = true;
-            startX = e.clientX;
-            deltaX = 0;
-            clearInterval(autoSlideInterval);
-            sliderContainer.style.transition = 'none';
-            sliderWrapper.style.cursor = 'grabbing';
-        });
-
-        sliderWrapper.addEventListener('pointermove', e => {
-            if (!isDragging) return;
-            deltaX = e.clientX - startX;
+        function isTabAllowed(tabId) {
+            const tab = allTabsData[tabId];
+            if (!tab) return false;
             
-            if (Math.abs(deltaX) > 10) {
-                sliderContainer.style.pointerEvents = 'none';
+            if (currentStudentData && (currentStudentData.isVip === true || currentStudentData.isVip === 'true')) {
+                return true;
             }
             
-            let deltaPercent = (deltaX / sliderWrapper.offsetWidth) * 100;
-            let totalTranslate = -(currentSlide * 100) + deltaPercent; 
-            sliderContainer.style.transform = `translateX(${totalTranslate}%)`;
-        });
+            const isLocallyUnlocked = localStorage.getItem('unlocked_' + tabId) === 'true';
+            const isStudentGlobalActive = (currentStudentData && currentStudentData.isActivated === true);
+            
+            const unlockedForAll = (tab.isFree === true || tab.isFree === 'true' || tab.unlockedForAll === true || tab.unlockedForAll === 'true' || tab.accessType === 'free');
+            const unlockedForSubscribers = isStudentGlobalActive && (tab.forSubscribers === true || tab.forSubscribers === 'true' || tab.accessType === 'locked');
+            
+            const unlockedForSpecificStudent = currentStudentData && currentStudentData.allowedTabs && 
+                (currentStudentData.allowedTabs[tabId] === true || currentStudentData.allowedTabs[tabId] === 'true' || currentStudentData.allowedTabs[tabId] === 1);
+            
+            return unlockedForAll || unlockedForSubscribers || unlockedForSpecificStudent || isLocallyUnlocked;
+        }
 
-        const handleSliderRelease = () => {
-            if (!isDragging) return;
-            isDragging = false;
-            sliderWrapper.style.cursor = 'grab';
-            
-            let deltaPercent = (deltaX / sliderWrapper.offsetWidth) * 100;
-            sliderContainer.style.transition = 'transform 0.4s cubic-bezier(0.25, 1, 0.5, 1)';
-            
-            if (deltaPercent < -15) {
-                currentSlide++; 
-            } else if (deltaPercent > 15) {
-                currentSlide--; 
+        function loadStudentSession() {
+            const sessionData = localStorage.getItem('currentStudent');
+            if (sessionData) {
+                currentStudentData = JSON.parse(sessionData);
             }
             
-            sliderContainer.style.transform = `translateX(-${currentSlide * 100}%)`;
-            
-            setTimeout(() => {
-                sliderContainer.style.pointerEvents = 'auto';
-            }, 50);
-            
-            startAutoSlide();
-        };
+            const savedKey = localStorage.getItem('student_key');
+            const savedPhone = localStorage.getItem('student_phone');
 
-        sliderWrapper.addEventListener('pointerup', handleSliderRelease);
-        sliderWrapper.addEventListener('pointerleave', handleSliderRelease);
-
-        /* ──────────────── النافذة المنبثقة للاعلانات ──────────────── */
-        function openAdModal(imgUrl) {
-            const modal = document.getElementById("imageModal");
-            const modalImg = document.getElementById("modalImg");
-            modalImg.src = imgUrl;
-            modal.style.display = "flex";
-            setTimeout(() => { modal.classList.add("show"); }, 10);
+            if (savedKey) {
+                setupSingleLiveSync(savedKey);
+            } else if (savedPhone) {
+                resolveStudentKeyAndSync(savedPhone.replace(/\s+/g, ''));
+            } else {
+                fetchTabsFromFirebase();
+            }
         }
 
-        function closeAdModal() {
-            const modal = document.getElementById("imageModal");
-            modal.classList.remove("show");
-            setTimeout(() => { modal.style.display = "none"; }, 300);
+        function handleDeactivation() {
+            currentStudentData = { name: "طالب زائر", isActivated: false, isVip: false, allowedTabs: {} };
+            localStorage.setItem('currentStudent', JSON.stringify(currentStudentData));
+            
+            localStorage.removeItem('student_key');
+            localStorage.removeItem('student_phone');
+            
+            if (activeLiveRef) {
+                activeLiveRef.off();
+                activeLiveRef = null;
+            }
+            
+            if (currentActiveTabId && !isTabAllowed(currentActiveTabId)) {
+                currentActiveTabId = null;
+                const filesSection = document.getElementById('files-section');
+                if (filesSection) filesSection.style.display = 'none';
+                const filesList = document.getElementById('files-list');
+                if (filesList) filesList.innerHTML = '';
+            }
+            
+            renderTabsHierarchy();
         }
 
-        /* 🚀 تشغيل النظام المزدوج (Online/Offline) بقوة وحماية عالية 🚀 */
-        if (isOnline && typeof firebase !== 'undefined') {
-            console.log("📡 نظام البث المباشر نشط: جاري جلب البيانات من السيرفر وحفظ كاش محلي...");
-            try {
-                firebase.initializeApp(firebaseConfig);
-                const db = firebase.database();
-
+        function resolveStudentKeyAndSync(cleanPhone) {
+            const phoneAsNum = Number(cleanPhone);
+            
+            db.ref('students/' + cleanPhone).once('value', snap => {
+                if (snap.exists()) {
+                    localStorage.setItem('student_key', cleanPhone);
+                    setupSingleLiveSync(cleanPhone);
+                    return;
+                }
                 
-                /* جلب الأخبار وتخزينها */
-                db.ref('news').on('value', snap => {
-                    const newsData = snap.val();
-                    renderNews(newsData);
-                    localStorage.setItem('cached_news', JSON.stringify(newsData));
-                });
-
-                /* جلب الإشعارات المباشرة */
-                db.ref('push_notification').on('value', snap => {
-                    const data = snap.val();
-                    if (!data) return;
-
-                    const lastSeenId = localStorage.getItem('last_seen_notification_id');
-                    if (data.id && data.id !== lastSeenId) {
-                        triggerInAppNotification(data.title, data.message, data.id);
+                db.ref('students').orderByChild('phone').equalTo(cleanPhone).once('value', searchSnap => {
+                    if (searchSnap.exists()) {
+                        searchSnap.forEach(childSnap => {
+                            localStorage.setItem('student_key', childSnap.key);
+                            setupSingleLiveSync(childSnap.key);
+                        });
+                        return;
+                    }
+                    
+                    if (!isNaN(phoneAsNum)) {
+                        db.ref('students').orderByChild('phone').equalTo(phoneAsNum).once('value', numSnap => {
+                            if (numSnap.exists()) {
+                                numSnap.forEach(childSnap => {
+                                    localStorage.setItem('student_key', childSnap.key);
+                                    setupSingleLiveSync(childSnap.key);
+                                });
+                            } else {
+                                handleDeactivation();
+                            }
+                        });
+                    } else {
+                        handleDeactivation();
                     }
                 });
+            });
+        }
 
-                /* جلب الإعلانات وتخزينها */
-                db.ref('ads').on('value', snap => {
-                    const adsData = snap.val();
-                    renderAds(adsData);
-                    localStorage.setItem('cached_ads', JSON.stringify(adsData));
+        function setupSingleLiveSync(studentKey) {
+            if (!studentKey) return;
+            if (activeLiveRef) activeLiveRef.off();
+            
+            activeLiveRef = db.ref('students/' + studentKey);
+            activeLiveRef.on('value', snap => {
+                if (snap.exists()) {
+                    syncStudentActivation(snap.val());
+                } else {
+                    handleDeactivation();
+                }
+            });
+
+            fetchTabsFromFirebase();
+        }
+
+        function syncStudentActivation(serverData) {
+            if (!serverData) {
+                handleDeactivation();
+                return;
+            }
+            if (!currentStudentData) currentStudentData = {};
+
+            const isVip = 
+                serverData.isVip === true || serverData.isVip === 'true' ||
+                serverData.status === 'vip' || serverData.status === 'VIP' ||
+                serverData.subscription === 'vip' || serverData.subscription === 'VIP';
+
+            const isExplicitlyDeactivated = 
+                serverData.isActivated === false || serverData.isActivated === 'false' ||
+                serverData.active === false || serverData.active === 'false' ||
+                serverData.activated === false || serverData.activated === 'false' ||
+                serverData.status === 'غير نشط' || serverData.status === 'inactive' || serverData.status === 'منتهي';
+
+            const hasActiveMarker = 
+                serverData.isActivated === true || serverData.isActivated === 'true' || 
+                serverData.active === true || serverData.active === 'true' || 
+                serverData.status === 'active' || serverData.status === 'نشط' ||
+                serverData.activated === true || serverData.activated === 'true' ||
+                isVip;
+
+            const isActive = hasActiveMarker && !isExplicitlyDeactivated;
+
+            if (isActive || isVip) {
+                currentStudentData.isActivated = true;
+                currentStudentData.isVip = isVip; 
+                currentStudentData.allowedTabs = serverData.allowedTabs || {}; 
+                currentStudentData.name = serverData.name || currentStudentData.name;
+                currentStudentData.phone = serverData.phone || currentStudentData.phone;
+            } else {
+                if (serverData.allowedTabs && Object.keys(serverData.allowedTabs).length > 0) {
+                    currentStudentData.isActivated = false; 
+                    currentStudentData.isVip = false;
+                    currentStudentData.allowedTabs = serverData.allowedTabs;
+                    currentStudentData.name = serverData.name || currentStudentData.name;
+                    currentStudentData.phone = serverData.phone || currentStudentData.phone;
+                } else {
+                    handleDeactivation();
+                    return;
+                }
+            }
+            localStorage.setItem('currentStudent', JSON.stringify(currentStudentData));
+            
+            if (currentActiveTabId && !isTabAllowed(currentActiveTabId)) {
+                currentActiveTabId = null;
+                const filesSection = document.getElementById('files-section');
+                if (filesSection) filesSection.style.display = 'none';
+            }
+            
+            renderTabsHierarchy();
+        }
+
+        function fetchTabsFromFirebase() {
+            const cachedTabs = localStorage.getItem('laba_cached_tabs');
+            if (cachedTabs) {
+                try {
+                    allTabsData = JSON.parse(cachedTabs) || {};
+                    renderTabsHierarchy();
+                } catch (e) {
+                    console.log("خطأ في قراءة الأقسام المخزنة مؤقتاً:", e);
+                }
+            }
+
+            db.ref('tabs').once('value').then(snap => {
+                const liveData = snap.val() || {};
+                allTabsData = liveData;
+                localStorage.setItem('laba_cached_tabs', JSON.stringify(liveData));
+                renderTabsHierarchy();
+            }).catch(err => {
+                console.log("أنت تعمل حالياً بوضع الأوفلاين. تم استخدام النسخة المخزنة مؤخراً.");
+                if (!cachedTabs) {
+                    const navContainer = document.getElementById('dynamic-tabs');
+                    if (navContainer) {
+                        navContainer.innerHTML = '<p style="grid-column: span 2; text-align:center; color:#e53e3e; font-weight: bold;">⚠️ يرجى الاتصال بالإنترنت للمرة الأولى لتحميل الأقسام الدراسية.</p>';
+                    }
+                }
+            });
+        }
+
+        function hasChildTabs(tabId) {
+            return Object.values(allTabsData).some(tab => tab.parentId === tabId);
+        }
+
+        function renderTabsHierarchy() {
+            const navContainer = document.getElementById('dynamic-tabs');
+            const sectionTitle = document.getElementById('library-section-title');
+            const sectionDesc = document.getElementById('library-section-description');
+            const backArea = document.getElementById('back-action-area');
+
+            if (!navContainer) return;
+            navContainer.innerHTML = "";
+
+            if (Object.keys(allTabsData).length === 0) {
+                navContainer.innerHTML = '<p style="grid-column: span 2; text-align:center; color:#64748b;">لا توجد أقسام منشورة حالياً.</p>';
+                return;
+            }
+
+            const currentParentId = navigationStack.length > 0 ? navigationStack[navigationStack.length - 1] : null;
+
+            if (currentParentId === null) {
+                sectionTitle.innerText = "اختر القسم المستهدف لتصفح الملفات:";
+                sectionDesc.style.display = 'none';
+                backArea.innerHTML = ""; 
+
+                Object.keys(allTabsData).forEach(key => {
+                    const tab = allTabsData[key];
+                    if (!tab.parentId || tab.parentId === 'root') buildTabSquare(key, tab, navContainer);
                 });
-
-            } catch (err) {
-                console.error("⚠️ فشل الاتصال المباشر بقاعدة البيانات، جاري الانتقال لوضع الكاش الاحتياطي:", err);
-                loadOfflineCache();
-            }
-        } else {
-            console.log("🔌 لا يوجد اتصال شبكة (أوفلاين) أو تعذر تحميل مكتبة Firebase: جاري استخدام الكاش المحلي...");
-            loadOfflineCache();
-        }
-
-        // دالة تشغيل الكاش الاحتياطي في وضع الأوفلاين
-        function loadOfflineCache() {
-            // استرجاع الأخبار
-            const cachedNews = localStorage.getItem('cached_news');
-            if (cachedNews) {
-                try {
-                    renderNews(JSON.parse(cachedNews));
-                } catch(e) { 
-                    document.getElementById('ticker-wrap').style.display = "none"; 
-                }
             } else {
-                document.getElementById('ticker-wrap').style.display = "none";
-            }
+                const parentTab = allTabsData[currentParentId];
+                sectionTitle.innerText = `الأقسام الفرعية المتاحة لـ: ${parentTab ? parentTab.name : ''}`;
+                sectionDesc.innerText = (parentTab && parentTab.description) ? parentTab.description : "";
+                sectionDesc.style.display = (parentTab && parentTab.description) ? 'block' : 'none';
+                
+                backArea.innerHTML = `<button class="btn-back-platform" onclick="handleNavigationPop()"><i class="fa-solid fa-arrow-right"></i> العودة للقسم السابق</button>`;
 
-            // استرجاع الإعلانات
-            const cachedAds = localStorage.getItem('cached_ads');
-            if (cachedAds) {
-                try {
-                    renderAds(JSON.parse(cachedAds));
-                } catch(e) { 
-                    document.getElementById('slider-wrapper').style.display = "none"; 
-                }
-            } else {
-                document.getElementById('slider-wrapper').style.display = "none";
+                Object.keys(allTabsData).forEach(key => {
+                    const tab = allTabsData[key];
+                    if (tab.parentId === currentParentId) {
+                        buildTabSquare(key, tab, navContainer);
+                    }
+                });
             }
         }
 
-        /* ────────────────────────────────────────────────────────── */
+        function buildTabSquare(key, tab, container) {
+            let isAllowed = isTabAllowed(key); 
+            const square = document.createElement('div');
+            let mediaHtml = tab.imageUrl ? `<img src="${tab.imageUrl}" class="tab-custom-img" onerror="handleMissingTabImage(this, '${tab.type}')">` : `<i class="${tab.type === 'video' ? 'fa-solid fa-circle-play main-icon' : (tab.type === 'exercises' ? 'fa-solid fa-square-root-variable main-icon' : 'fa-solid fa-file-pdf main-icon')}"></i>`;
 
-        document.addEventListener("DOMContentLoaded", function() {
-            displayRandomMotivation();
-            initPomoTimer(); // 🔄 فحص التخزين السحابي/المحلي فور تحميل الصفحة لمزامنة الوقت الفعلي
+            if (!isAllowed) {
+                square.className = 'tab-square locked';
+                square.innerHTML = `<div class="lock-badge"><i class="fa-solid fa-lock"></i></div>${mediaHtml}<span>${tab.name}</span>`;
+                square.onclick = () => openActivationModal(key, tab.name);
+            } else {
+                square.className = `tab-square ${key === currentActiveTabId ? 'active' : ''}`;
+                square.innerHTML = `${mediaHtml}<span>${tab.name}</span>`;
+                square.onclick = () => {
+                    if (hasChildTabs(key)) {
+                        const filesSection = document.getElementById('files-section');
+                        if (filesSection) filesSection.style.display = 'none';
+                        currentActiveTabId = null;
+
+                        navigationStack.push(key);
+                        renderTabsHierarchy();
+                    } else {
+                        document.querySelectorAll('.tab-square').forEach(s => s.classList.remove('active'));
+                        square.classList.add('active');
+                        currentActiveTabId = key;
+                        loadLessonsForTab(key, tab.name);
+                    }
+                };
+            }
+            container.appendChild(square);
+        }
+
+        function openActivationModal(tabId, tabName) {
+            pendingTabIdToActivate = tabId;
+            document.getElementById('modal-tab-title').innerText = `تفعيل قسم: ${tabName}`;
+            
+            let savedPhone = (currentStudentData && currentStudentData.phone) ? currentStudentData.phone : (localStorage.getItem('student_phone') || "");
+            document.getElementById('modal-input-phone').value = savedPhone.trim();
+            document.getElementById('modal-input-code').value = "";
+            
+            document.getElementById('activation-modal').classList.add('open');
+            if(savedPhone.trim() !== "") {
+                document.getElementById('modal-input-code').focus();
+            } else {
+                document.getElementById('modal-input-phone').focus();
+            }
+        }
+
+        function closeActivationModal() {
+            document.getElementById('activation-modal').classList.remove('open');
+            pendingTabIdToActivate = null;
+        }
+
+        function checkPhoneActivationOnTheFly(rawPhone) {
+            const cleanPhone = rawPhone.replace(/\s+/g, '');
+            if (cleanPhone.length < 9) return;
+
+            const phoneAsNum = Number(cleanPhone);
+            const targetTabId = pendingTabIdToActivate;
+
+            const processInstantUnlock = (serverData, actualKey) => {
+                const isVip = 
+                    serverData.isVip === true || serverData.isVip === 'true' ||
+                    serverData.status === 'vip' || serverData.status === 'VIP' ||
+                    serverData.subscription === 'vip' || serverData.subscription === 'VIP';
+
+                const isExplicitlyDeactivated = 
+                    serverData.isActivated === false || serverData.isActivated === 'false' ||
+                    serverData.active === false || serverData.active === 'false' ||
+                    serverData.status === 'غير نشط' || serverData.status === 'inactive' || serverData.status === 'منتهي';
+
+                const hasActiveMarker = 
+                    serverData.isActivated === true || serverData.isActivated === 'true' || 
+                    serverData.active === true || serverData.active === 'true' || 
+                    serverData.status === 'active' || serverData.status === 'نشط' ||
+                    isVip;
+
+                const isActive = hasActiveMarker && !isExplicitlyDeactivated;
+                const hasSpecificTabAccess = serverData.allowedTabs && 
+                    (serverData.allowedTabs[targetTabId] === true || serverData.allowedTabs[targetTabId] === 'true' || serverData.allowedTabs[targetTabId] === 1);
+
+                if (isActive || hasSpecificTabAccess || isVip) {
+                    localStorage.setItem('student_phone', cleanPhone);
+                    localStorage.setItem('student_key', actualKey); 
+                    
+                    currentStudentData = {
+                        isActivated: isActive,
+                        isVip: isVip,
+                        allowedTabs: serverData.allowedTabs || {},
+                        name: serverData.name || "طالب متميز",
+                        phone: cleanPhone
+                    };
+                    localStorage.setItem('currentStudent', JSON.stringify(currentStudentData));
+                    
+                    closeActivationModal();
+                    renderTabsHierarchy();
+                    
+                    if (targetTabId && allTabsData[targetTabId]) {
+                        currentActiveTabId = targetTabId;
+                        loadLessonsForTab(targetTabId, allTabsData[targetTabId].name);
+                    }
+
+                    setupSingleLiveSync(actualKey);
+                    setTimeout(() => {
+                        showNotification(`🎯 تم التعرف على تفعيلك التلقائي بنجاح! مرحباً بك يا ${serverData.name || 'طالبنا المتميز'}.`);
+                    }, 100);
+                }
+            };
+
+            db.ref('students/' + cleanPhone).once('value', snap => { 
+                if(snap.exists()) {
+                    processInstantUnlock(snap.val(), cleanPhone); 
+                } else {
+                    db.ref('students').orderByChild('phone').equalTo(cleanPhone).once('value', snap2 => { 
+                        if(snap2.exists()) {
+                            snap2.forEach(c => processInstantUnlock(c.val(), c.key)); 
+                        } else if(!isNaN(phoneAsNum)) {
+                            db.ref('students').orderByChild('phone').equalTo(phoneAsNum).once('value', snap3 => { 
+                                if(snap3.exists()) snap3.forEach(c => processInstantUnlock(c.val(), c.key)); 
+                            });
+                        }
+                    });
+                }
+            });
+        }
+
+        document.getElementById('modal-input-phone').addEventListener('input', function(e) {
+            if(e.target.value.trim().length >= 9) {
+                checkPhoneActivationOnTheFly(e.target.value);
+            }
         });
 
-        const mathQuotes = [
-            "يا بطل البكالوريا، تذكر دائماً أن العلامة التامة تبدأ بخطوة وتركيز في تمرين!",
-            "الرياضيات ليست صعبة، هي فقط تحتاج إلى ورقة وقلم وثقة بالقدرات الجبارة التي تمتلكها.",
-            "كل مسألة معقدة تقوم بحلها اليوم، تقربك خطوة إضافية نحو حلمك وشغفك الكبير.",
-            "لا توجد مسألة مستحيلة الحل، الاستمرارية والمحاولة مراراً وتكراراً تصنع المعجزات.",
-            "مستقبلك المشرق يستحق التعب والتركيز، الأستاذ محمد لبابيدي فخور بجهودك وسعيك المستمر.",
-            "التميز في البكالوريا لا يأتي بالصدفة، بل يأتي من استغلال دقائق مؤقت التركيز الآن!",
-            "اجعل شغفك بالوصول إلى القمة يطرد أي شعور بالكسل.. أنت قادر على فعلها ونيل الصدارة.",
-            "تجاوز عقبات الهندسة والتحليل بالتدريب اليومي، فالعلامة الكاملة تُصنع بالصبر والتحدي.",
-            "من لم تكن له بداية محرقة ... لم تكن له نهاية مشرقة"
-        ];
-
-        function displayRandomMotivation() {
-            const textElement = document.getElementById('motivation-text');
-            const randomIndex = Math.floor(Math.random() * mathQuotes.length);
-            textElement.innerText = mathQuotes[randomIndex];
-        }
-
-        /* العداد التنازلي */
-        const targetExamDate = new Date("June 1, 2027 08:00:00").getTime();
-        const countdownInterval = setInterval(function() {
-            const now = new Date().getTime();
-            const diff = targetExamDate - now;
-            if (diff > 0) {
-                const d = Math.floor(diff / (1000 * 60 * 60 * 24));
-                const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-                const s = Math.floor((diff % (1000 * 60)) / 1000);
-                document.getElementById("days").innerText = d < 10 ? "0" + d : d;
-                document.getElementById("hours").innerText = h < 10 ? "0" + h : h;
-                document.getElementById("minutes").innerText = m < 10 ? "0" + m : m;
-                document.getElementById("seconds").innerText = s < 10 ? "0" + s : s;
-            } else {
-                clearInterval(countdownInterval);
-                document.querySelector(".countdown-section").innerHTML = "<div class='countdown-title'>📋 بالتوفيق والنجاح لجميع الطلاب في الامتحانات!</div>";
-            }
-        }, 1000);
-
-        /* ──────────────── ⏱️ نظام مؤقت بومودورو المطور فائق الاستمرار والذكاء ──────────────── */
-        let pomoInterval = null;
-        let pomoMinutes = 25;
-        let pomoSeconds = 0;
-        let totalSeconds = 25 * 60; 
-        let currentPomoMode = 'study'; 
-
-        const circumference = 2 * Math.PI * 80; 
-        const progressCircle = document.getElementById('pomo-progress');
-        const pomoTimeDisplay = document.getElementById('pomo-time');
-        const pomoStartBtn = document.getElementById('pomo-start');
-        const pomoPauseBtn = document.getElementById('pomo-pause');
-        const studyTab = document.getElementById('btn-mode-study');
-        const breakTab = document.getElementById('btn-mode-break');
-
-        progressCircle.style.strokeDasharray = circumference;
-
-        function updatePomoDisplay() {
-            let m = pomoMinutes < 10 ? "0" + pomoMinutes : pomoMinutes;
-            let s = pomoSeconds < 10 ? "0" + pomoSeconds : pomoSeconds;
-            pomoTimeDisplay.textContent = m + ":" + s;
-            let currentSecondsLeft = pomoMinutes * 60 + pomoSeconds;
-            let progressFraction = currentSecondsLeft / totalSeconds;
-            let offset = circumference * (1 - progressFraction);
-            progressCircle.style.strokeDashoffset = offset;
-        }
-
-        // دالة التهيئة والمزامنة اللحظية
-        function initPomoTimer() {
-            const savedMode = localStorage.getItem('pomo_mode') || 'study';
-            currentPomoMode = savedMode;
+        document.getElementById('modal-btn-confirm').addEventListener('click', () => {
+            if (!pendingTabIdToActivate) return;
             
-            if (currentPomoMode === 'study') {
-                studyTab.classList.add('active'); breakTab.classList.remove('active');
-                totalSeconds = 25 * 60;
-            } else {
-                breakTab.classList.add('active'); studyTab.classList.remove('active');
-                totalSeconds = 5 * 60;
+            const phoneField = document.getElementById('modal-input-phone');
+            const codeField = document.getElementById('modal-input-code');
+            const rawPhone = phoneField.value.trim();
+            const typedKey = codeField.value.trim().toUpperCase();
+            
+            const tabId = pendingTabIdToActivate;
+            const tabName = allTabsData[tabId] ? allTabsData[tabId].name : "";
+
+            if (rawPhone === "") {
+                showNotification("⚠️ الرجاء إدخال رقم الهاتف أولاً!");
+                return;
             }
 
-            const savedStatus = localStorage.getItem('pomo_status') || 'stopped';
+            const cleanPhone = rawPhone.replace(/\s+/g, '');
+            localStorage.setItem('student_phone', cleanPhone);
 
-            if (savedStatus === 'running') {
-                const endTimestamp = parseInt(localStorage.getItem('pomo_end_timestamp'), 10);
-                const now = Date.now();
-                const diffSeconds = Math.round((endTimestamp - now) / 1000);
-
-                if (diffSeconds > 0) {
-                    pomoMinutes = Math.floor(diffSeconds / 60);
-                    pomoSeconds = diffSeconds % 60;
-                    updatePomoDisplay();
-                    resumePomoInterval(endTimestamp);
-                } else {
-                    // انتهى الوقت أثناء انتقال الطالب وتصفحه
-                    handleTimerCompletion();
+            if(typedKey !== "") {
+                let fullString = cleanPhone + tabId + SECRET_SALT;
+                let hash = 0;
+                for (let i = 0; i < fullString.length; i++) {
+                    hash = (hash << 5) - hash + fullString.charCodeAt(i);
+                    hash |= 0;
                 }
-            } else if (savedStatus === 'paused') {
-                const secondsLeft = parseInt(localStorage.getItem('pomo_seconds_left'), 10) || totalSeconds;
-                pomoMinutes = Math.floor(secondsLeft / 60);
-                pomoSeconds = secondsLeft % 60;
-                updatePomoDisplay();
-                pomoStartBtn.style.display = 'inline-flex';
-                pomoPauseBtn.style.display = 'none';
+                const expectedKey = "LABA-" + Math.abs(hash).toString(16).toUpperCase();
+
+                if (typedKey === expectedKey) {
+                    localStorage.setItem('unlocked_' + tabId, 'true');
+                    closeActivationModal();
+                    
+                    renderTabsHierarchy();
+                    currentActiveTabId = tabId;
+                    loadLessonsForTab(tabId, tabName);
+                    
+                    setTimeout(() => {
+                        showNotification(`🎉 تم تفعيل قسم [ ${tabName} ] بنجاح بواسطة الكود.`);
+                    }, 80);
+                } else {
+                    showNotification("❌ كود التفعيل اليدوي المدخل غير صحيح!");
+                }
             } else {
-                pomoMinutes = currentPomoMode === 'study' ? 25 : 5;
-                pomoSeconds = 0;
-                updatePomoDisplay();
+                checkPhoneActivationOnTheFly(cleanPhone);
+                setTimeout(() => {
+                    if (document.getElementById('activation-modal').classList.contains('open')) {
+                         showNotification("❌ لم يتم العثور على تفعيل تلقائي لهذا الرقم على السيرفر لهذا القسم بالتحديد!");
+                    }
+                }, 1000);
             }
+        });
+
+        function handleNavigationPop() { 
+            navigationStack.pop(); 
+            currentActiveTabId = null; 
+            const filesSection = document.getElementById('files-section');
+            if (filesSection) filesSection.style.display = 'none';
+            renderTabsHierarchy(); 
+        }
+        
+        function handleMissingTabImage(imgElement, type) { 
+            const i = document.createElement('i'); 
+            i.className = type === 'video' ? 'fa-solid fa-circle-play main-icon' : (type === 'exercises' ? 'fa-solid fa-square-root-variable main-icon' : 'fa-solid fa-file-pdf main-icon'); 
+            imgElement.replaceWith(i); 
         }
 
-        function switchPomoMode(mode) {
-            pausePomoTimer();
-            currentPomoMode = mode;
-            localStorage.setItem('pomo_mode', mode);
-            localStorage.setItem('pomo_status', 'stopped');
+        /* ──────────────── 📐 نظام الجلب والتصيير المتجاوب والـ LaTeX (أوفلاين) ──────────────── */
+        function loadLessonsForTab(tabId, tabName) {
+            const filesSection = document.getElementById('files-section');
+            const selectedTitle = document.getElementById('selected-tab-title');
+            const filesList = document.getElementById('files-list');
             
-            if (mode === 'study') { pomoMinutes = 25; totalSeconds = 25 * 60; studyTab.classList.add('active'); breakTab.classList.remove('active'); } 
-            else { pomoMinutes = 5; totalSeconds = 5 * 60; breakTab.classList.add('active'); studyTab.classList.remove('active'); }
-            pomoSeconds = 0;
-            updatePomoDisplay();
-        }
-
-        function startPomoTimer() {
-            if (pomoInterval !== null) return;
+            if (!filesSection || !selectedTitle || !filesList) return;
             
-            const currentSecondsLeft = pomoMinutes * 60 + pomoSeconds;
-            const endTimestamp = Date.now() + (currentSecondsLeft * 1000);
-            
-            localStorage.setItem('pomo_status', 'running');
-            localStorage.setItem('pomo_end_timestamp', endTimestamp);
-            localStorage.setItem('pomo_mode', currentPomoMode);
+            selectedTitle.innerText = `📚 محتويات: ${tabName}`;
+            filesSection.style.display = 'block';
 
-            resumePomoInterval(endTimestamp);
-        }
+            if (currentLessonsRef) currentLessonsRef.off();
+            if (currentExercisesRef) currentExercisesRef.off();
 
-        function resumePomoInterval(endTimestamp) {
-            pomoStartBtn.style.display = 'none';
-            pomoPauseBtn.style.display = 'inline-flex';
-            
-            clearInterval(pomoInterval);
-            pomoInterval = setInterval(() => {
-                const now = Date.now();
-                const diffSeconds = Math.round((endTimestamp - now) / 1000);
+            let localLessons = {};
+            let localExercises = {};
 
-                if (diffSeconds <= 0) {
-                    clearInterval(pomoInterval);
-                    pomoInterval = null;
-                    handleTimerCompletion();
+            const cachedLessons = localStorage.getItem(`laba_lessons_${tabId}`);
+            const cachedExercises = localStorage.getItem(`laba_exercises_${tabId}`);
+
+            if (cachedLessons) {
+                try { localLessons = JSON.parse(cachedLessons) || {}; } catch(e){}
+            }
+            if (cachedExercises) {
+                try { localExercises = JSON.parse(cachedExercises) || {}; } catch(e){}
+            }
+
+            const mergeAndRenderAll = () => {
+                filesList.innerHTML = "";
+
+                if (Object.keys(localLessons).length === 0 && Object.keys(localExercises).length === 0) {
+                    filesList.innerHTML = '<p style="text-align:center; color:#64748b; padding:10px;">لا توجد ملفات أو نوط أو مسائل مضافة في هذا القسم حالياً.</p>';
                     return;
                 }
 
-                pomoMinutes = Math.floor(diffSeconds / 60);
-                pomoSeconds = diffSeconds % 60;
-                updatePomoDisplay();
-            }, 1000);
+                Object.keys(localLessons).forEach(key => {
+                    const lesson = localLessons[key];
+                    const pdfItem = document.createElement('div');
+                    pdfItem.className = 'pdf-item';
+                    
+                    let secureUrl = lesson.url.includes('drive.google.com') ? lesson.url.replace('/view?usp=sharing', '/preview').replace('/view', '/preview') : lesson.url;
+                    let iconHtml = `<i class="fa-solid fa-file-pdf" style="color: #e53e3e; margin-left: 8px;"></i>`;
+                    let btnText = `تصفح النوطة آمن`;
+                    
+                    if (lesson.type === 'video') {
+                        iconHtml = `<i class="fa-solid fa-circle-play" style="color: #06b6d4; margin-left: 8px;"></i>`;
+                        btnText = `مشاهدة الشرح التفاعلي`;
+                    }
+
+                    pdfItem.innerHTML = `<span>${iconHtml} ${lesson.title}</span><a href="${secureUrl}" target="_blank" class="btn-preview">${btnText}</a>`;
+                    filesList.appendChild(pdfItem);
+                });
+
+                const sortedExercises = Object.keys(localExercises).map(key => ({ id: key, ...localExercises[key] }))
+                                              .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+                sortedExercises.forEach(ex => {
+                    const exerciseCard = document.createElement('div');
+                    exerciseCard.className = 'latex-exercise-card';
+                    
+                    exerciseCard.innerHTML = `
+                        <div class="exercise-header-clickable" onclick="toggleExerciseAccordion('${ex.id}')">
+                            <span style="font-weight: bold; color: var(--primary-color);">
+                                <i class="fa-solid fa-calculator" style="color: var(--accent-color); margin-left: 6px;"></i> ${ex.title}
+                            </span>
+                            <i class="fa-solid fa-chevron-down" style="color: #9ca3af; transition: transform 0.2s;" id="chevron-${ex.id}"></i>
+                        </div>
+                        
+                        <div class="exercise-toggle-content" id="exercise-content-${ex.id}">
+                            <div class="exercise-problem-box">
+                                ${ex.question}
+                            </div>
+                            <button class="btn-preview" style="align-self: flex-start; background-color: var(--primary-color); border: none; cursor: pointer;" onclick="toggleSolutionDisplay('${ex.id}')">
+                                <i class="fa-solid fa-eye" id="icon-${ex.id}"></i> <span id="btn-text-${ex.id}" style="color: white;">عرض الحل النموذجي</span>
+                            </button>
+                            <div class="exercise-solution-box" id="solution-container-${ex.id}">
+                                <strong style="color: var(--success-color); display: block; margin-bottom: 6px;"><i class="fa-solid fa-square-check"></i> خطوات الحل المعتمدة:</strong>
+                                <div style="color: var(--text-color);">${ex.solution}</div>
+                            </div>
+                        </div>
+                    `;
+                    filesList.appendChild(exerciseCard);
+                });
+
+                if (window.MathJax && window.MathJax.typesetPromise) {
+                    window.MathJax.typesetPromise([filesList]).catch(err => console.log(err));
+                }
+            };
+
+            mergeAndRenderAll();
+
+            currentLessonsRef = db.ref('lessons').orderByChild('tabId').equalTo(tabId);
+            currentExercisesRef = db.ref('math_exercises').orderByChild('tabId').equalTo(tabId);
+
+            currentLessonsRef.on('value', snap => {
+                const liveData = snap.val() || {};
+                localLessons = liveData;
+                localStorage.setItem(`laba_lessons_${tabId}`, JSON.stringify(liveData));
+                mergeAndRenderAll();
+            }, err => {
+                console.log("استخدام الدروس المخزنة مؤقتاً في وضع عدم الاتصال.");
+            });
+
+            currentExercisesRef.on('value', snap => {
+                const liveData = snap.val() || {};
+                localExercises = liveData;
+                localStorage.setItem(`laba_exercises_${tabId}`, JSON.stringify(liveData));
+                mergeAndRenderAll();
+            }, err => {
+                console.log("استخدام المسائل المخزنة مؤقتاً في وضع عدم الاتصال.");
+            });
         }
 
-        function pausePomoTimer() {
-            clearInterval(pomoInterval);
-            pomoInterval = null;
-            pomoStartBtn.style.display = 'inline-flex';
-            pomoPauseBtn.style.display = 'none';
+        function toggleExerciseAccordion(key) {
+            const targetContentBox = document.getElementById(`exercise-content-${key}`);
+            const targetChevron = document.getElementById(`chevron-${key}`);
             
-            const currentSecondsLeft = pomoMinutes * 60 + pomoSeconds;
-            localStorage.setItem('pomo_status', 'paused');
-            localStorage.setItem('pomo_seconds_left', currentSecondsLeft);
-        }
+            if (!targetContentBox) return;
 
-        function resetPomoTimer() {
-            clearInterval(pomoInterval);
-            pomoInterval = null;
-            pomoStartBtn.style.display = 'inline-flex';
-            pomoPauseBtn.style.display = 'none';
-            
-            localStorage.setItem('pomo_status', 'stopped');
-            if (currentPomoMode === 'study') { pomoMinutes = 25; totalSeconds = 25 * 60; } 
-            else { pomoMinutes = 5; totalSeconds = 5 * 60; }
-            pomoSeconds = 0;
-            updatePomoDisplay();
-        }
+            if (targetContentBox.style.display === 'none' || targetContentBox.style.display === '') {
+                document.querySelectorAll('.exercise-toggle-content').forEach(box => {
+                    if (box.id !== `exercise-content-${key}`) {
+                        box.style.display = 'none';
+                        const otherKey = box.id.replace('exercise-content-', '');
+                        const otherChevron = document.getElementById(`chevron-${otherKey}`);
+                        if (otherChevron) otherChevron.style.transform = 'rotate(0deg)';
+                        
+                        const solBox = document.getElementById(`solution-container-${otherKey}`);
+                        const btnText = document.getElementById(`btn-text-${otherKey}`);
+                        const eyeIcon = document.getElementById(`icon-${otherKey}`);
+                        if (solBox) solBox.style.display = 'none';
+                        if (btnText) btnText.innerText = 'عرض الحل النموذجي';
+                        if (eyeIcon) eyeIcon.className = 'fa-solid fa-eye';
+                    }
+                });
 
-        function handleTimerCompletion() {
-            localStorage.setItem('pomo_status', 'stopped');
-            
-            if (navigator.vibrate) {
-                navigator.vibrate([400, 200, 400, 200, 400]);
+                targetContentBox.style.display = 'block';
+                if (targetChevron) targetChevron.style.transform = 'rotate(180deg)';
+            } else {
+                targetContentBox.style.display = 'none';
+                if (targetChevron) targetChevron.style.transform = 'rotate(0deg)';
+                
+                const solBox = document.getElementById(`solution-container-${key}`);
+                const btnText = document.getElementById(`btn-text-${key}`);
+                const eyeIcon = document.getElementById(`icon-${key}`);
+                if (solBox) solBox.style.display = 'none';
+                if (btnText) btnText.innerText = 'عرض الحل النموذجي';
+                if (eyeIcon) eyeIcon.className = 'fa-solid fa-eye';
             }
-            
-            const notifyTitle = currentPomoMode === 'study' ? "جلسة رائعة وبطلة! 📚" : "انتهى الوقت المخصص للراحة ☕";
-            const notifyMsg = currentPomoMode === 'study' ? "لقد أنهيت جلسة دراسة الرياضيات بنجاح، خذ استراحة قصيرة الآن." : "هيا بنا نعود بكل طاقة وحماس لاستكمال حل التمارين!";
-            triggerInAppNotification(notifyTitle, notifyMsg, "pomo");
-            
-            resetPomoTimer();
         }
-    
-    // تنشيط دوري للـ Service Worker لضمان استمرارية الاتصال
-// setInterval(() => {
-   // if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-  //      navigator.serviceWorker.controller.postMessage({ type: 'PING' });
-//    }
-// }, 60000); // كل دقيقة
-        
 
-    
-    // مراقبة عودة المستخدم للتطبيق
-    document.addEventListener("visibilitychange", () => {
-        if (document.visibilityState === "visible") {
-            // إذا كانت الصفحة فارغة (يحتوي الجسم على عناصر قليلة جداً)
-            // فهذا يعني أن الأندرويد قام بقتل العملية
-            if (document.body.innerText.length < 50) { 
-                console.log("تم اكتشاف توقف التطبيق، جاري إعادة التحميل...");
-                location.reload(); 
+        function toggleSolutionDisplay(key) {
+            const container = document.getElementById(`solution-container-${key}`);
+            const text = document.getElementById(`btn-text-${key}`);
+            const icon = document.getElementById(`icon-${key}`);
+
+            if (!container) return;
+
+            if (container.style.display === 'none' || container.style.display === '') {
+                container.style.display = 'block';
+                text.innerText = 'إخفاء الحل';
+                icon.className = 'fa-solid fa-eye-slash';
+            } else {
+                container.style.display = 'none';
+                text.innerText = 'عرض الحل النموذجي';
+                icon.className = 'fa-solid fa-eye';
             }
         }
-    });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            if (localStorage.getItem('platform-theme') === 'dark') {
+                document.body.classList.add('dark-mode');
+            } else {
+                document.body.classList.remove('dark-mode');
+            }
+            loadStudentSession();
+        });
     </script>
-    
-    
 </body>
 </html>
